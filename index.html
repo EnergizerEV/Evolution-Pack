@@ -69,7 +69,6 @@
             align-items: center;
             width: 100%;
             min-height: 100vh;
-            position: relative;
         }
 
         body {
@@ -86,7 +85,6 @@
             position: relative;
         }
 
-        /* СЕТКА И ЭФФЕКТЫ */
         .vignette {
             position: fixed;
             top: 0; left: 0; width: 100%; height: 100%;
@@ -114,9 +112,9 @@
 
         @keyframes scanline-run { 0% { top: -100px; } 100% { top: 100%; } }
 
-        /* ОБЩИЙ КЛАСС ДЛЯ ПАРАЛЛАКСА */
+        /* ПАРАЛЛАКС СЛОЙ */
         .parallax-layer {
-            transition: transform 0.2s cubic-bezier(0.03, 0.98, 0.52, 0.99);
+            transition: transform 0.4s cubic-bezier(0.23, 1, 0.32, 1); /* Плавный доводчик */
             will-change: transform;
         }
 
@@ -146,14 +144,12 @@
         .card {
             background: rgba(10, 15, 20, 0.9); border: 1px solid #1a262b; padding: 40px; width: 100%; max-width: 600px; margin-bottom: 30px;
             position: relative; z-index: 20;
-            /* Плавность для ховера и параллакса отдельно */
-            transition: transform 0.2s cubic-bezier(0.03, 0.98, 0.52, 0.99), border 0.4s, box-shadow 0.4s, background 0.4s;
+            transition: transform 0.4s cubic-bezier(0.23, 1, 0.32, 1), border 0.4s, box-shadow 0.4s, background 0.4s;
         }
 
         .card h2 { margin-top: 0; color: #fff; transition: 0.4s; font-weight: normal; }
         .glow-part, .night-glow { transition: 0.4s; color: #fff; }
 
-        /* ЭФФЕКТЫ ХОВЕРА */
         .aqua-style:hover { border-left: 4px solid var(--aqua); box-shadow: 0 0 40px rgba(0, 255, 216, 0.2); background: rgba(10, 25, 25, 0.95); }
         .aqua-style:hover .glow-part { color: var(--aqua); text-shadow: 0 0 15px var(--aqua); font-weight: bold; }
 
@@ -191,16 +187,16 @@
         <div class="crt-scanlines"></div>
         <div class="scanline"></div>
         
-        <div class="logo-wrapper parallax-layer" data-strength="40">
+        <div class="logo-wrapper parallax-layer" data-strength="60">
             <div class="glitch-logo logo-base"></div>
             <div class="glitch-logo logo-glitch"></div>
         </div>
 
-        <div class="header parallax-layer" data-strength="25">
+        <div class="header parallax-layer" data-strength="80">
             <h1><span>EV</span>olution</h1>
         </div>
 
-        <div class="card aqua-style parallax-layer" data-strength="15">
+        <div class="card aqua-style parallax-layer" data-strength="120">
             <h2><span class="glow-part">EV</span>olution <span class="glow-part">Pa</span>ck</h2>
             <p>Классический набор текстур включающий в себя: Dark-Aqua, Equipments&Skins, SFX-Pack</p>
             <div class="btn-container">
@@ -209,7 +205,7 @@
             </div>
         </div>
 
-        <div class="card night-style parallax-layer" data-strength="15">
+        <div class="card night-style parallax-layer" data-strength="120">
             <h2>PROJECT <span class="night-glow">NIGHT</span></h2>
             <p>Протокол запущен./// Набор Текстур, который добавляет механику "Тьмы". Как долго ты протянешь?...\\\\\\</p>
             <a href="https://drive.google.com/file/d/1nIO79tg17x5P7VQxxa_dwtIzr42Kk9fq/view?usp=drive_link" target="_blank" class="btn">Access Files</a>
@@ -223,7 +219,6 @@
     </div>
 
     <script>
-        // ЗАГРУЗКА
         window.addEventListener('load', () => {
             const statusText = document.getElementById('status-text');
             const messages = ["ESTABLISHING CONNECTION...", "DECRYPTING ASSETS...", "EXECUTING EV_Core.exe...", "LOADING CORE MODULES...", "STABILIZING INTERFACE...", "ACCESS GRANTED."];
@@ -244,7 +239,7 @@
             }, 800);
         });
 
-        // ГАРМОНИЧНЫЙ ПАРАЛЛАКС
+        // СБАЛАНСИРОВАННЫЙ ПАРАЛЛАКС
         document.addEventListener('mousemove', (e) => {
             const { clientX, clientY } = e;
             const centerX = window.innerWidth / 2;
@@ -253,17 +248,19 @@
             const layers = document.querySelectorAll('.parallax-layer');
             layers.forEach(layer => {
                 const strength = layer.getAttribute('data-strength');
+                
+                // Движение вслед за мышью (clientX - centerX)
+                // Чем выше strength, тем меньше дистанция движения
                 const moveX = (clientX - centerX) / strength;
                 const moveY = (clientY - centerY) / strength;
                 
-                // Проверка на ховер для карточек (сохраняем scale 1.03)
-                const scale = (layer.classList.contains('card') && layer.matches(':hover')) ? 1.03 : 1;
+                const isHovered = layer.classList.contains('card') && layer.matches(':hover');
+                const scale = isHovered ? 1.03 : 1;
                 
                 layer.style.transform = `translate3d(${moveX}px, ${moveY}px, 0) scale(${scale})`;
             });
         });
 
-        // СКРЕМБЛЕР
         const element = document.getElementById('nickname');
         const originalText = element.innerText;
         const symbols = "!<>-_\\/[]{}—=+*^?#________";
