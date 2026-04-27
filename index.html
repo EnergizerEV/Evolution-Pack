@@ -22,61 +22,87 @@
             align-items: center;
             padding: 60px 20px;
             overflow-x: hidden;
-            position: relative;
             min-height: 100vh;
-            /* Высокочастотное тусклое мерцание */
-            animation: terminal-flicker 0.15s infinite;
+            /* Постоянное мерцание яркости */
+            animation: terminal-flicker 0.1s infinite;
         }
 
         @keyframes terminal-flicker {
-            0% { opacity: 0.99; }
+            0% { opacity: 0.98; }
             50% { opacity: 1; }
-            100% { opacity: 0.98; }
+            100% { opacity: 0.99; }
         }
 
-        /* Эффект шума (Grain) */
-        .noise-overlay {
+        /* Анимированный цифровой шум (пыль) */
+        .noise {
+            fixed: top 0 left 0;
+            position: fixed;
+            top: -50%; left: -50%; width: 200%; height: 200%;
+            background-image: url('https://grainy-gradients.vercel.app/noise.svg');
+            opacity: 0.08;
+            pointer-events: none;
+            z-index: 3000;
+            animation: noise-anim 0.2s steps(4) infinite;
+        }
+
+        @keyframes noise-anim {
+            0% { transform: translate(0,0); }
+            25% { transform: translate(1%, 2%); }
+            50% { transform: translate(-2%, 1%); }
+            75% { transform: translate(2%, -1%); }
+            100% { transform: translate(0,0); }
+        }
+
+        /* Бегущая линия */
+        .scanline {
+            width: 100%;
+            height: 5px;
+            z-index: 1200;
+            background: rgba(0, 255, 216, 0.2);
+            box-shadow: 0 0 15px rgba(0, 255, 216, 0.4);
+            position: fixed;
+            top: -100px;
+            left: 0;
+            pointer-events: none;
+            animation: scanline-move 5s linear infinite;
+        }
+
+        @keyframes scanline-move {
+            0% { top: -100px; }
+            100% { top: 100%; }
+        }
+
+        /* Виньетка и Шейдинг */
+        .master-overlay {
             position: fixed;
             top: 0; left: 0; width: 100%; height: 100%;
-            background: url('https://grainy-gradients.vercel.app/noise.svg');
-            opacity: 0.05;
+            background: radial-gradient(circle, transparent 30%, rgba(0,0,0,0.85) 100%);
             pointer-events: none;
-            z-index: 2000;
+            z-index: 1100;
         }
 
-        /* Общий шейдинг и мягкая виньетка */
-        .master-shading {
-            position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background: radial-gradient(circle, rgba(0, 255, 216, 0.02) 0%, rgba(0,0,0,0.85) 100%);
-            pointer-events: none;
-            z-index: 1500;
-        }
-
-        /* CRT полоски (более тонкие и частые) */
-        .crt-scanlines {
+        /* Полоски CRT */
+        .crt-lines {
             position: fixed;
             top: 0; left: 0; width: 100%; height: 100%;
             background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.3) 50%);
-            background-size: 100% 2px;
+            background-size: 100% 3px;
             pointer-events: none;
-            z-index: 1100;
-            opacity: 0.4;
+            z-index: 1000;
+            opacity: 0.5;
         }
 
         .logo-container {
-            width: 130px;
-            height: 130px;
+            width: 130px; height: 130px;
             margin-bottom: 20px;
             background-image: url('EV_Dark_2k.png');
             background-size: cover;
-            background-position: center;
             border-radius: 50%;
             border: 2px solid var(--aqua);
-            box-shadow: 0 0 20px rgba(0, 255, 216, 0.4);
+            box-shadow: 0 0 15px var(--aqua);
             animation: glitch-soft 6s infinite;
-            position: relative;
             z-index: 10;
+            position: relative;
         }
 
         @keyframes glitch-soft {
@@ -89,50 +115,50 @@
             font-size: 2.2rem;
             letter-spacing: 12px;
             text-transform: uppercase;
-            margin: 10px 0;
             z-index: 10;
+            position: relative;
         }
-        .header h1 span { color: var(--aqua); text-shadow: 0 0 10px rgba(0, 255, 216, 0.5); }
-        .header h1 i { color: #fff; font-style: normal; }
+        .header h1 span { color: var(--aqua); text-shadow: 0 0 10px var(--aqua); }
 
         .card {
-            background: rgba(10, 15, 20, 0.8);
+            background: rgba(10, 15, 20, 0.9);
             border: 1px solid #1a262b;
             padding: 40px;
             width: 100%;
             max-width: 600px;
             margin-bottom: 30px;
-            transition: all 0.4s cubic-bezier(0.23, 1, 0.32, 1);
+            transition: 0.4s;
             position: relative;
-            z-index: 10;
+            z-index: 2000; /* Карточки выше шейдинга */
+            overflow: hidden;
         }
 
-        /* EVO Card */
+        /* EVO Pack Стиль */
         .aqua-style { border-left: 4px solid #1a262b; }
-        .aqua-style h2 { color: #fff; margin-top: 0; transition: 0.4s; }
-        .aqua-style h2 .glow-part { color: #fff; transition: 0.4s; }
+        .aqua-style h2 .glow-part { color: var(--aqua); transition: 0.4s; }
+        .aqua-style h2 i, .aqua-style h2 b { color: #fff; font-style: normal; font-weight: normal; transition: 0.4s; }
 
         .aqua-style:hover { 
             border-left: 4px solid var(--aqua);
-            box-shadow: 0 0 30px rgba(0, 255, 216, 0.1), inset 0 0 20px rgba(0, 255, 216, 0.05); 
-            transform: scale(1.02); 
+            box-shadow: 0 0 30px rgba(0, 255, 216, 0.1), inset 0 0 20px rgba(0, 255, 216, 0.05);
+            transform: scale(1.02);
         }
-        .aqua-style:hover h2 .glow-part { color: var(--aqua); text-shadow: 0 0 10px var(--aqua); }
+        .aqua-style:hover h2 i, .aqua-style:hover h2 b { color: var(--aqua); text-shadow: 0 0 10px var(--aqua); }
 
-        /* Night Card */
+        /* Project Night Стиль */
         .night-style { border-left: 4px solid #1a262b; }
-        .night-title { margin-top: 0; transition: 0.4s; color: #fff; }
+        .night-title { color: #fff; transition: 0.4s; margin-top:0; }
         .night-title b { color: var(--blood-red); text-shadow: 0 0 5px var(--blood-red); }
 
         .night-style:hover { 
             border-left: 4px solid var(--blood-red);
-            box-shadow: 0 0 30px rgba(255, 0, 0, 0.1), inset 0 0 20px rgba(255, 0, 0, 0.05); 
+            box-shadow: 0 0 30px rgba(255, 0, 0, 0.1), inset 0 0 20px rgba(255, 0, 0, 0.05);
             transform: scale(1.02);
-            background: rgba(15, 8, 8, 0.9);
+            background: rgba(20, 10, 10, 0.95);
         }
-        .night-style:hover .night-title { transform: skewX(-5deg); text-shadow: 0 0 10px var(--blood-red); }
+        .night-style:hover .night-title { text-shadow: 0 0 10px var(--blood-red); transform: skewX(-5deg); }
 
-        p { font-size: 0.85rem; color: #8da0a9; letter-spacing: 1px; line-height: 1.6; }
+        p { font-size: 0.85rem; color: #8da0a9; line-height: 1.6; z-index: 10; position: relative; }
 
         .btn {
             display: inline-block;
@@ -140,56 +166,46 @@
             text-decoration: none;
             font-weight: bold;
             font-size: 0.75rem;
-            letter-spacing: 2px;
             text-transform: uppercase;
             border: 1px solid #1a262b;
             transition: 0.3s;
             margin-top: 10px;
-            position: relative;
-            z-index: 100; /* Чтобы кнопки всегда были сверху шейдинга */
+            cursor: pointer;
+            z-index: 2100;
         }
         .btn-aqua { color: #555; }
         .aqua-style:hover .btn-aqua { color: var(--aqua); border-color: var(--aqua); }
-        .btn-aqua:hover { background: var(--aqua) !important; color: #000 !important; }
+        .btn-aqua:hover { background: var(--aqua) !important; color: #000 !important; box-shadow: 0 0 15px var(--aqua); }
 
         .btn-night { color: #555; }
         .night-style:hover .btn-night { color: var(--blood-red); border-color: var(--blood-red); }
-        .btn-night:hover { background: var(--blood-red) !important; color: #fff !important; }
+        .btn-night:hover { background: var(--blood-red) !important; color: #fff !important; box-shadow: 0 0 15px var(--blood-red); }
 
-        .footer {
-            margin-top: auto;
-            padding-top: 40px;
-            font-size: 0.65rem;
-            color: #222;
-            letter-spacing: 2px;
-            text-align: center;
-            z-index: 10;
-        }
-
-        .glitch-wrapper { display: inline-block; color: #333; cursor: help; }
+        .footer { margin-top: auto; padding-top: 40px; font-size: 0.65rem; color: #333; text-align: center; z-index: 10; position: relative;}
         .glitch-wrapper:hover { animation: panic 0.1s infinite; color: var(--blood-red); }
-
-        @keyframes panic {
-            0% { transform: translate(1px, -1px); }
-            50% { transform: translate(-1px, 1px); }
-            100% { transform: translate(0); }
-        }
+        @keyframes panic { 0% { transform: translate(1px, -1px); } 50% { transform: translate(-1px, 1px); } }
     </style>
 </head>
 <body>
 
-    <div class="noise-overlay"></div>
-    <div class="crt-scanlines"></div>
-    <div class="master-shading"></div>
+    <div class="noise"></div>
+    <div class="crt-lines"></div>
+    <div class="master-overlay"></div>
+    <div class="scanline"></div>
     
     <div class="logo-container"></div>
 
     <div class="header">
-        <h1><span>EV</span><i>olution</i></h1>
+        <h1><span>EV</span>olution</h1>
     </div>
 
     <div class="card aqua-style">
-        <h2><span class="glow-part">EV</span>o<i>lution</i> <span class="glow-part">Pa</span>ck</h2>
+        <h2><span class="glow-part">EV</span>o<i>lution</i> <b>Pa</b>ck</h2>
         <p>Глобальная переработка визуальных ассетов. Повышение детализации текстур до стандарта High-Res.</p>
         <a href="https://drive.google.com/file/d/1Qw3G5LnlaEteiOD51bF1Oy1uh2A63R9O/view?usp=drive_link" target="_blank" class="btn btn-aqua">Download Pack</a>
     </div>
+
+    <div class="card night-style">
+        <h2 class="night-title">PROJECT <b>NIGHT</b></h2>
+        <p>Протокол запущен. Глубокое затенение и динамический контраст для ночных операций.</p>
+        <a href="
