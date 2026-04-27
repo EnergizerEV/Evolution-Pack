@@ -21,6 +21,7 @@
             background-color: var(--bg-color);
         }
 
+        /* Убираем курсор везде (для ПК) */
         * { cursor: none !important; }
 
         /* ВОССТАНОВЛЕННЫЙ ФОН И БЕГУЩАЯ ПОЛОСА */
@@ -87,7 +88,7 @@
             flex-direction: column; 
             align-items: center; 
             justify-content: center; 
-            perspective: 1000px; /* Добавлено для корректного 3D поворота */
+            perspective: 1000px;
         }
 
         #main-content { opacity: 0; transition: opacity 2s ease; display: flex; flex-direction: column; align-items: center; width: 100%; }
@@ -135,7 +136,6 @@
         }
         .night-style:hover .night-glow { color: var(--blood-red); text-shadow: 0 0 20px var(--blood-red); font-weight: bold; }
 
-        /* СТИЛЬ ДЛЯ ТЕКСТОВОГО ПРИНТЕРА */
         .type-output { font-size: 0.85rem; color: #8da0a9; line-height: 1.6; min-height: 2.5em; }
 
         .btn {
@@ -154,14 +154,7 @@
         }
 
         @keyframes btn-flicker {
-            0% { opacity: 0.2; }
-            15% { opacity: 1; }
-            30% { opacity: 0.4; }
-            45% { opacity: 1; }
-            60% { opacity: 0.7; }
-            75% { opacity: 0.9; }
-            90% { opacity: 0.8; }
-            100% { opacity: 1; }
+            0% { opacity: 0.2; } 15% { opacity: 1; } 30% { opacity: 0.4; } 45% { opacity: 1; } 60% { opacity: 0.7; } 75% { opacity: 0.9; } 90% { opacity: 0.8; } 100% { opacity: 1; }
         }
 
         .footer { margin-top: 20px; font-size: 0.65rem; color: #333; text-align: center; z-index: 10; letter-spacing: 2px; }
@@ -174,6 +167,37 @@
         .progress-bar-container { width: 250px; height: 2px; background: rgba(0, 255, 216, 0.1); border: 1px solid rgba(0, 255, 216, 0.3); position: relative; overflow: hidden; }
         .progress-bar-fill { position: absolute; height: 100%; width: 0%; background: var(--aqua); box-shadow: 0 0 15px var(--aqua); animation: loadProgress 3.5s forwards; }
         @keyframes loadProgress { to { width: 100%; } }
+
+        /* --- МОБИЛЬНАЯ АДАПТАЦИЯ (ТОЛЬКО ДЛЯ ТЕЛЕФОНОВ) --- */
+        @media screen and (max-width: 768px) {
+            * { cursor: auto !important; } /* Возвращаем стандартный палец для тачскринов */
+            #custom-cursor { display: none; } /* Скрываем кастомный курсор */
+
+            html, body { overflow-y: auto; overflow-x: hidden; height: auto; min-height: 100%; }
+            body { padding: 40px 0; justify-content: flex-start; }
+
+            #main-content { padding: 0 20px; width: calc(100% - 40px); }
+
+            .logo-wrapper { width: 100px; height: 100px; margin-bottom: 15px; }
+            .header h1 { font-size: 1.4rem; letter-spacing: 6px; }
+
+            .card { padding: 25px; width: 100%; margin-bottom: 20px; box-sizing: border-box; }
+            .card h2 { font-size: 1.1rem; }
+            .type-output { font-size: 0.75rem; }
+
+            .btn { padding: 10px 20px; font-size: 0.65rem; width: 100%; text-align: center; box-sizing: border-box; }
+            .card div[style*="flex"] { flex-direction: column; width: 100%; }
+
+            #sys-status { 
+                position: static; margin-top: 30px; text-align: center; 
+                opacity: 0.8; font-size: 8px; width: 100%; 
+                display: flex; justify-content: center; gap: 15px;
+            }
+            #sys-status br { display: none; }
+
+            #term-console { width: 90%; padding: 15px; }
+            #term-input { font-size: 14px; width: 70%; }
+        }
     </style>
 </head>
 <body class="aqua-mode">
@@ -188,8 +212,8 @@
     </div>
 
     <div id="sys-status">
-        CPU_LOAD: <span id="cpu-val">00</span>% <br>
-        SYSTEM: STABLE <br>
+        CPU_LOAD: <span id="cpu-val">00</span>% 
+        <span>SYSTEM: STABLE</span> 
         MODE: <span id="mode-text">AQUA_CORE</span>
     </div>
 
@@ -260,6 +284,8 @@
         drawGrid();
 
         document.addEventListener('mousemove', (e) => {
+            if (window.innerWidth <= 768) return; // Отключаем параллакс и курсор на мобильных
+            
             mouse.x = e.clientX; mouse.y = e.clientY;
             cursor.style.left = `${e.clientX}px`;
             cursor.style.top = `${e.clientY}px`;
@@ -271,7 +297,6 @@
                 const str = layer.getAttribute('data-strength');
                 const isHovered = layer.classList.contains('card') && layer.matches(':hover');
                 
-                // Параллакс смещение
                 const transX = (e.clientX - centerX) / str;
                 const transY = (e.clientY - centerY) / str;
                 
@@ -281,12 +306,9 @@
 
                 if (isHovered) {
                     scale = 1.03;
-                    // Рассчитываем поворот относительно центра самой карточки
                     const rect = layer.getBoundingClientRect();
                     const cardCenterX = rect.left + rect.width / 2;
                     const cardCenterY = rect.top + rect.height / 2;
-                    
-                    // Небольшой коэффициент поворота (чем больше число, тем меньше наклон)
                     rotateY = (e.clientX - cardCenterX) / 25; 
                     rotateX = (cardCenterY - e.clientY) / 25;
                 }
@@ -350,7 +372,6 @@
             }, 30);
         };
 
-        // ФУНКЦИЯ ТЕКСТОВОГО ПРИНТЕРА
         function startTyping() {
             document.querySelectorAll('.type-output').forEach(el => {
                 const text = el.getAttribute('data-text');
@@ -369,7 +390,7 @@
                 document.getElementById('loading-screen').style.opacity = '0';
                 setTimeout(() => {
                     document.getElementById('loading-screen').style.display = 'none';
-                    startTyping(); // Запуск принтера после загрузки
+                    startTyping();
                 }, 1000);
                 document.getElementById('main-content').style.opacity = '1';
             }, 3000);
