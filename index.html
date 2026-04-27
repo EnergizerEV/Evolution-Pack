@@ -23,8 +23,10 @@
             padding: 60px 20px;
             overflow-x: hidden;
             position: relative;
+            min-height: 100vh;
         }
 
+        /* Сканирующая полоса */
         .scanline {
             width: 100%;
             height: 150px;
@@ -42,6 +44,7 @@
             100% { bottom: -150px; }
         }
 
+        /* Линии монитора */
         body::before {
             content: " ";
             display: block;
@@ -53,7 +56,7 @@
             pointer-events: none;
         }
 
-        /* Логотип с мягким глюком */
+        /* Логотип */
         .logo-container {
             width: 130px;
             height: 130px;
@@ -65,24 +68,27 @@
             border: 2px solid var(--aqua);
             box-shadow: 0 0 15px var(--aqua);
             animation: glitch-soft 6s infinite;
+            position: relative;
+            z-index: 2;
         }
 
         @keyframes glitch-soft {
             0%, 92%, 96%, 100% { background-image: url('EV_Dark_2k.png'); transform: none; filter: none; }
-            94% { background-image: url('EV_Dark_2k_ERR.png'); transform: translateX(2px) skewX(2deg); filter: brightness(1.2); }
-            95% { background-image: url('EV_Dark_2k_ERR.png'); transform: translateX(-2px); filter: contrast(1.1); }
+            94% { background-image: url('EV_Dark_2k_ERR.png'); transform: translateX(2px); filter: brightness(1.1); }
+            95% { background-image: url('EV_Dark_2k_ERR.png'); transform: translateX(-2px); }
         }
 
-        /* Шапка сайта */
         .header h1 {
             font-size: 2.2rem;
             letter-spacing: 12px;
             text-transform: uppercase;
             margin: 10px 0;
+            z-index: 2;
         }
         .header h1 span { color: var(--aqua); }
         .header h1 i { color: #fff; font-style: normal; }
 
+        /* Общие стили карточек */
         .card {
             background: rgba(10, 15, 20, 0.95);
             border: 1px solid #1a262b;
@@ -91,42 +97,41 @@
             max-width: 600px;
             margin-bottom: 30px;
             transition: all 0.4s cubic-bezier(0.23, 1, 0.32, 1);
+            position: relative;
+            z-index: 2;
         }
 
-        /* EVolution Pack Стиль */
-        .aqua-style { border-left: 4px solid #222; }
-        .aqua-style h2 { color: #fff; transition: 0.3s; }
-        .aqua-style h2 span { color: #fff; transition: 0.5s; } /* Изначально белые */
+        /* EVO Card */
+        .aqua-style { border-left: 4px solid #1a262b; }
+        .aqua-style h2 { color: #fff; transition: 0.4s; margin-top: 0; }
+        .aqua-style h2 span { color: #fff; transition: 0.6s; }
 
         .aqua-style:hover { 
-            border-color: var(--aqua); 
+            border-left: 4px solid var(--aqua);
             box-shadow: 0 0 30px rgba(0, 255, 216, 0.1); 
-            transform: scale(1.03); 
+            transform: scale(1.02); 
         }
-        .aqua-style:hover h2 { 
-            text-shadow: 0 0 10px var(--aqua), 0 0 20px rgba(0, 255, 216, 0.5); 
-        }
-        /* Загораются буквы при наведении на карточку */
+        .aqua-style:hover h2 { text-shadow: 0 0 15px var(--aqua); }
         .aqua-style:hover h2 span { color: var(--aqua); }
 
-        /* Project Night Стиль */
-        .night-style { border-left: 4px solid #222; }
-        .night-title i { color: #fff; font-style: normal; transition: 0.3s; }
-        .night-title b { color: var(--blood-red); font-weight: 700; transition: 0.3s; opacity: 0.8; }
+        /* Night Card */
+        .night-style { border-left: 4px solid #1a262b; }
+        .night-title { color: #fff; margin-top: 0; transition: 0.4s; }
+        .night-title b { color: var(--blood-red); transition: 0.4s; opacity: 0.7; }
 
         .night-style:hover { 
             border-left: 4px solid var(--blood-red);
             box-shadow: 0 0 30px rgba(255, 0, 0, 0.1); 
-            transform: scale(1.03);
+            transform: scale(1.02);
             background: rgba(20, 10, 10, 0.9);
         }
         .night-style:hover .night-title { 
-            text-shadow: 0 0 10px var(--blood-red), 0 0 20px rgba(255, 0, 0, 0.5); 
-            transform: skewX(-10deg);
+            text-shadow: 0 0 15px var(--blood-red); 
+            transform: skewX(-5deg);
         }
         .night-style:hover .night-title b { opacity: 1; }
 
-        p { font-size: 0.85rem; color: #8da0a9; letter-spacing: 1px; }
+        p { font-size: 0.85rem; color: #8da0a9; letter-spacing: 1px; line-height: 1.6; }
 
         /* Кнопки */
         .btn {
@@ -137,20 +142,22 @@
             font-size: 0.75rem;
             letter-spacing: 2px;
             text-transform: uppercase;
-            border: 1px solid;
+            border: 1px solid #1a262b;
             transition: 0.3s;
+            margin-top: 10px;
         }
-        .btn-aqua { color: #444; border-color: #222; }
+        .btn-aqua { color: #555; }
         .aqua-style:hover .btn-aqua { color: var(--aqua); border-color: var(--aqua); }
         .btn-aqua:hover { background: var(--aqua) !important; color: #000 !important; }
 
-        .btn-night { color: #444; border-color: #222; }
+        .btn-night { color: #555; }
         .night-style:hover .btn-night { color: var(--blood-red); border-color: var(--blood-red); }
         .btn-night:hover { background: var(--blood-red) !important; color: #fff !important; }
 
         /* Футер */
         .footer {
-            margin-top: 50px;
+            margin-top: auto;
+            padding-top: 40px;
             font-size: 0.65rem;
             color: #222;
             letter-spacing: 2px;
@@ -159,4 +166,49 @@
 
         .glitch-wrapper {
             display: inline-block;
-            color: #333
+            color: #333;
+            cursor: help;
+        }
+
+        .glitch-wrapper:hover {
+            animation: panic 0.1s infinite;
+            color: var(--blood-red);
+        }
+
+        @keyframes panic {
+            0% { transform: translate(1px, -1px); }
+            50% { transform: translate(-1px, 1px); }
+            100% { transform: translate(0); }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="scanline"></div>
+    
+    <div class="logo-container"></div>
+
+    <div class="header">
+        <h1><span>EV</span><i>olution</i></h1>
+    </div>
+
+    <div class="card aqua-style">
+        <h2><span>EV</span>O<span>lution</span> <span>Pa</span>ck</h2>
+        <p>Глобальная переработка визуальных ассетов. Повышение детализации текстур до стандарта High-Res.</p>
+        <a href="#" class="btn btn-aqua">Download Pack</a>
+    </div>
+
+    <div class="card night-style">
+        <h2 class="night-title">PROJECT <b>NIGHT</b></h2>
+        <p>Протокол запущен. Глубокое затенение и динамический контраст для ночных операций.</p>
+        <a href="#" class="btn btn-night">Access Files</a>
+    </div>
+
+    <div class="footer">
+        UNAUTHORIZED ACCESS IS PROHIBITED // 
+        <div class="glitch-wrapper">M45T0D0NM4N</div>
+        _SYSTEM_V.4.0
+    </div>
+
+</body>
+</html>
