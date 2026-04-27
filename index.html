@@ -23,56 +23,31 @@
             padding: 60px 20px;
             overflow-x: hidden;
             min-height: 100vh;
-            animation: terminal-flicker 0.15s infinite;
         }
 
-        @keyframes terminal-flicker {
-            0% { opacity: 0.98; }
-            50% { opacity: 1; }
-            100% { opacity: 0.99; }
-        }
-
-        /* Анимированная цифровая пыль */
-        .noise-overlay {
-            position: fixed;
-            top: -50%; left: -50%; width: 200%; height: 200%;
-            background-image: url('https://grainy-gradients.vercel.app/noise.svg');
-            opacity: 0.06;
-            pointer-events: none;
-            z-index: 5000;
-            animation: noise-move 0.2s steps(4) infinite;
-        }
-
-        @keyframes noise-move {
-            0% { transform: translate(0,0); }
-            50% { transform: translate(-1%, 1%); }
-            100% { transform: translate(0,0); }
-        }
-
-        /* Мягкая виньетка (затемнение по краям) */
+        /* Виньетка */
         .vignette {
             position: fixed;
             top: 0; left: 0; width: 100%; height: 100%;
-            background: radial-gradient(circle, transparent 40%, rgba(0,0,0,0.8) 100%);
+            background: radial-gradient(circle, transparent 50%, rgba(0,0,0,0.8) 100%);
             pointer-events: none;
             z-index: 1000;
         }
 
-        /* Новый узорчатый фон терминала */
+        /* Узор фона */
         .terminal-pattern {
             position: fixed;
             top: 0; left: 0; width: 100%; height: 100%;
             background-image: 
                 radial-gradient(rgba(0, 255, 216, 0.05) 1px, transparent 1px),
                 linear-gradient(rgba(0, 255, 216, 0.05) 1px, transparent 1px);
-            background-size: 50px 50px;
-            background-position: 0 0, 25px 25px;
+            background-size: 40px 40px;
             pointer-events: none;
             z-index: 5;
-            opacity: 0.4;
+            opacity: 0.3;
         }
 
-        /* Тонкие полоски ЭЛТ монитора */
+        /* CRT линии */
         .crt-scanlines {
             position: fixed;
             top: 0; left: 0; width: 100%; height: 100%;
@@ -80,7 +55,25 @@
             background-size: 100% 4px;
             pointer-events: none;
             z-index: 999;
-            opacity: 0.6;
+            opacity: 0.5;
+        }
+
+        /* Бегущая полоса (SCANLINE) */
+        .scanline {
+            width: 100%;
+            height: 100px;
+            z-index: 1010;
+            background: linear-gradient(0deg, rgba(0, 255, 216, 0) 0%, rgba(0, 255, 216, 0.04) 50%, rgba(0, 255, 216, 0) 100%);
+            position: fixed;
+            top: -100px;
+            left: 0;
+            pointer-events: none;
+            animation: scanline-run 10s linear infinite;
+        }
+
+        @keyframes scanline-run {
+            0% { top: -100px; }
+            100% { top: 100%; }
         }
 
         .logo-container {
@@ -91,14 +84,7 @@
             border-radius: 50%;
             border: 2px solid var(--aqua);
             box-shadow: 0 0 15px var(--aqua);
-            animation: glitch-soft 6s infinite;
             z-index: 10;
-        }
-
-        @keyframes glitch-soft {
-            0%, 92%, 96%, 100% { background-image: url('EV_Dark_2k.png'); transform: none; }
-            94% { background-image: url('EV_Dark_2k_ERR.png'); transform: translateX(2px); }
-            95% { background-image: url('EV_Dark_2k_ERR.png'); transform: translateX(-2px); }
         }
 
         .header h1 {
@@ -119,34 +105,34 @@
             transition: 0.4s;
             position: relative;
             z-index: 20;
-            overflow: hidden;
         }
 
-        /* EVO Card - Исправленные цвета текста */
-        .aqua-style { border-left: 4px solid #1a262b; }
-        .aqua-style h2 { transition: 0.4s; margin-top: 0; color: #fff; }
-        .aqua-style h2 .glow-part { color: var(--aqua); transition: 0.5s; font-weight: bold; }
-        .aqua-style h2 i, .aqua-style h2 b { color: #fff; font-style: normal; font-weight: normal; transition: 0.5s; }
+        /* Стили заголовков (по умолчанию белые) */
+        .card h2 { margin-top: 0; color: #fff; transition: 0.4s; font-weight: normal; }
+        .glow-part { transition: 0.4s; color: #fff; font-weight: normal; }
 
+        /* ЭФФЕКТ ДЛЯ EVOLUTION PACK: подсветка EV и Pa */
+        .aqua-style:hover .glow-part { 
+            color: var(--aqua); 
+            text-shadow: 0 0 15px var(--aqua);
+            font-weight: bold;
+        }
         .aqua-style:hover { 
             border-left: 4px solid var(--aqua);
-            box-shadow: 0 0 30px rgba(0, 255, 216, 0.15), inset 0 0 25px rgba(0, 255, 216, 0.07); 
-            transform: scale(1.02); 
+            box-shadow: 0 0 20px rgba(0, 255, 216, 0.1);
         }
-        .aqua-style:hover h2 i, .aqua-style:hover h2 b { color: var(--aqua); text-shadow: 0 0 10px var(--aqua); }
 
-        /* Night Card */
-        .night-style { border-left: 4px solid #1a262b; }
-        .night-title { color: #fff; transition: 0.4s; margin-top: 0; }
-        .night-title b { color: var(--blood-red); text-shadow: 0 0 5px var(--blood-red); }
-
+        /* ЭФФЕКТ ДЛЯ PROJECT NIGHT: подсветка только Night */
+        .night-style .night-glow { transition: 0.4s; color: #fff; }
+        .night-style:hover .night-glow { 
+            color: var(--aqua); 
+            text-shadow: 0 0 15px var(--aqua);
+            font-weight: bold;
+        }
         .night-style:hover { 
             border-left: 4px solid var(--blood-red);
-            box-shadow: 0 0 30px rgba(255, 0, 0, 0.15), inset 0 0 25px rgba(255, 0, 0, 0.07); 
-            transform: scale(1.02);
-            background: rgba(20, 10, 10, 0.95);
+            box-shadow: 0 0 20px rgba(255, 0, 0, 0.1);
         }
-        .night-style:hover .night-title { text-shadow: 0 0 15px var(--blood-red); transform: skewX(-5deg); }
 
         p { font-size: 0.85rem; color: #8da0a9; line-height: 1.6; }
 
@@ -160,17 +146,12 @@
             border: 1px solid #1a262b;
             transition: 0.3s;
             margin-top: 10px;
-            position: relative;
-            z-index: 100; /* Самый высокий z-index, чтобы кнопка всегда нажималась */
+            color: #555;
             cursor: pointer;
         }
-        .btn-aqua { color: #555; }
-        .aqua-style:hover .btn-aqua { color: var(--aqua); border-color: var(--aqua); }
-        .btn-aqua:hover { background: var(--aqua) !important; color: #000 !important; box-shadow: 0 0 15px var(--aqua); }
-
-        .btn-night { color: #555; }
-        .night-style:hover .btn-night { color: var(--blood-red); border-color: var(--blood-red); }
-        .btn-night:hover { background: var(--blood-red) !important; color: #fff !important; box-shadow: 0 0 15px var(--blood-red); }
+        .aqua-style:hover .btn { color: var(--aqua); border-color: var(--aqua); }
+        .night-style:hover .btn { color: var(--blood-red); border-color: var(--blood-red); }
+        .btn:hover { background: #fff !important; color: #000 !important; }
 
         .footer { margin-top: auto; padding-top: 40px; font-size: 0.65rem; color: #333; text-align: center; z-index: 10; }
         .glitch-wrapper:hover { animation: panic 0.1s infinite; color: var(--blood-red); }
@@ -179,10 +160,10 @@
 </head>
 <body>
 
-    <div class="noise-overlay"></div>
     <div class="terminal-pattern"></div>
     <div class="vignette"></div>
     <div class="crt-scanlines"></div>
+    <div class="scanline"></div>
     
     <div class="logo-container"></div>
 
@@ -191,15 +172,15 @@
     </div>
 
     <div class="card aqua-style">
-        <h2><span class="glow-part">EV</span>o<i>lution</i> <b>Pa</b>ck</h2>
+        <h2><span class="glow-part">EV</span>olution <span class="glow-part">Pa</span>ck</h2>
         <p>Глобальная переработка визуальных ассетов. Повышение детализации текстур до стандарта High-Res.</p>
-        <a href="https://drive.google.com/file/d/1Qw3G5LnlaEteiOD51bF1Oy1uh2A63R9O/view?usp=drive_link" target="_blank" class="btn btn-aqua">Download Pack</a>
+        <a href="https://drive.google.com/file/d/1Qw3G5LnlaEteiOD51bF1Oy1uh2A63R9O/view?usp=drive_link" target="_blank" class="btn">Download Pack</a>
     </div>
 
     <div class="card night-style">
-        <h2 class="night-title">PROJECT <b>NIGHT</b></h2>
+        <h2>PROJECT <span class="night-glow">NIGHT</span></h2>
         <p>Протокол запущен. Глубокое затенение и динамический контраст для ночных операций.</p>
-        <a href="https://drive.google.com/file/d/1nIO79tg17x5P7VQxxa_dwtIzr42Kk9fq/view?usp=drive_link" target="_blank" class="btn btn-night">Access Files</a>
+        <a href="https://drive.google.com/file/d/1nIO79tg17x5P7VQxxa_dwtIzr42Kk9fq/view?usp=drive_link" target="_blank" class="btn">Access Files</a>
     </div>
 
     <div class="footer">
