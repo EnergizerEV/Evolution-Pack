@@ -26,7 +26,7 @@
             position: relative;
         }
 
-        /* Вотермарк на фоне */
+        /* Вотермарк на фоне - снизил прозрачность до 3% (было 10%) */
         .background-watermark {
             position: fixed;
             top: 50%; left: 50%;
@@ -36,7 +36,7 @@
             background-size: contain;
             background-repeat: no-repeat;
             background-position: center;
-            opacity: 0.1; /* 10% прозрачности */
+            opacity: 0.03; /* Теперь картинка еле заметная */
             pointer-events: none;
             z-index: -1;
         }
@@ -96,6 +96,7 @@
         }
         .header h1 span { color: var(--aqua); }
 
+        /* --- КАРТОЧКИ НЕ ТРОГАЛ ВООБЩЕ --- */
         .card {
             background: rgba(10, 15, 20, 0.9);
             border: 1px solid #1a262b;
@@ -193,4 +194,4 @@
     </div>
 
 </body>
-</html>
+</html>+
