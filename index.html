@@ -26,22 +26,22 @@
             position: relative;
         }
 
-        /* Вотермарк на фоне */
+        /* Твой вотермарк на самом заднем плане */
         .background-watermark {
             position: fixed;
             top: 50%; left: 50%;
             transform: translate(-50%, -50%);
-            width: 80%; height: 80%;
+            width: 85%; height: 85%;
             background-image: url('Watermark_EV.png');
             background-size: contain;
             background-repeat: no-repeat;
             background-position: center;
-            opacity: 0.03; /* Еле заметный */
+            opacity: 0.03; 
             pointer-events: none;
             z-index: -1;
         }
 
-        /* Эффекты терминала */
+        /* Виньетка и CRT-эффекты */
         .vignette {
             position: fixed;
             top: 0; left: 0; width: 100%; height: 100%;
@@ -72,7 +72,7 @@
 
         @keyframes scanline-run { 0% { top: -100px; } 100% { top: 100%; } }
 
-        /* ИСПРАВЛЕННЫЙ ЛОГОТИП С ТВОИМИ НАЗВАНИЯМИ */
+        /* ЛОГОТИП С ГЛЮКОМ */
         .logo-wrapper {
             position: relative;
             width: 150px; height: 150px;
@@ -101,15 +101,15 @@
 
         @keyframes glitch-step {
             0%, 90%, 100% { opacity: 0; transform: none; }
-            92% { opacity: 1; transform: translate(5px, -2px); filter: hue-rotate(90deg); }
-            94% { opacity: 1; transform: translate(-5px, 2px); filter: saturate(3); }
-            95% { opacity: 0.5; transform: scale(1.1); }
+            92% { opacity: 1; transform: translate(6px, -3px); filter: hue-rotate(45deg); }
+            94% { opacity: 1; transform: translate(-6px, 3px); filter: saturate(2); }
+            95% { opacity: 0.4; transform: scale(1.05); }
         }
 
         .header h1 { font-size: 2.2rem; letter-spacing: 12px; text-transform: uppercase; z-index: 10; }
         .header h1 span { color: var(--aqua); }
 
-        /* КАРТОЧКИ (БЕЗ ИЗМЕНЕНИЙ) */
+        /* ПАНЕЛИ (БЕЗ ИЗМЕНЕНИЙ ДИЗАЙНА) */
         .card {
             background: rgba(10, 15, 20, 0.9);
             border: 1px solid #1a262b;
@@ -122,4 +122,46 @@
             z-index: 20;
         }
 
-        .card h2 { margin-top: 0; color: #fff; transition
+        .card h2 { margin-top: 0; color: #fff; transition: 0.4s; font-weight: normal; }
+        .glow-part, .night-glow { transition: 0.4s; color: #fff; }
+
+        .aqua-style:hover { 
+            border-left: 4px solid var(--aqua);
+            box-shadow: 0 0 40px rgba(0, 255, 216, 0.2);
+            transform: scale(1.03);
+            background: rgba(10, 25, 25, 0.95);
+        }
+        .aqua-style:hover .glow-part { color: var(--aqua); text-shadow: 0 0 15px var(--aqua); font-weight: bold; }
+
+        .night-style:hover { 
+            border-left: 4px solid var(--blood-red);
+            box-shadow: 0 0 40px rgba(255, 0, 0, 0.2);
+            transform: scale(1.03);
+            background: rgba(25, 10, 10, 0.95);
+        }
+        .night-style:hover .night-glow { color: var(--blood-red); text-shadow: 0 0 15px var(--blood-red); font-weight: bold; }
+
+        p { font-size: 0.85rem; color: #8da0a9; line-height: 1.6; }
+
+        .btn {
+            display: inline-block;
+            padding: 12px 25px;
+            text-decoration: none;
+            font-weight: bold;
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            border: 1px solid #1a262b;
+            transition: 0.3s;
+            margin-top: 10px;
+            color: #555;
+            cursor: pointer;
+            position: relative;
+            z-index: 30;
+        }
+        .aqua-style:hover .btn { color: var(--aqua); border-color: var(--aqua); }
+        .night-style:hover .btn { color: var(--blood-red); border-color: var(--blood-red); }
+        .btn:hover { background: #fff !important; color: #000 !important; }
+
+        .footer { margin-top: auto; padding-top: 40px; font-size: 0.65rem; color: #333; text-align: center; z-index: 10; }
+        .glitch-wrapper:hover { animation: panic 0.1s infinite; color: var(--blood-red); cursor: help; }
+        @keyframes panic { 0% { transform: translate(1px, -1px);
