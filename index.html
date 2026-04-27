@@ -24,9 +24,38 @@
             overflow-x: hidden;
             position: relative;
             min-height: 100vh;
+            /* Легкое мерцание всего фона */
+            animation: bg-flicker 10s infinite;
         }
 
-        /* Сканирующая полоса */
+        @keyframes bg-flicker {
+            0%, 100% { background-color: #06080a; }
+            95% { background-color: #080a0c; }
+            96% { background-color: #040506; }
+            97% { background-color: #090b0e; }
+        }
+
+        /* Виньетка (затемнение по краям) */
+        .vignette {
+            fixed: top 0 left 0;
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: radial-gradient(circle, transparent 40%, rgba(0,0,0,0.8) 100%);
+            pointer-events: none;
+            z-index: 1000;
+        }
+
+        /* Усиленные контурные полосы (CRT эффект) */
+        .crt-lines {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.4) 50%);
+            background-size: 100% 4px;
+            pointer-events: none;
+            z-index: 999;
+            opacity: 0.6;
+        }
+
         .scanline {
             width: 100%;
             height: 150px;
@@ -44,18 +73,6 @@
             100% { bottom: -150px; }
         }
 
-        body::before {
-            content: " ";
-            display: block;
-            position: fixed;
-            top: 0; left: 0; bottom: 0; right: 0;
-            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%);
-            z-index: 999;
-            background-size: 100% 3px;
-            pointer-events: none;
-        }
-
-        /* Логотип */
         .logo-container {
             width: 130px;
             height: 130px;
@@ -65,7 +82,7 @@
             background-position: center;
             border-radius: 50%;
             border: 2px solid var(--aqua);
-            box-shadow: 0 0 15px var(--aqua);
+            box-shadow: 0 0 20px var(--aqua);
             animation: glitch-soft 6s infinite;
             position: relative;
             z-index: 2;
@@ -73,8 +90,8 @@
 
         @keyframes glitch-soft {
             0%, 92%, 96%, 100% { background-image: url('EV_Dark_2k.png'); transform: none; filter: none; }
-            94% { background-image: url('EV_Dark_2k_ERR.png'); transform: translateX(2px); filter: brightness(1.1); }
-            95% { background-image: url('EV_Dark_2k_ERR.png'); transform: translateX(-2px); }
+            94% { background-image: url('EV_Dark_2k_ERR.png'); transform: translateX(3px) skewX(2deg); }
+            95% { background-image: url('EV_Dark_2k_ERR.png'); transform: translateX(-3px); }
         }
 
         .header h1 {
@@ -84,12 +101,11 @@
             margin: 10px 0;
             z-index: 2;
         }
-        .header h1 span { color: var(--aqua); }
+        .header h1 span { color: var(--aqua); text-shadow: 0 0 10px var(--aqua); }
         .header h1 i { color: #fff; font-style: normal; }
 
-        /* Карточки */
         .card {
-            background: rgba(10, 15, 20, 0.95);
+            background: rgba(8, 12, 15, 0.9);
             border: 1px solid #1a262b;
             padding: 40px;
             width: 100%;
@@ -104,37 +120,32 @@
         /* EVO Card */
         .aqua-style { border-left: 4px solid #1a262b; }
         .aqua-style h2 { transition: 0.4s; margin-top: 0; color: #fff; }
-        .aqua-style h2 span { color: var(--aqua); } 
-        .aqua-style h2 i { color: #fff; font-style: normal; } 
-        .aqua-style h2 b { color: #fff; font-weight: normal; transition: 0.5s; } 
+        /* EV и Pa теперь одного класса для синхронного зажигания */
+        .aqua-style h2 .glow-part { color: #fff; transition: 0.5s; font-weight: normal; }
 
         .aqua-style:hover { 
             border-left: 4px solid var(--aqua);
-            box-shadow: 0 0 30px rgba(0, 255, 216, 0.1), inset 0 0 20px rgba(0, 255, 216, 0.05); 
+            box-shadow: 0 0 30px rgba(0, 255, 216, 0.15), inset 0 0 25px rgba(0, 255, 216, 0.07); 
             transform: scale(1.02); 
         }
         .aqua-style:hover h2 { text-shadow: 0 0 15px var(--aqua); }
-        .aqua-style:hover h2 b { color: var(--aqua); font-weight: bold; }
+        .aqua-style:hover h2 .glow-part { color: var(--aqua); font-weight: bold; }
 
         /* Night Card */
         .night-style { border-left: 4px solid #1a262b; }
         .night-title { margin-top: 0; transition: 0.4s; color: #fff; }
-        .night-title b { color: var(--blood-red); transition: 0.4s; }
+        .night-title b { color: var(--blood-red); text-shadow: 0 0 5px var(--blood-red); }
 
         .night-style:hover { 
             border-left: 4px solid var(--blood-red);
-            box-shadow: 0 0 30px rgba(255, 0, 0, 0.1), inset 0 0 20px rgba(255, 0, 0, 0.05); 
+            box-shadow: 0 0 30px rgba(255, 0, 0, 0.15), inset 0 0 25px rgba(255, 0, 0, 0.07); 
             transform: scale(1.02);
-            background: rgba(20, 10, 10, 0.9);
+            background: rgba(15, 8, 8, 0.95);
         }
-        .night-style:hover .night-title { 
-            text-shadow: 0 0 15px var(--blood-red); 
-            transform: skewX(-5deg);
-        }
+        .night-style:hover .night-title { text-shadow: 0 0 15px var(--blood-red); transform: skewX(-5deg); }
 
         p { font-size: 0.85rem; color: #8da0a9; letter-spacing: 1px; line-height: 1.6; }
 
-        /* Кнопки */
         .btn {
             display: inline-block;
             padding: 12px 25px;
@@ -146,17 +157,17 @@
             border: 1px solid #1a262b;
             transition: 0.3s;
             margin-top: 10px;
-            cursor: pointer;
+            position: relative;
+            z-index: 5;
         }
-        .btn-aqua { color: #555; border-color: #222; }
+        .btn-aqua { color: #555; }
         .aqua-style:hover .btn-aqua { color: var(--aqua); border-color: var(--aqua); }
-        .btn-aqua:hover { background: var(--aqua) !important; color: #000 !important; }
+        .btn-aqua:hover { background: var(--aqua) !important; color: #000 !important; box-shadow: 0 0 15px var(--aqua); }
 
-        .btn-night { color: #555; border-color: #222; }
+        .btn-night { color: #555; }
         .night-style:hover .btn-night { color: var(--blood-red); border-color: var(--blood-red); }
-        .btn-night:hover { background: var(--blood-red) !important; color: #fff !important; }
+        .btn-night:hover { background: var(--blood-red) !important; color: #fff !important; box-shadow: 0 0 15px var(--blood-red); }
 
-        /* Футер */
         .footer {
             margin-top: auto;
             padding-top: 40px;
@@ -164,18 +175,11 @@
             color: #222;
             letter-spacing: 2px;
             text-align: center;
+            z-index: 2;
         }
 
-        .glitch-wrapper {
-            display: inline-block;
-            color: #333;
-            cursor: help;
-        }
-
-        .glitch-wrapper:hover {
-            animation: panic 0.1s infinite;
-            color: var(--blood-red);
-        }
+        .glitch-wrapper { display: inline-block; color: #333; cursor: help; }
+        .glitch-wrapper:hover { animation: panic 0.1s infinite; color: var(--blood-red); }
 
         @keyframes panic {
             0% { transform: translate(1px, -1px); }
@@ -186,6 +190,8 @@
 </head>
 <body>
 
+    <div class="vignette"></div>
+    <div class="crt-lines"></div>
     <div class="scanline"></div>
     
     <div class="logo-container"></div>
@@ -195,7 +201,7 @@
     </div>
 
     <div class="card aqua-style">
-        <h2><span>EV</span>o<i>lution</i> <b>Pa</b>ck</h2>
+        <h2><span class="glow-part">EV</span>o<i>lution</i> <span class="glow-part">Pa</span>ck</h2>
         <p>Глобальная переработка визуальных ассетов. Повышение детализации текстур до стандарта High-Res.</p>
         <a href="https://drive.google.com/file/d/1Qw3G5LnlaEteiOD51bF1Oy1uh2A63R9O/view?usp=drive_link" target="_blank" class="btn btn-aqua">Download Pack</a>
     </div>
