@@ -26,107 +26,113 @@
             min-height: 100vh;
         }
 
-        /* Еле различимый фон (G-logo) */
-        .g-logo-background {
+        /* Задний фон с твоим фото */
+        .background-watermark {
             position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background-image: url('https://w7.pngwing.com/pngs/397/413/png-transparent-logo-brand-font-ghost-icon-logo-ghost-brand.png');
+            top: 50%; left: 50%;
+            transform: translate(-50%, -50%);
+            width: 80%; height: 80%;
+            background-image: url('Watermark_EV.png');
             background-size: contain;
-            background-position: center;
             background-repeat: no-repeat;
-            opacity: 0.05; /* Почти неразличим */
+            background-position: center;
+            opacity: 0.05;
             pointer-events: none;
-            z-index: 1;
+            z-index: -1;
         }
 
-        /* Виньетка (затемнение по краям) */
+        /* Сетка терминала (узоры) */
+        .terminal-grid {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background-image: 
+                linear-gradient(rgba(0, 255, 216, 0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(0, 255, 216, 0.03) 1px, transparent 1px);
+            background-size: 30px 30px;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        /* Виньетка (чуть меньше, как ты просил) */
         .vignette {
             position: fixed;
             top: 0; left: 0; width: 100%; height: 100%;
-            background: radial-gradient(circle, transparent 40%, rgba(0,0,0,0.8) 100%);
+            background: radial-gradient(circle, transparent 60%, rgba(0,0,0,0.7) 100%);
             pointer-events: none;
             z-index: 1000;
         }
 
-        /* Контурные полосы (CRT эффект) */
+        /* CRT полоски */
         .crt-lines {
             position: fixed;
             top: 0; left: 0; width: 100%; height: 100%;
-            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.4) 50%);
+            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.3) 50%);
             background-size: 100% 4px;
             pointer-events: none;
             z-index: 999;
-            opacity: 0.6;
+            opacity: 0.4;
         }
 
         /* Бегущая полоса */
         .scanline {
             width: 100%;
-            height: 150px;
-            z-index: 10;
-            background: linear-gradient(0deg, rgba(0, 255, 216, 0) 0%, rgba(0, 255, 216, 0.03) 50%, rgba(0, 255, 216, 0) 100%);
+            height: 100px;
+            z-index: 1010;
+            background: linear-gradient(0deg, rgba(0, 255, 216, 0) 0%, rgba(0, 255, 216, 0.04) 50%, rgba(0, 255, 216, 0) 100%);
             position: fixed;
-            bottom: 100%;
+            top: -100px;
             left: 0;
             pointer-events: none;
-            animation: scanline 8s linear infinite;
+            animation: scanline-run 10s linear infinite;
         }
 
-        @keyframes scanline {
-            0% { bottom: 100%; }
-            100% { bottom: -150px; }
+        @keyframes scanline-run {
+            0% { top: -100px; }
+            100% { top: 100%; }
         }
 
-        /* Твой оригинальный логотип в углу */
         .logo-container {
-            width: 130px;
-            height: 130px;
+            width: 130px; height: 130px;
             margin-bottom: 20px;
-            background-image: url('https://w7.pngwing.com/pngs/397/413/png-transparent-logo-brand-font-ghost-icon-logo-ghost-brand.png');
+            background-image: url('EV_Dark_2k.png');
             background-size: cover;
-            background-position: center;
             border-radius: 50%;
             border: 2px solid var(--aqua);
             box-shadow: 0 0 20px var(--aqua);
             animation: glitch-soft 6s infinite;
             position: relative;
-            z-index: 10; /* Выше фона */
+            z-index: 20;
         }
 
         @keyframes glitch-soft {
-            0%, 92%, 96%, 100% { transform: none; filter: none; }
-            94% { transform: translateX(3px) skewX(2deg); }
-            95% { transform: translateX(-3px); }
+            0%, 92%, 96%, 100% { transform: none; }
+            94% { transform: translateX(2px) skewX(1deg); }
+            95% { transform: translateX(-2px); }
         }
 
         .header h1 {
             font-size: 2.2rem;
             letter-spacing: 12px;
             text-transform: uppercase;
-            margin: 10px 0;
-            z-index: 10;
+            z-index: 20;
         }
         .header h1 span { color: var(--aqua); text-shadow: 0 0 10px var(--aqua); }
-        .header h1 i { color: #fff; font-style: normal; }
 
         .card {
-            background: rgba(8, 12, 15, 0.9);
+            background: rgba(10, 15, 20, 0.9);
             border: 1px solid #1a262b;
             padding: 40px;
             width: 100%;
             max-width: 600px;
             margin-bottom: 30px;
-            transition: all 0.4s cubic-bezier(0.23, 1, 0.32, 1);
+            transition: 0.4s;
             position: relative;
-            z-index: 10;
+            z-index: 20;
             overflow: hidden;
         }
 
-        /* EVO Card */
         .aqua-style { border-left: 4px solid #1a262b; }
-        .aqua-style h2 { transition: 0.4s; margin-top: 0; color: #fff; }
-        /* EV, o и Pa теперь одного класса для синхронного зажигания */
-        .aqua-style h2 .glow-part, .aqua-style h2 i { color: #fff; transition: 0.5s; font-weight: normal; font-style: normal; }
+        .aqua-style h2 .glow-part, .aqua-style h2 i { color: #fff; transition: 0.5s; font-style: normal; }
 
         .aqua-style:hover { 
             border-left: 4px solid var(--aqua);
@@ -135,24 +141,20 @@
         }
         .aqua-style:hover h2 .glow-part, .aqua-style:hover h2 i { 
             color: var(--aqua); 
-            text-shadow: 0 0 15px var(--aqua); 
-            font-weight: bold; 
+            text-shadow: 0 0 10px var(--aqua); 
         }
 
-        /* Night Card */
         .night-style { border-left: 4px solid #1a262b; }
-        .night-title { margin-top: 0; transition: 0.4s; color: #fff; }
+        .night-title { color: #fff; transition: 0.4s; margin-top: 0; }
         .night-title b { color: var(--blood-red); text-shadow: 0 0 5px var(--blood-red); }
 
         .night-style:hover { 
             border-left: 4px solid var(--blood-red);
             box-shadow: 0 0 30px rgba(255, 0, 0, 0.15), inset 0 0 25px rgba(255, 0, 0, 0.07); 
             transform: scale(1.02);
-            background: rgba(15, 8, 8, 0.95);
+            background: rgba(20, 10, 10, 0.95);
         }
         .night-style:hover .night-title { text-shadow: 0 0 15px var(--blood-red); transform: skewX(-5deg); }
-
-        p { font-size: 0.85rem; color: #8da0a9; letter-spacing: 1px; line-height: 1.6; }
 
         .btn {
             display: inline-block;
@@ -160,57 +162,30 @@
             text-decoration: none;
             font-weight: bold;
             font-size: 0.75rem;
-            letter-spacing: 2px;
             text-transform: uppercase;
             border: 1px solid #1a262b;
             transition: 0.3s;
             margin-top: 10px;
+            color: #555;
             position: relative;
-            z-index: 100;
+            z-index: 30;
         }
-        .btn-aqua { color: #555; }
-        .aqua-style:hover .btn-aqua { color: var(--aqua); border-color: var(--aqua); }
-        .btn-aqua:hover { background: var(--aqua) !important; color: #000 !important; box-shadow: 0 0 15px var(--aqua); }
+        .aqua-style:hover .btn { color: var(--aqua); border-color: var(--aqua); }
+        .night-style:hover .btn { color: var(--blood-red); border-color: var(--blood-red); }
+        .btn:hover { background: white !important; color: black !important; }
 
-        .btn-night { color: #555; }
-        .night-style:hover .btn-night { color: var(--blood-red); border-color: var(--blood-red); }
-        .btn-night:hover { background: var(--blood-red) !important; color: #fff !important; box-shadow: 0 0 15px var(--blood-red); }
+        .footer { margin-top: auto; padding-top: 40px; font-size: 0.65rem; color: #333; text-align: center; z-index: 20; }
 
-        /* Футер */
-        .footer {
-            margin-top: auto;
-            padding-top: 40px;
-            font-size: 0.65rem;
-            color: #222;
-            letter-spacing: 2px;
-            text-align: center;
-            z-index: 10;
-        }
-
-        /* Глючный шифр в футере */
-        .glitch-wrapper {
-            display: inline-block;
-            color: #333; /* В обычном состоянии серый */
-            cursor: help;
-            transition: color 0.2s;
-        }
-
-        /* При наведении — паника шифра */
-        .glitch-wrapper:hover {
-            animation: cipher-panic 0.1s infinite;
-            color: var(--blood-red); /* Краснеет при наведении */
-        }
-
-        @keyframes cipher-panic {
-            0% { transform: translate(1px, -1px); opacity: 0.8; }
-            50% { transform: translate(-1px, 1px); opacity: 1; }
-            100% { transform: translate(0); }
-        }
+        /* Тот самый шифр */
+        .glitch-wrapper { display: inline-block; cursor: help; transition: 0.2s; }
+        .glitch-wrapper:hover { animation: panic 0.1s infinite; color: var(--blood-red); }
+        @keyframes panic { 0% { transform: translate(1px, -1px); } 50% { transform: translate(-1px, 1px); } }
     </style>
 </head>
 <body>
 
-    <div class="g-logo-background"></div>
+    <div class="background-watermark"></div>
+    <div class="terminal-grid"></div>
     <div class="vignette"></div>
     <div class="crt-lines"></div>
     <div class="scanline"></div>
@@ -218,26 +193,24 @@
     <div class="logo-container"></div>
 
     <div class="header">
-        <h1><span>EV</span><i>olution</i></h1>
+        <h1><span>EV</span>olution</h1>
     </div>
 
     <div class="card aqua-style">
-        <h2><span class="glow-part">EV</span><i>o</i><span>lution</span> <span class="glow-part">Pa</span>ck</h2>
+        <h2><span class="glow-part">EV</span>o<i>lution</i> <span class="glow-part">Pa</span>ck</h2>
         <p>Глобальная переработка визуальных ассетов. Повышение детализации текстур до стандарта High-Res.</p>
-        <a href="https://drive.google.com/file/d/1Qw3G5LnlaEteiOD51bF1Oy1uh2A63R9O/view?usp=drive_link" target="_blank" class="btn btn-aqua">Download Pack</a>
+        <a href="https://drive.google.com/file/d/1Qw3G5LnlaEteiOD51bF1Oy1uh2A63R9O/view?usp=drive_link" target="_blank" class="btn">Download Pack</a>
     </div>
 
     <div class="card night-style">
         <h2 class="night-title">PROJECT <b>NIGHT</b></h2>
         <p>Протокол запущен. Глубокое затенение и динамический контраст для ночных операций.</p>
-        <a href="https://drive.google.com/file/d/1nIO79tg17x5P7VQxxa_dwtIzr42Kk9fq/view?usp=drive_link" target="_blank" class="btn btn-night">Access Files</a>
+        <a href="https://drive.google.com/file/d/1nIO79tg17x5P7VQxxa_dwtIzr42Kk9fq/view?usp=drive_link" target="_blank" class="btn">Access Files</a>
     </div>
 
     <div class="footer">
         UNAUTHORIZED ACCESS IS PROHIBITED // 
-        <div class="glitch-wrapper">
-            M45T0D0NM4N
-        </div>
+        <div class="glitch-wrapper">M45T0D0NM4N</div>
         _SYSTEM_V.4.0
     </div>
 
