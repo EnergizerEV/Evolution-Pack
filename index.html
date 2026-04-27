@@ -23,6 +23,22 @@
             padding: 60px 20px;
             overflow-x: hidden;
             min-height: 100vh;
+            position: relative;
+        }
+
+        /* Вотермарк на фоне */
+        .background-watermark {
+            position: fixed;
+            top: 50%; left: 50%;
+            transform: translate(-50%, -50%);
+            width: 90%; height: 90%;
+            background-image: url('Watermark_EV.png');
+            background-size: contain;
+            background-repeat: no-repeat;
+            background-position: center;
+            opacity: 0.1; /* 10% прозрачности */
+            pointer-events: none;
+            z-index: -1;
         }
 
         /* Виньетка */
@@ -34,19 +50,6 @@
             z-index: 1000;
         }
 
-        /* Узор фона */
-        .terminal-pattern {
-            position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background-image: 
-                radial-gradient(rgba(0, 255, 216, 0.05) 1px, transparent 1px),
-                linear-gradient(rgba(0, 255, 216, 0.05) 1px, transparent 1px);
-            background-size: 40px 40px;
-            pointer-events: none;
-            z-index: 5;
-            opacity: 0.3;
-        }
-
         /* CRT линии */
         .crt-scanlines {
             position: fixed;
@@ -55,20 +58,18 @@
             background-size: 100% 4px;
             pointer-events: none;
             z-index: 999;
-            opacity: 0.5;
+            opacity: 0.4;
         }
 
-        /* Бегущая полоса (SCANLINE) */
+        /* Бегущая полоса */
         .scanline {
-            width: 100%;
-            height: 100px;
+            width: 100%; height: 100px;
             z-index: 1010;
-            background: linear-gradient(0deg, rgba(0, 255, 216, 0) 0%, rgba(0, 255, 216, 0.04) 50%, rgba(0, 255, 216, 0) 100%);
+            background: linear-gradient(0deg, rgba(0, 255, 216, 0) 0%, rgba(0, 255, 216, 0.03) 50%, rgba(0, 255, 216, 0) 100%);
             position: fixed;
-            top: -100px;
-            left: 0;
+            top: -100px; left: 0;
             pointer-events: none;
-            animation: scanline-run 10s linear infinite;
+            animation: scanline-run 12s linear infinite;
         }
 
         @keyframes scanline-run {
@@ -102,36 +103,38 @@
             width: 100%;
             max-width: 600px;
             margin-bottom: 30px;
-            transition: 0.4s;
+            transition: all 0.5s cubic-bezier(0.165, 0.84, 0.44, 1);
             position: relative;
             z-index: 20;
         }
 
-        /* Стили заголовков (по умолчанию белые) */
         .card h2 { margin-top: 0; color: #fff; transition: 0.4s; font-weight: normal; }
-        .glow-part { transition: 0.4s; color: #fff; font-weight: normal; }
+        .glow-part, .night-glow { transition: 0.4s; color: #fff; }
 
-        /* ЭФФЕКТ ДЛЯ EVOLUTION PACK: подсветка EV и Pa */
+        /* EVOLUTION PACK STYLE (AQUA) */
+        .aqua-style:hover { 
+            border-left: 4px solid var(--aqua);
+            box-shadow: 0 0 40px rgba(0, 255, 216, 0.2);
+            transform: scale(1.03);
+            background: rgba(10, 25, 25, 0.95);
+        }
         .aqua-style:hover .glow-part { 
             color: var(--aqua); 
             text-shadow: 0 0 15px var(--aqua);
             font-weight: bold;
         }
-        .aqua-style:hover { 
-            border-left: 4px solid var(--aqua);
-            box-shadow: 0 0 20px rgba(0, 255, 216, 0.1);
-        }
 
-        /* ЭФФЕКТ ДЛЯ PROJECT NIGHT: подсветка только Night */
-        .night-style .night-glow { transition: 0.4s; color: #fff; }
-        .night-style:hover .night-glow { 
-            color: var(--aqua); 
-            text-shadow: 0 0 15px var(--aqua);
-            font-weight: bold;
-        }
+        /* PROJECT NIGHT STYLE (RED) */
         .night-style:hover { 
             border-left: 4px solid var(--blood-red);
-            box-shadow: 0 0 20px rgba(255, 0, 0, 0.1);
+            box-shadow: 0 0 40px rgba(255, 0, 0, 0.2);
+            transform: scale(1.03);
+            background: rgba(25, 10, 10, 0.95);
+        }
+        .night-style:hover .night-glow { 
+            color: var(--blood-red); 
+            text-shadow: 0 0 15px var(--blood-red);
+            font-weight: bold;
         }
 
         p { font-size: 0.85rem; color: #8da0a9; line-height: 1.6; }
@@ -160,7 +163,7 @@
 </head>
 <body>
 
-    <div class="terminal-pattern"></div>
+    <div class="background-watermark"></div>
     <div class="vignette"></div>
     <div class="crt-scanlines"></div>
     <div class="scanline"></div>
