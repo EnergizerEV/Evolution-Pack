@@ -25,56 +25,55 @@
             position: relative;
         }
 
-        /* Анимация бегущей полосы сканера */
+        /* Сканирующая полоса */
         .scanline {
             width: 100%;
-            height: 100px;
+            height: 150px;
             z-index: 10;
-            background: linear-gradient(0deg, rgba(0, 255, 216, 0) 0%, rgba(0, 255, 216, 0.05) 50%, rgba(0, 255, 216, 0) 100%);
-            opacity: 0.1;
+            background: linear-gradient(0deg, rgba(0, 255, 216, 0) 0%, rgba(0, 255, 216, 0.03) 50%, rgba(0, 255, 216, 0) 100%);
             position: fixed;
             bottom: 100%;
             left: 0;
             pointer-events: none;
-            animation: scanline 6s linear infinite;
+            animation: scanline 8s linear infinite;
         }
 
         @keyframes scanline {
             0% { bottom: 100%; }
-            100% { bottom: -100px; }
+            100% { bottom: -150px; }
         }
 
-        /* Эффект скан-линий монитора */
+        /* Скан-линии монитора */
         body::before {
             content: " ";
             display: block;
             position: fixed;
             top: 0; left: 0; bottom: 0; right: 0;
-            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.2) 50%);
+            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%);
             z-index: 999;
             background-size: 100% 3px;
             pointer-events: none;
         }
 
-        /* Логотип с эффектом глюка */
+        /* Аватарка с глюками (ИСПРАВЛЕНО НА .PNG) */
         .logo-container {
-            width: 120px;
-            height: 120px;
+            width: 130px;
+            height: 130px;
             margin-bottom: 20px;
-            position: relative;
-            background-image: url('EV_Dark_2k.jpg');
+            background-image: url('EV_Dark_2k.png'); /* Ссылка на твой PNG */
             background-size: cover;
+            background-position: center;
             border-radius: 50%;
             border: 2px solid var(--aqua);
             box-shadow: 0 0 15px var(--aqua);
-            animation: glitch-img 4s infinite;
+            animation: glitch-img 5s infinite;
         }
 
         @keyframes glitch-img {
-            0%, 90%, 100% { background-image: url('EV_Dark_2k.jpg'); filter: hue-rotate(0deg); }
-            92% { background-image: url('EV_Dark_2k_ERR.jpg'); filter: hue-rotate(90deg) contrast(1.5); }
-            94% { background-image: url('EV_Dark_2k.jpg'); }
-            96% { background-image: url('EV_Dark_2k_ERR.jpg'); filter: brightness(2); }
+            /* Мягкие глюки с PNG прозрачностью */
+            0%, 88%, 93%, 100% { background-image: url('EV_Dark_2k.png'); filter: hue-rotate(0deg); transform: scale(1); opacity: 1; }
+            90% { background-image: url('EV_Dark_2k_ERR.png'); filter: hue-rotate(90deg) contrast(1.5) blur(1px); transform: scale(1.05) skewX(5deg); opacity: 0.8; }
+            95% { background-image: url('EV_Dark_2k_ERR.png'); filter: brightness(2) contrast(2); transform: scale(0.95); opacity: 0.9; }
         }
 
         .header h1 {
@@ -93,35 +92,32 @@
             width: 100%;
             max-width: 600px;
             margin-bottom: 30px;
-            position: relative;
-            transition: 0.3s;
+            transition: all 0.4s cubic-bezier(0.23, 1, 0.32, 1);
         }
 
         .aqua-style { border-left: 4px solid var(--aqua); }
-        .aqua-style:hover { border-color: var(--aqua); box-shadow: 0 0 30px rgba(0, 255, 216, 0.15); }
+        .aqua-style:hover { 
+            border-color: var(--aqua); 
+            box-shadow: 0 0 30px rgba(0, 255, 216, 0.15); 
+            transform: scale(1.03); 
+        }
 
-        /* Текст EVO-lution Pack */
-        .evo-title { letter-spacing: 2px; }
+        .night-style { border-left: 4px solid #333; }
+        .night-style:hover { 
+            border-left: 4px solid var(--blood-red);
+            box-shadow: 0 0 30px rgba(255, 0, 0, 0.1); 
+            transform: scale(1.03);
+            background: rgba(20, 10, 10, 0.9);
+        }
+
+        /* Тексты */
         .evo-title span { color: var(--aqua); }
-        .evo-title i { color: #fff; font-style: normal; }
-
-        /* Project Night в стиле NeonZone */
-        .night-style { border-left: 4px solid #222; }
-        .night-title { 
-            color: #fff; 
-            font-style: italic; 
-            font-weight: 700;
-            letter-spacing: -1px;
-            transition: 0.3s;
-        }
-        .night-style:hover .night-title { 
-            color: var(--blood-red); 
-            text-shadow: 0 0 8px #ff0000, 0 0 20px #ff0000;
-            transform: skewX(-10deg);
-        }
+        .night-title { color: #fff; font-style: italic; font-weight: 700; transition: 0.3s; }
+        .night-style:hover .night-title { color: var(--blood-red); text-shadow: 0 0 8px #ff0000; transform: skewX(-10deg); }
 
         p { font-size: 0.85rem; color: #8da0a9; letter-spacing: 1px; }
 
+        /* Кнопки */
         .btn {
             display: inline-block;
             padding: 12px 25px;
@@ -133,15 +129,13 @@
             border: 1px solid;
             transition: 0.3s;
         }
-
         .btn-aqua { color: var(--aqua); border-color: var(--aqua); }
         .btn-aqua:hover { background: var(--aqua); color: #000; }
-
         .btn-night { color: #444; border-color: #222; }
         .night-style:hover .btn-night { color: var(--blood-red); border-color: var(--blood-red); }
-        .btn-night:hover { background: var(--blood-red) !important; color: #fff !important; }
+        .btn-night:hover { background: var(--blood-red); color: #fff; }
 
-        /* Футер с анимацией дешифровки */
+        /* Глючный шифр */
         .footer {
             margin-top: 50px;
             font-size: 0.65rem;
@@ -150,22 +144,40 @@
             text-align: center;
         }
 
-        .decrypt {
+        .glitch-wrapper {
             display: inline-block;
-            color: #555;
-            animation: decrypt-blink 2s steps(4) infinite;
+            position: relative;
+            color: #444;
+            cursor: crosshair;
         }
 
-        @keyframes decrypt-blink {
-            0%, 100% { opacity: 1; color: #555; }
-            50% { opacity: 0.5; color: var(--aqua); }
+        .glitch-text {
+            display: inline-block;
+            animation: cipher-glitch 5s infinite;
+        }
+
+        @keyframes cipher-glitch {
+            0%, 94%, 98%, 100% { transform: none; filter: none; opacity: 1; }
+            95% { transform: skew(15deg); filter: blur(1px); color: var(--aqua); }
+            96% { transform: skew(-15deg); color: #fff; }
+            97% { transform: none; opacity: 0.5; }
+        }
+
+        .glitch-wrapper:hover .glitch-text {
+            animation: cipher-panic 0.1s infinite;
+            color: var(--blood-red);
+        }
+
+        @keyframes cipher-panic {
+            0% { transform: translate(2px, -2px); }
+            50% { transform: translate(-2px, 2px); }
+            100% { transform: translate(0); }
         }
     </style>
 </head>
 <body>
 
     <div class="scanline"></div>
-
     <div class="logo-container"></div>
 
     <div class="header">
@@ -186,7 +198,10 @@
 
     <div class="footer">
         UNAUTHORIZED ACCESS IS PROHIBITED // 
-        <span class="decrypt">M45T0D0NM4N</span>_SYSTEM_V.4.0
+        <div class="glitch-wrapper">
+            <span class="glitch-text">M45T0D0NM4N</span>
+        </div>
+        _SYSTEM_V.4.0
     </div>
 
 </body>
