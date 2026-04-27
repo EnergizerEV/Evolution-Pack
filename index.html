@@ -23,6 +23,14 @@
 
         * { cursor: none !important; }
 
+        /* ГЛОБАЛЬНЫЙ ШЕЙДИНГ (CRT BLOOM & VIGNETTE) */
+        body::after {
+            content: "";
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: radial-gradient(circle, transparent 30%, rgba(0,0,0,0.4) 100%);
+            pointer-events: none; z-index: 9997;
+        }
+
         #custom-cursor {
             position: fixed; top: 0; left: 0; width: 32px; height: 32px;
             background-image: url('Cursor1-F1-32x32x32.png');
@@ -90,6 +98,7 @@
             background: rgba(10, 15, 20, 0.92); border: 1px solid #1a262b; padding: 40px; 
             width: 100%; max-width: 600px; margin-bottom: 30px; position: relative; z-index: 20;
             transition: transform 0.5s cubic-bezier(0.165, 0.84, 0.44, 1), border 0.4s, box-shadow 0.4s, background 0.4s;
+            backdrop-filter: blur(2px); /* Часть шейдинга */
         }
         .card h2 { margin-top: 0; color: #fff; transition: 0.4s; font-weight: normal; font-size: 1.4rem; }
         .glow-part, .night-glow { transition: 0.4s; color: #fff; }
@@ -113,7 +122,7 @@
 
         p { font-size: 0.85rem; color: #8da0a9; line-height: 1.6; }
 
-        /* ЭФФЕКТ МЕРЦАНИЯ КНОПКИ */
+        /* ПЛАВНОЕ МЕРЦАНИЕ КНОПКИ (1.5 СЕКУНДЫ) */
         .btn {
             display: inline-block; padding: 12px 28px; text-decoration: none; font-weight: bold; font-size: 0.75rem; 
             text-transform: uppercase; border: 1px solid #1a262b; transition: 0.3s; margin-top: 10px; color: #555; position: relative; z-index: 30;
@@ -122,19 +131,21 @@
         .aqua-style:hover .btn { border-color: var(--current-accent); color: var(--current-accent); }
         .night-style:hover .btn { border-color: var(--blood-red); color: var(--blood-red); }
 
-        /* Белое мерцание только в начале наведения */
         .btn:hover { 
             background: #fff !important; 
             color: #000 !important; 
-            animation: btn-flicker 0.4s ease-out;
-            box-shadow: 0 0 20px #fff;
+            animation: btn-flicker 1.5s ease-in-out;
+            box-shadow: 0 0 25px rgba(255, 255, 255, 0.5);
         }
 
         @keyframes btn-flicker {
-            0% { opacity: 0.1; background: transparent; }
-            10% { opacity: 1; background: #fff; }
-            20% { opacity: 0.3; }
-            40% { opacity: 1; }
+            0% { opacity: 0.2; }
+            15% { opacity: 1; }
+            30% { opacity: 0.4; }
+            45% { opacity: 1; }
+            60% { opacity: 0.7; }
+            75% { opacity: 0.9; }
+            90% { opacity: 0.8; }
             100% { opacity: 1; }
         }
 
@@ -200,7 +211,7 @@
         </div>
 
         <div class="footer">
-            UNAUTHORIZED ACCESS // <div class="scramble-text" id="nickname">M45T0D0NM4N</div> // V.5.2
+            UNAUTHORIZED ACCESS // <div class="scramble-text" id="nickname">M45T0D0NM4N</div> // V.5.4
         </div>
     </div>
 
