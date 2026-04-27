@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Evolution | Terminal Stable</title>
+    <title>Evolution | Terminal Stable Fix</title>
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Source+Code+Pro:wght@400&display=swap" rel="stylesheet">
     <style>
         :root {
@@ -25,7 +25,7 @@
 
         * { cursor: none !important; -webkit-tap-highlight-color: transparent; }
 
-        /* ВОССТАНОВЛЕННАЯ ВИНЬЕТКА И CRT */
+        /* ВИНЬЕТКА И ЭФФЕКТЫ */
         .vignette { 
             position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
             background: radial-gradient(circle, transparent 40%, rgba(0,0,0,0.9) 100%); 
@@ -74,32 +74,29 @@
             opacity: 0; transition: opacity 2s ease; 
             display: flex; flex-direction: column; align-items: center; 
             width: 100%; height: 100vh; overflow-y: scroll; scrollbar-width: none; 
-            padding: 60px 0; perspective: 1200px;
+            padding: 60px 0; perspective: 1500px;
         }
         #main-content::-webkit-scrollbar { display: none; }
 
-        /* ЛОГОТИП И НАДПИСЬ - СТАТИЧНЫ (ИДЕАЛЬНЫЙ КОД) */
+        /* ЛОГОТИП (СТАТИЧНЫЙ) */
         .logo-wrapper { position: relative; width: 150px; height: 150px; margin-bottom: 10px; z-index: 10; pointer-events: none; }
         .glitch-logo { position: absolute; width: 100%; height: 100%; background-size: contain; background-repeat: no-repeat; background-position: center; }
-        .logo-base { background-image: url('EV_Dark_2k.png'); filter: drop-shadow(0 0 15px var(--current-accent)); }
-        .logo-glitch { background-image: url('EV_Dark_2k_ERR.png'); opacity: 0; animation: glitch-step 4s infinite step-end; }
+        .logo-base { background-image: url('EV_Dark_2k.png'); filter: drop-shadow(0 0 15px var(--current-accent)); transition: background-image 0.4s; }
+        .logo-glitch { background-image: url('EV_Dark_2k_ERR.png'); opacity: 0; animation: glitch-step 4s infinite step-end; transition: background-image 0.4s; }
         @keyframes glitch-step { 0%, 90% { opacity: 0; } 92% { opacity: 1; transform: translate(5px, -3px); } 94% { opacity: 1; transform: translate(-5px, 3px); } }
 
-        .header h1 { 
-            font-size: 2.2rem; letter-spacing: 12px; text-transform: uppercase; 
-            margin-bottom: 30px; text-align: center; pointer-events: none; 
-        }
+        .header h1 { font-size: 2.2rem; letter-spacing: 12px; text-transform: uppercase; margin-bottom: 30px; text-align: center; pointer-events: none; }
         .header h1 span { color: var(--current-accent); transition: color 0.4s; }
 
-        /* ПАНЕЛИ С ПЛАВНЫМ УВЕЛИЧЕНИЕМ (ИДЕАЛЬНЫЙ КОД) */
+        /* КАРТОЧКИ (ПЛАВНЫЙ СКЕЙЛ + МЯГКИЙ ПОВОРОТ) */
         .card {
             background: rgba(10, 15, 20, 0.92); border: 1px solid #1a262b; 
             padding: 40px; width: 85%; max-width: 600px; margin-bottom: 30px; 
             position: relative; z-index: 20;
-            transition: transform 0.5s cubic-bezier(0.165, 0.84, 0.44, 1), border 0.4s, box-shadow 0.4s, background 0.4s;
+            transition: transform 0.6s cubic-bezier(0.165, 0.84, 0.44, 1), border 0.4s, box-shadow 0.4s, background 0.4s;
             backdrop-filter: blur(2px);
             display: flex; flex-direction: column; justify-content: space-between;
-            min-height: 240px;
+            min-height: 240px; transform-style: preserve-3d;
         }
 
         .card h2 { margin: 0; font-weight: normal; font-size: 1.4rem; color: #fff; transition: 0.4s; }
@@ -108,7 +105,6 @@
         .aqua-style:hover { 
             border-left: 5px solid var(--current-accent); 
             box-shadow: 0 0 50px rgba(0, 255, 216, 0.15); 
-            transform: scale(1.03); /* Плавное увеличение вернул */
             background: rgba(10, 25, 25, 0.95); 
         }
         .aqua-style:hover .glow-part { color: var(--current-accent); text-shadow: 0 0 20px var(--current-accent); font-weight: bold; }
@@ -116,14 +112,13 @@
         .night-style:hover { 
             border-left: 5px solid var(--blood-red); 
             box-shadow: 0 0 50px rgba(255, 0, 0, 0.2); 
-            transform: scale(1.03); /* Плавное увеличение вернул */
             background: rgba(25, 10, 10, 0.95); 
         }
         .night-style:hover .night-glow { color: var(--blood-red); text-shadow: 0 0 20px var(--blood-red); font-weight: bold; }
 
         .type-output { font-size: 0.85rem; color: #8da0a9; line-height: 1.6; min-height: 4em; margin-top: 15px; font-family: 'Source Code Pro', monospace; }
 
-        /* КНОПКИ С МЕРЦАНИЕМ (ИДЕАЛЬНЫЙ КОД) */
+        /* КНОПКИ (МЕРЦАНИЕ) */
         .btn {
             display: inline-block; padding: 12px 28px; text-decoration: none; font-weight: bold; font-size: 0.75rem; 
             text-transform: uppercase; border: 1px solid #1a262b; transition: 0.3s; color: #555; position: relative;
@@ -188,7 +183,7 @@
             <h1><span>EV</span>olution</h1>
         </div>
 
-        <div class="card aqua-style parallax-layer" data-strength="120">
+        <div class="card aqua-style parallax-layer" data-strength="150">
             <div>
                 <h2><span class="glow-part">EV</span>olution <span class="glow-part">Pa</span>ck</h2>
                 <p class="type-output" data-text="Классический набор текстур включающий в себя: Dark-Aqua, Equipments&Skins, SFX-Pack."></p>
@@ -199,7 +194,7 @@
             </div>
         </div>
 
-        <div class="card night-style parallax-layer" data-strength="120">
+        <div class="card night-style parallax-layer" data-strength="150">
             <div>
                 <h2>PROJECT <span class="night-glow">NIGHT</span></h2>
                 <p class="type-output" data-text="Набор Текстур, добавляющий механику 'Тьмы'. На грани возможного."></p>
@@ -239,7 +234,6 @@
         }
         drawGrid();
 
-        // ОБНОВЛЕННЫЙ ПАРАЛЛАКС (ТОЛЬКО ДЛЯ ПАНЕЛЕЙ)
         const update = (e) => {
             const x = e.clientX || (e.touches && e.touches[0].clientX);
             const y = e.clientY || (e.touches && e.touches[0].clientY);
@@ -255,9 +249,9 @@
                 const my = (y - cy) / str;
                 const isHovered = layer.matches(':hover');
                 
-                // Мягкий 3D поворот только при наведении
-                const rx = isHovered ? (cy - y) / 15 : 0;
-                const ry = isHovered ? (x - cx) / 15 : 0;
+                // ЗНАЧИТЕЛЬНО УМЕНЬШЕННЫЙ ПОВОРОТ (коэффициент 40)
+                const rx = isHovered ? (cy - y) / 40 : 0;
+                const ry = isHovered ? (x - cx) / 40 : 0;
                 
                 layer.style.transform = `translate3d(${mx}px, ${my}px, 0) rotateX(${rx}deg) rotateY(${ry}deg) scale(${isHovered ? 1.03 : 1})`;
             });
@@ -276,7 +270,7 @@
         });
         document.addEventListener('mouseup', () => cursor?.classList.remove('pressed'));
 
-        // КОНСОЛЬ
+        // КОНСОЛЬ + ФИКС ЛОГОТИПА
         const inputEl = document.getElementById('term-input');
         window.addEventListener('keydown', (e) => {
             if (e.code === 'Backquote') {
@@ -292,9 +286,15 @@
                 if (cmd === 'red') {
                     document.documentElement.style.setProperty('--current-accent', 'var(--blood-red)');
                     document.getElementById('mode-text').innerText = "NIGHT_PROTOCOL";
+                    // Смена логотипов
+                    logoMain.style.backgroundImage = "url('Project_Night_Icon.png')";
+                    logoErr.style.backgroundImage = "url('Project_Night_Icon_ERR.png')";
                 } else if (cmd === 'aqua') {
                     document.documentElement.style.setProperty('--current-accent', 'var(--aqua)');
                     document.getElementById('mode-text').innerText = "AQUA_CORE";
+                    // Возврат логотипов
+                    logoMain.style.backgroundImage = "url('EV_Dark_2k.png')";
+                    logoErr.style.backgroundImage = "url('EV_Dark_2k_ERR.png')";
                 }
                 inputEl.value = '';
             }
@@ -312,7 +312,7 @@
             });
         }
 
-        // ШИФР ДЛЯ НИКНЕЙМА
+        // ШИФР
         const nick = document.getElementById('nickname');
         const original = nick.innerText;
         nick.onmouseover = () => {
