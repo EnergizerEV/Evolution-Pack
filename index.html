@@ -13,107 +13,35 @@
             --current-accent: var(--aqua);
         }
 
-        html, body {
-            overflow: hidden;
-            height: 100%;
-            margin: 0;
-            padding: 0;
-            background-color: var(--bg-color);
-        }
-
+        html, body { overflow: hidden; height: 100%; margin: 0; padding: 0; background-color: var(--bg-color); }
         * { cursor: none !important; }
 
-        /* ЭФФЕКТ ПОТЕРТОЙ ЛИНЗЫ И ТУМАНА */
-        .fog-overlay {
-            position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background: url('https://www.transparenttextures.com/patterns/asfalt-light.png'); /* Создает эффект микро-царапин и пыли */
-            opacity: 0.05;
-            pointer-events: none;
-            z-index: 9998;
-        }
-
-        .fog-layer {
-            position: fixed;
-            top: 0; left: 0; width: 200%; height: 200%;
-            background: radial-gradient(circle at center, transparent 20%, rgba(0, 255, 216, 0.03) 50%, rgba(0,0,0,0.2) 80%);
-            filter: blur(80px);
-            animation: fog-move 20s ease-in-out infinite alternate;
-            pointer-events: none;
-            z-index: 9996;
-        }
-
-        @keyframes fog-move {
-            from { transform: translate(-10%, -10%); }
-            to { transform: translate(0%, 0%); }
-        }
-
-        /* ВОССТАНОВЛЕННЫЙ ФОН И БЕГУЩАЯ ПОЛОСА */
-        .scan-line {
-            position: fixed;
-            top: 0; left: 0; width: 100%; height: 100px;
-            background: linear-gradient(to bottom, transparent, rgba(0, 255, 216, 0.05), transparent);
-            opacity: 0.1;
-            pointer-events: none;
-            z-index: 1001;
-            animation: scanning 4s linear infinite;
-        }
-        @keyframes scanning {
-            0% { transform: translateY(-100px); }
-            100% { transform: translateY(100vh); }
-        }
-
-        /* ГЛОБАЛЬНЫЙ ШЕЙДИНГ */
-        body::after {
-            content: "";
+        /* ЭФФЕКТ ПОМЕХ ПРИ ПЕРЕХОДЕ (GLITCH OVERLAY) */
+        #mode-glitch {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: radial-gradient(circle, transparent 30%, rgba(0,0,0,0.5) 100%);
-            pointer-events: none; z-index: 9997;
+            background: white; z-index: 100000; opacity: 0; pointer-events: none;
         }
 
-        #custom-cursor {
-            position: fixed; top: 0; left: 0; width: 32px; height: 32px;
-            background-image: url('Cursor1-F1-32x32x32.png');
-            background-size: contain; background-repeat: no-repeat;
-            pointer-events: none; z-index: 99999; will-change: transform;
-        }
+        /* ТУМАН И ПОТЕРТОСТИ */
+        .fog-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: url('https://www.transparenttextures.com/patterns/asfalt-light.png'); opacity: 0.05; pointer-events: none; z-index: 9998; }
+        .fog-layer { position: fixed; top: 0; left: 0; width: 200%; height: 200%; background: radial-gradient(circle at center, transparent 20%, rgba(0, 255, 216, 0.03) 50%, rgba(0,0,0,0.2) 80%); filter: blur(80px); animation: fog-move 20s ease-in-out infinite alternate; pointer-events: none; z-index: 9996; }
+        @keyframes fog-move { from { transform: translate(-10%, -10%); } to { transform: translate(0%, 0%); } }
+
+        .scan-line { position: fixed; top: 0; left: 0; width: 100%; height: 100px; background: linear-gradient(to bottom, transparent, rgba(0, 255, 216, 0.05), transparent); opacity: 0.1; pointer-events: none; z-index: 1001; animation: scanning 4s linear infinite; }
+        @keyframes scanning { 0% { transform: translateY(-100px); } 100% { transform: translateY(100vh); } }
+
+        body::after { content: ""; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: radial-gradient(circle, transparent 30%, rgba(0,0,0,0.5) 100%); pointer-events: none; z-index: 9997; }
+
+        #custom-cursor { position: fixed; top: 0; left: 0; width: 32px; height: 32px; background-image: url('Cursor1-F1-32x32x32.png'); background-size: contain; background-repeat: no-repeat; pointer-events: none; z-index: 99999; will-change: transform; }
         #custom-cursor.pressed { background-image: url('Cursor2-F1-32x32x32.png'); }
-
-        .click-ripple {
-            position: fixed; border: 2px solid var(--current-accent);
-            border-radius: 50%; pointer-events: none; transform: translate(-50%, -50%);
-            z-index: 9998; animation: ripple-out 0.6s ease-out forwards;
-        }
-        @keyframes ripple-out {
-            0% { width: 0; height: 0; opacity: 0.8; }
-            100% { width: 160px; height: 160px; opacity: 0; border-width: 1px; }
-        }
 
         #grid-canvas { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1; opacity: 0.15; pointer-events: none; }
 
-        #term-console {
-            position: fixed; top: -160px; left: 50%; transform: translateX(-50%);
-            width: 80%; max-width: 600px; background: rgba(0, 5, 5, 0.98);
-            border: 1px solid var(--current-accent); padding: 20px;
-            z-index: 10000; font-family: 'Source Code Pro', monospace;
-            transition: top 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            box-shadow: 0 0 40px rgba(0, 0, 0, 0.5);
-        }
+        #term-console { position: fixed; top: -160px; left: 50%; transform: translateX(-50%); width: 80%; max-width: 600px; background: rgba(0, 5, 5, 0.98); border: 1px solid var(--current-accent); padding: 20px; z-index: 10000; font-family: 'Source Code Pro', monospace; transition: top 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); box-shadow: 0 0 40px rgba(0, 0, 0, 0.5); }
         #term-console.active { top: 30px; }
-        #term-input {
-            background: transparent; border: none; color: #fff; width: 80%;
-            outline: none; font-family: inherit; font-size: 16px; caret-color: var(--current-accent);
-        }
+        #term-input { background: transparent; border: none; color: #fff; width: 80%; outline: none; font-family: inherit; font-size: 16px; caret-color: var(--current-accent); }
 
-        body { 
-            color: #e0e6ed; 
-            font-family: 'Orbitron', sans-serif; 
-            display: flex; 
-            flex-direction: column; 
-            align-items: center; 
-            justify-content: center; 
-        }
-
+        body { color: #e0e6ed; font-family: 'Orbitron', sans-serif; display: flex; flex-direction: column; align-items: center; justify-content: center; }
         #main-content { opacity: 0; transition: opacity 2s ease; display: flex; flex-direction: column; align-items: center; width: 100%; }
         .vignette { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: radial-gradient(circle, transparent 40%, rgba(0,0,0,0.9) 100%); pointer-events: none; z-index: 1000; }
         .crt-scanlines { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.4) 50%); background-size: 100% 4px; pointer-events: none; z-index: 999; opacity: 0.3; }
@@ -124,87 +52,43 @@
         .glitch-logo { position: absolute; width: 100%; height: 100%; background-size: contain; background-repeat: no-repeat; background-position: center; transition: background-image 0.4s ease; }
         .logo-base { background-image: url('EV_Dark_2k.png'); filter: drop-shadow(0 0 15px var(--current-accent)); }
         .logo-glitch { background-image: url('EV_Dark_2k_ERR.png'); opacity: 0; animation: glitch-step 4s infinite step-end; }
-        
-        @keyframes glitch-step { 
-            0%, 90%, 100% { opacity: 0; transform: none; } 
-            92% { opacity: 1; transform: translate(6px, -3px); } 
-            94% { opacity: 1; transform: translate(-6px, 3px); } 
-        }
+        @keyframes glitch-step { 0%, 90%, 100% { opacity: 0; transform: none; } 92% { opacity: 1; transform: translate(6px, -3px); } 94% { opacity: 1; transform: translate(-6px, 3px); } }
 
         .header h1 { font-size: 2.2rem; letter-spacing: 12px; text-transform: uppercase; z-index: 10; margin: 10px 0; }
         .header h1 span { color: var(--current-accent); transition: color 0.4s; }
 
-        .card {
-            background: rgba(10, 15, 20, 0.92); border: 1px solid #1a262b; padding: 40px; 
-            width: 100%; max-width: 600px; margin-bottom: 30px; position: relative; z-index: 20;
-            transition: transform 0.5s cubic-bezier(0.165, 0.84, 0.44, 1), border 0.4s, box-shadow 0.4s, background 0.4s;
-            backdrop-filter: blur(4px);
-        }
+        .card { background: rgba(10, 15, 20, 0.92); border: 1px solid #1a262b; padding: 40px; width: 100%; max-width: 600px; margin-bottom: 30px; position: relative; z-index: 20; transition: transform 0.5s cubic-bezier(0.165, 0.84, 0.44, 1), border 0.4s, box-shadow 0.4s, background 0.4s; backdrop-filter: blur(4px); }
         .card h2 { margin-top: 0; color: #fff; transition: 0.4s; font-weight: normal; font-size: 1.4rem; }
         .glow-part, .night-glow { transition: 0.4s; color: #fff; }
 
-        .aqua-style:hover { 
-            border-left: 5px solid var(--current-accent); 
-            box-shadow: 0 0 50px rgba(0, 255, 216, 0.15); 
-            transform: scale(1.03); 
-            background: rgba(10, 25, 25, 0.95);
-        }
+        .aqua-style:hover { border-left: 5px solid var(--current-accent); box-shadow: 0 0 50px rgba(0, 255, 216, 0.15); transform: scale(1.03); background: rgba(10, 25, 25, 0.95); }
         body.red-mode .aqua-style:hover { box-shadow: 0 0 50px rgba(255, 0, 0, 0.2); }
         .aqua-style:hover .glow-part { color: var(--current-accent); text-shadow: 0 0 20px var(--current-accent); font-weight: bold; }
 
-        .night-style:hover { 
-            border-left: 5px solid var(--blood-red); 
-            box-shadow: 0 0 50px rgba(255, 0, 0, 0.2); 
-            transform: scale(1.03); 
-            background: rgba(25, 10, 10, 0.95);
-        }
+        .night-style:hover { border-left: 5px solid var(--blood-red); box-shadow: 0 0 50px rgba(255, 0, 0, 0.2); transform: scale(1.03); background: rgba(25, 10, 10, 0.95); }
         .night-style:hover .night-glow { color: var(--blood-red); text-shadow: 0 0 20px var(--blood-red); font-weight: bold; }
 
-        p { font-size: 0.85rem; color: #8da0a9; line-height: 1.6; }
+        /* СТИЛЬ ДЛЯ ПРИНТЕРА */
+        .typewriter { font-size: 0.85rem; color: #8da0a9; line-height: 1.6; min-height: 3.2em; }
 
-        .btn {
-            display: inline-block; padding: 12px 28px; text-decoration: none; font-weight: bold; font-size: 0.75rem; 
-            text-transform: uppercase; border: 1px solid #1a262b; transition: 0.3s; margin-top: 10px; color: #555; position: relative; z-index: 30;
-        }
-        .card:hover .btn { border-color: inherit; color: inherit; }
-        .aqua-style:hover .btn { border-color: var(--current-accent); color: var(--current-accent); }
-        .night-style:hover .btn { border-color: var(--blood-red); color: var(--blood-red); }
-
-        .btn:hover { 
-            background: #fff !important; 
-            color: #000 !important; 
-            animation: btn-flicker 1.5s ease-in-out;
-            box-shadow: 0 0 25px rgba(255, 255, 255, 0.5);
-        }
-
-        @keyframes btn-flicker {
-            0% { opacity: 0.2; }
-            15% { opacity: 1; }
-            30% { opacity: 0.4; }
-            45% { opacity: 1; }
-            60% { opacity: 0.7; }
-            75% { opacity: 0.9; }
-            90% { opacity: 0.8; }
-            100% { opacity: 1; }
-        }
+        .btn { display: inline-block; padding: 12px 28px; text-decoration: none; font-weight: bold; font-size: 0.75rem; text-transform: uppercase; border: 1px solid #1a262b; transition: 0.3s; margin-top: 10px; color: #555; position: relative; z-index: 30; }
+        .btn:hover { background: #fff !important; color: #000 !important; animation: btn-flicker 1.5s ease-in-out; box-shadow: 0 0 25px rgba(255, 255, 255, 0.5); }
+        @keyframes btn-flicker { 0% { opacity: 0.2; } 15% { opacity: 1; } 30% { opacity: 0.4; } 45% { opacity: 1; } 60% { opacity: 0.7; } 75% { opacity: 0.9; } 90% { opacity: 0.8; } 100% { opacity: 1; } }
 
         .footer { margin-top: 20px; font-size: 0.65rem; color: #333; text-align: center; z-index: 10; letter-spacing: 2px; }
         .scramble-text { display: inline-block; font-family: 'Source Code Pro', monospace; color: #444; transition: 0.3s; }
-        .scramble-text:hover { color: var(--current-accent); }
 
         #sys-status { position: fixed; bottom: 25px; left: 25px; font-family: 'Source Code Pro', monospace; font-size: 10px; color: var(--current-accent); opacity: 0.5; pointer-events: none; }
-
         #loading-screen { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #000; z-index: 9999; display: flex; flex-direction: column; justify-content: center; align-items: center; color: var(--aqua); font-family: 'Source Code Pro', monospace; transition: opacity 1s; }
-        .progress-bar-container { width: 250px; height: 2px; background: rgba(0, 255, 216, 0.1); border: 1px solid rgba(0, 255, 216, 0.3); position: relative; overflow: hidden; }
         .progress-bar-fill { position: absolute; height: 100%; width: 0%; background: var(--aqua); box-shadow: 0 0 15px var(--aqua); animation: loadProgress 3.5s forwards; }
         @keyframes loadProgress { to { width: 100%; } }
     </style>
 </head>
 <body class="aqua-mode">
 
+    <div id="mode-glitch"></div>
     <div class="fog-overlay"></div>
     <div class="fog-layer"></div>
-
     <div class="scan-line"></div>
     <canvas id="grid-canvas"></canvas>
     <div id="custom-cursor"></div>
@@ -222,7 +106,9 @@
 
     <div id="loading-screen">
         <div class="loading-text">INITIALIZING EVO_OS...</div>
-        <div class="progress-bar-container"><div class="progress-bar-fill"></div></div>
+        <div style="width: 250px; height: 2px; background: rgba(0,255,216,0.1); border: 1px solid rgba(0,255,216,0.3); position: relative; overflow: hidden;">
+            <div class="progress-bar-fill"></div>
+        </div>
     </div>
 
     <div id="main-content">
@@ -240,7 +126,7 @@
 
         <div class="card aqua-style parallax-layer" data-strength="150">
             <h2><span class="glow-part">EV</span>olution <span class="glow-part">Pa</span>ck</h2>
-            <p>Классический набор текстур включающий в себя: Dark-Aqua, Equipments&Skins, SFX-Pack</p>
+            <p class="typewriter" data-text="Классический набор текстур включающий в себя: Dark-Aqua, Equipments&Skins, SFX-Pack"></p>
             <div style="display:flex; gap:12px;">
                 <a href="https://drive.google.com/file/d/1Qw3G5LnlaEteiOD51bF1Oy1uh2A63R9O/view" target="_blank" class="btn">PC</a>
                 <a href="https://drive.google.com/file/d/19GXDO7E-SCvKzvF9ZIklORNZ1xmfN8dC/view" target="_blank" class="btn">Android</a>
@@ -249,12 +135,12 @@
 
         <div class="card night-style parallax-layer" data-strength="150">
             <h2>PROJECT <span class="night-glow">NIGHT</span></h2>
-            <p>Набор Текстур, добавляющий механику "Тьмы". На грани возможного.</p>
+            <p class="typewriter" data-text="Набор Текстур, добавляющий механику 'Тьмы'. На грани возможного."></p>
             <a href="https://drive.google.com/file/d/1nIO79tg17x5P7VQxxa_dwtIzr42Kk9fq/view" target="_blank" class="btn">Access Files</a>
         </div>
 
         <div class="footer">
-            UNAUTHORIZED ACCESS // <div class="scramble-text" id="nickname">M45T0D0NM4N</div> // V.5.7
+            UNAUTHORIZED ACCESS // <div class="scramble-text" id="nickname">M45T0D0NM4N</div> // V.5.8
         </div>
     </div>
 
@@ -262,9 +148,7 @@
         const cursor = document.getElementById('custom-cursor');
         const canvas = document.getElementById('grid-canvas');
         const ctx = canvas.getContext('2d');
-        const logoMain = document.getElementById('logo-main');
-        const logoErr = document.getElementById('logo-err');
-        let mouse = { x: -1000, y: -1000 };
+        const glitchLayer = document.getElementById('mode-glitch');
 
         function resize() { canvas.width = window.innerWidth; canvas.height = window.innerHeight; }
         window.addEventListener('resize', resize); resize();
@@ -276,10 +160,9 @@
             ctx.lineWidth = 0.5;
             for (let x = 0; x < canvas.width; x += size) {
                 for (let y = 0; y < canvas.height; y += size) {
-                    const dist = Math.hypot(x - mouse.x, y - mouse.y);
-                    const offset = Math.max(0, 10 - dist / 30);
-                    ctx.globalAlpha = offset > 0 ? 0.6 : 0.15;
-                    ctx.strokeRect(x - offset/2, y - offset/2, size + offset, size + offset);
+                    const dist = Math.hypot(x - (window.mouseX||-1000), y - (window.mouseY||-1000));
+                    ctx.globalAlpha = Math.max(0, 0.6 - dist/300);
+                    ctx.strokeRect(x, y, size, size);
                 }
             }
             requestAnimationFrame(drawGrid);
@@ -287,82 +170,62 @@
         drawGrid();
 
         document.addEventListener('mousemove', (e) => {
-            mouse.x = e.clientX; mouse.y = e.clientY;
-            cursor.style.left = `${e.clientX}px`;
-            cursor.style.top = `${e.clientY}px`;
-
-            const centerX = window.innerWidth / 2;
-            const centerY = window.innerHeight / 2;
+            window.mouseX = e.clientX; window.mouseY = e.clientY;
+            cursor.style.left = `${e.clientX}px`; cursor.style.top = `${e.clientY}px`;
+            const centerX = window.innerWidth / 2; const centerY = window.innerHeight / 2;
             document.querySelectorAll('.parallax-layer').forEach(layer => {
                 const str = layer.getAttribute('data-strength');
-                const isHovered = layer.classList.contains('card') && layer.matches(':hover');
-                const scale = isHovered ? 1.03 : 1;
-                layer.style.transform = `translate3d(${(e.clientX - centerX) / str}px, ${(e.clientY - centerY) / str}px, 0) scale(${scale})`;
+                layer.style.transform = `translate3d(${(e.clientX - centerX) / str}px, ${(e.clientY - centerY) / str}px, 0)`;
             });
         });
 
-        document.addEventListener('mousedown', (e) => {
-            cursor.classList.add('pressed');
-            const ripple = document.createElement('div');
-            ripple.className = 'click-ripple';
-            ripple.style.left = e.clientX + 'px'; ripple.style.top = e.clientY + 'px';
-            document.body.appendChild(ripple);
-            setTimeout(() => ripple.remove(), 600);
-        });
-        document.addEventListener('mouseup', () => cursor.classList.remove('pressed'));
-
-        const consoleEl = document.getElementById('term-console');
-        const inputEl = document.getElementById('term-input');
-        const modeText = document.getElementById('mode-text');
-
-        window.addEventListener('keydown', (e) => {
-            if (e.code === 'Backquote') {
-                e.preventDefault();
-                consoleEl.classList.toggle('active');
-                if (consoleEl.classList.contains('active')) inputEl.focus();
+        // ТЕКСТОВЫЙ ПРИНТЕР
+        function typeWriter(el) {
+            const text = el.getAttribute('data-text');
+            let i = 0;
+            el.innerHTML = '';
+            function type() {
+                if (i < text.length) {
+                    el.innerHTML += text.charAt(i);
+                    i++;
+                    setTimeout(type, 30);
+                }
             }
-        });
+            type();
+        }
 
+        const inputEl = document.getElementById('term-input');
         inputEl.addEventListener('keypress', (e) => {
             if (e.key === 'Enter') {
                 const cmd = inputEl.value.toLowerCase().trim();
-                if (cmd === 'red') {
-                    document.documentElement.style.setProperty('--current-accent', 'var(--blood-red)');
-                    document.body.classList.add('red-mode');
-                    logoMain.style.backgroundImage = "url('Project_Night_Icon.png')";
-                    logoErr.style.backgroundImage = "url('Project_Night_Icon_ERR.png')";
-                    modeText.innerText = "NIGHT_PROTOCOL";
-                } 
-                else if (cmd === 'aqua') {
-                    document.documentElement.style.setProperty('--current-accent', 'var(--aqua)');
-                    document.body.classList.remove('red-mode');
-                    logoMain.style.backgroundImage = "url('EV_Dark_2k.png')";
-                    logoErr.style.backgroundImage = "url('EV_Dark_2k_ERR.png')";
-                    modeText.innerText = "AQUA_CORE";
+                if (cmd === 'red' || cmd === 'aqua') {
+                    // ЭФФЕКТ ПЕРЕХОДА
+                    glitchLayer.style.opacity = '0.4';
+                    setTimeout(() => glitchLayer.style.opacity = '0', 150);
+                    
+                    if (cmd === 'red') {
+                        document.documentElement.style.setProperty('--current-accent', 'var(--blood-red)');
+                        document.body.classList.add('red-mode');
+                        document.getElementById('mode-text').innerText = "NIGHT_PROTOCOL";
+                    } else {
+                        document.documentElement.style.setProperty('--current-accent', 'var(--aqua)');
+                        document.body.classList.remove('red-mode');
+                        document.getElementById('mode-text').innerText = "AQUA_CORE";
+                    }
                 }
-                if (cmd === 'clear') consoleEl.classList.remove('active');
                 inputEl.value = '';
             }
         });
 
-        const nick = document.getElementById('nickname');
-        const original = nick.innerText;
-        nick.onmouseover = () => {
-            let i = 0;
-            const iter = setInterval(() => {
-                nick.innerText = original.split("").map((l, idx) => idx < i ? original[idx] : "X_#$@&"[Math.floor(Math.random()*6)]).join("");
-                if (i >= original.length) clearInterval(iter);
-                i += 1/3;
-            }, 30);
-        };
-
         window.addEventListener('load', () => {
             setTimeout(() => {
                 document.getElementById('loading-screen').style.opacity = '0';
-                setTimeout(() => document.getElementById('loading-screen').style.display = 'none', 1000);
+                setTimeout(() => {
+                    document.getElementById('loading-screen').style.display = 'none';
+                    document.querySelectorAll('.typewriter').forEach(typeWriter);
+                }, 1000);
                 document.getElementById('main-content').style.opacity = '1';
             }, 3000);
-            setInterval(() => { document.getElementById('cpu-val').innerText = Math.floor(Math.random()*15)+5; }, 2000);
         });
     </script>
 </body>
