@@ -21,10 +21,8 @@
             background-color: var(--bg-color);
         }
 
-        /* Убираем курсор везде (для ПК) */
         * { cursor: none !important; }
 
-        /* ВОССТАНОВЛЕННЫЙ ФОН И БЕГУЩАЯ ПОЛОСА */
         .scan-line {
             position: fixed;
             top: 0; left: 0; width: 100%; height: 100px;
@@ -39,7 +37,6 @@
             100% { transform: translateY(100vh); }
         }
 
-        /* ГЛОБАЛЬНЫЙ ШЕЙДИНГ */
         body::after {
             content: "";
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
@@ -92,7 +89,15 @@
         }
 
         #main-content { opacity: 0; transition: opacity 2s ease; display: flex; flex-direction: column; align-items: center; width: 100%; }
-        .vignette { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: radial-gradient(circle, transparent 40%, rgba(0,0,0,0.9) 100%); pointer-events: none; z-index: 1000; }
+        
+        /* ИЗМЕНЕННАЯ ВИНЬЕТКА-ФОНАРЬ */
+        .vignette { 
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
+            background: radial-gradient(circle at 50% 50%, transparent 10%, rgba(0,0,0,0.95) 70%); 
+            pointer-events: none; z-index: 1000; 
+            will-change: background;
+        }
+
         .crt-scanlines { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.4) 50%); background-size: 100% 4px; pointer-events: none; z-index: 999; opacity: 0.3; }
 
         .parallax-layer { transition: transform 0.4s cubic-bezier(0.23, 1, 0.32, 1); will-change: transform; }
@@ -168,35 +173,28 @@
         .progress-bar-fill { position: absolute; height: 100%; width: 0%; background: var(--aqua); box-shadow: 0 0 15px var(--aqua); animation: loadProgress 3.5s forwards; }
         @keyframes loadProgress { to { width: 100%; } }
 
-        /* --- МОБИЛЬНАЯ АДАПТАЦИЯ (ТОЛЬКО ДЛЯ ТЕЛЕФОНОВ) --- */
         @media screen and (max-width: 768px) {
-            * { cursor: auto !important; } /* Возвращаем стандартный палец для тачскринов */
-            #custom-cursor { display: none; } /* Скрываем кастомный курсор */
-
+            * { cursor: auto !important; }
+            #custom-cursor { display: none; }
             html, body { overflow-y: auto; overflow-x: hidden; height: auto; min-height: 100%; }
             body { padding: 40px 0; justify-content: flex-start; }
-
             #main-content { padding: 0 20px; width: calc(100% - 40px); }
-
             .logo-wrapper { width: 100px; height: 100px; margin-bottom: 15px; }
             .header h1 { font-size: 1.4rem; letter-spacing: 6px; }
-
             .card { padding: 25px; width: 100%; margin-bottom: 20px; box-sizing: border-box; }
             .card h2 { font-size: 1.1rem; }
             .type-output { font-size: 0.75rem; }
-
             .btn { padding: 10px 20px; font-size: 0.65rem; width: 100%; text-align: center; box-sizing: border-box; }
             .card div[style*="flex"] { flex-direction: column; width: 100%; }
-
             #sys-status { 
                 position: static; margin-top: 30px; text-align: center; 
                 opacity: 0.8; font-size: 8px; width: 100%; 
                 display: flex; justify-content: center; gap: 15px;
             }
             #sys-status br { display: none; }
-
             #term-console { width: 90%; padding: 15px; }
             #term-input { font-size: 14px; width: 70%; }
+            .vignette { background: radial-gradient(circle at 50% 40%, transparent 10%, rgba(0,0,0,0.9) 80%); }
         }
     </style>
 </head>
@@ -223,7 +221,7 @@
     </div>
 
     <div id="main-content">
-        <div class="vignette"></div>
+        <div class="vignette" id="vignette"></div>
         <div class="crt-scanlines"></div>
         
         <div class="logo-wrapper parallax-layer" data-strength="60">
@@ -261,6 +259,7 @@
         const ctx = canvas.getContext('2d');
         const logoMain = document.getElementById('logo-main');
         const logoErr = document.getElementById('logo-err');
+        const vignette = document.getElementById('vignette');
         let mouse = { x: -1000, y: -1000 };
 
         function resize() { canvas.width = window.innerWidth; canvas.height = window.innerHeight; }
@@ -284,11 +283,16 @@
         drawGrid();
 
         document.addEventListener('mousemove', (e) => {
-            if (window.innerWidth <= 768) return; // Отключаем параллакс и курсор на мобильных
+            if (window.innerWidth <= 768) return;
             
             mouse.x = e.clientX; mouse.y = e.clientY;
             cursor.style.left = `${e.clientX}px`;
             cursor.style.top = `${e.clientY}px`;
+
+            // ОБНОВЛЕНИЕ ФОНАРЯ (ВИНЬЕТКИ)
+            const xPct = (e.clientX / window.innerWidth) * 100;
+            const yPct = (e.clientY / window.innerHeight) * 100;
+            vignette.style.background = `radial-gradient(circle at ${xPct}% ${yPct}%, transparent 10%, rgba(0,0,0,0.95) 70%)`;
 
             const centerX = window.innerWidth / 2;
             const centerY = window.innerHeight / 2;
@@ -296,13 +300,9 @@
             document.querySelectorAll('.parallax-layer').forEach(layer => {
                 const str = layer.getAttribute('data-strength');
                 const isHovered = layer.classList.contains('card') && layer.matches(':hover');
-                
                 const transX = (e.clientX - centerX) / str;
                 const transY = (e.clientY - centerY) / str;
-                
-                let scale = 1;
-                let rotateX = 0;
-                let rotateY = 0;
+                let scale = 1, rotateX = 0, rotateY = 0;
 
                 if (isHovered) {
                     scale = 1.03;
@@ -312,7 +312,6 @@
                     rotateY = (e.clientX - cardCenterX) / 25; 
                     rotateX = (cardCenterY - e.clientY) / 25;
                 }
-
                 layer.style.transform = `translate3d(${transX}px, ${transY}px, 0) scale(${scale}) rotateX(${rotateX}deg) rotateY(${rotateY}deg)`;
             });
         });
