@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Evolution | Terminal v.6.3 Ultimate</title>
+    <title>Evolution | Terminal v.6.4 Final</title>
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Source+Code+Pro:wght@400;700&display=swap" rel="stylesheet">
     <style>
         :root {
@@ -13,7 +13,7 @@
             --current-accent: var(--aqua);
         }
 
-        /* БАЗА */
+        /* БАЗОВЫЕ НАСТРОЙКИ */
         html, body {
             overflow: hidden; height: 100%; margin: 0; padding: 0;
             background-color: var(--bg-color); color: #e0e6ed;
@@ -22,7 +22,7 @@
 
         * { cursor: none !important; }
 
-        /* ЭФФЕКТ ПЕРЕХОДА */
+        /* ЭФФЕКТ ПЕРЕХОДА (DIGITAL GLITCH) */
         #mode-glitch-overlay {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background: transparent; z-index: 100000; pointer-events: none; opacity: 0;
@@ -32,7 +32,7 @@
             background: var(--current-accent); box-shadow: 0 0 15px var(--current-accent);
         }
 
-        /* АТМОСФЕРА: ТУМАН И ПОТЕРТОСТИ */
+        /* АТМОСФЕРА И ТЕКСТУРЫ */
         .fog-overlay {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background: url('https://www.transparenttextures.com/patterns/asfalt-light.png');
@@ -86,13 +86,13 @@
         }
         @keyframes ripple-effect { 0% { width: 0; height: 0; opacity: 1; } 100% { width: 180px; height: 180px; opacity: 0; } }
 
-        /* КОНСОЛЬ V.5.5 */
+        /* КОНСОЛЬ (V.5.5) */
         #term-console {
             position: fixed; top: -180px; left: 50%; transform: translateX(-50%);
             width: 80%; max-width: 600px; background: rgba(2, 4, 6, 0.98);
             border: 1px solid var(--current-accent); padding: 20px; z-index: 10000;
             font-family: 'Source Code Pro', monospace; transition: top 0.45s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            box-shadow: 0 0 35px rgba(0,0,0,0.9), 0 0 15px rgba(0, 255, 216, 0.1);
+            box-shadow: 0 0 35px rgba(0,0,0,0.9);
         }
         #term-console.active { top: 35px; }
         #term-input { background: transparent; border: none; color: #fff; width: 85%; outline: none; font-family: inherit; font-size: 16px; caret-color: var(--current-accent); }
@@ -110,32 +110,39 @@
         .header h1 { font-size: 2.4rem; letter-spacing: 14px; text-transform: uppercase; margin: 15px 0; text-align: center; font-weight: 700; }
         .header h1 span { color: var(--current-accent); text-shadow: 0 0 20px var(--current-accent); transition: all 0.5s; }
 
-        /* КАРТОЧКИ С ГЛУБОКИМ СВЕЧЕНИЕМ */
+        /* КАРТОЧКИ (ВОЗВРАТ К ИДЕАЛЬНОМУ ХОВЕРУ) */
         .card {
             background: rgba(10, 15, 20, 0.93); border: 1px solid #1a262b; padding: 45px;
             width: 100%; max-width: 620px; margin-bottom: 35px; position: relative; z-index: 20;
-            backdrop-filter: blur(5px); transition: transform 0.5s cubic-bezier(0.165, 0.84, 0.44, 1), border 0.4s ease, box-shadow 0.4s ease;
+            backdrop-filter: blur(5px); transition: transform 0.5s cubic-bezier(0.165, 0.84, 0.44, 1), border 0.4s ease, box-shadow 0.4s ease, background 0.4s;
             will-change: transform;
         }
-        .card h2 { margin-top: 0; font-size: 1.5rem; letter-spacing: 2px; color: #fff; font-weight: 400; transition: 0.4s; }
+        .card h2 { margin-top: 0; font-size: 1.5rem; letter-spacing: 2px; color: #fff; font-weight: 400; }
+        .card h2 span { transition: color 0.4s, text-shadow 0.4s; }
+
+        /* ЭФФЕКТ ТОЧЕЧНОГО ПОДСВЕЧИВАНИЯ БУКВ */
+        .card:hover h2 span {
+            color: var(--current-accent);
+            text-shadow: 0 0 15px var(--current-accent);
+        }
 
         .aqua-style:hover {
             border-left: 6px solid var(--aqua);
-            box-shadow: 0 0 60px rgba(0, 255, 216, 0.25), inset 0 0 20px rgba(0, 255, 216, 0.05);
+            box-shadow: 0 0 60px rgba(0, 255, 216, 0.2);
             transform: scale(1.03) translateY(-5px);
+            background: rgba(12, 20, 25, 0.96); /* Вернул правильный цвет фона */
         }
-        .aqua-style:hover h2 { text-shadow: 0 0 15px var(--aqua); color: var(--aqua); }
 
         .night-style:hover {
             border-left: 6px solid var(--blood-red);
-            box-shadow: 0 0 60px rgba(255, 0, 0, 0.3), inset 0 0 20px rgba(255, 0, 0, 0.05);
+            box-shadow: 0 0 60px rgba(255, 0, 0, 0.25);
             transform: scale(1.03) translateY(-5px);
+            background: rgba(20, 12, 12, 0.96);
         }
-        .night-style:hover h2 { text-shadow: 0 0 15px var(--blood-red); color: var(--blood-red); }
 
         .typewriter-box { font-size: 0.88rem; color: #8da0a9; line-height: 1.7; min-height: 3.5em; font-family: 'Source Code Pro', monospace; }
 
-        /* КНОПКИ С МЕРЦАНИЕМ (1 СЕКУНДА) */
+        /* КНОПКИ */
         .btn {
             display: inline-block; padding: 14px 30px; text-decoration: none; font-weight: 700; font-size: 0.78rem;
             text-transform: uppercase; border: 1px solid #1a262b; transition: all 0.3s ease; margin-top: 20px;
@@ -153,7 +160,7 @@
         .footer { margin-top: 35px; font-size: 0.68rem; color: #333; letter-spacing: 3px; z-index: 10; }
         #sys-status { position: fixed; bottom: 30px; left: 30px; font-family: 'Source Code Pro', monospace; font-size: 11px; color: var(--current-accent); opacity: 0.6; line-height: 1.8; pointer-events: none; text-shadow: 0 0 5px var(--current-accent); }
 
-        /* ЭКРАН ЗАГРУЗКИ СО СВЕЧЕНИЕМ */
+        /* ЗАГРУЗКА СО СВЕЧЕНИЕМ */
         #loading-screen {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #000;
             z-index: 100010; display: flex; flex-direction: column; justify-content: center; align-items: center;
@@ -161,15 +168,15 @@
         .load-text { 
             color: var(--aqua); font-family: 'Source Code Pro', monospace; font-size: 14px; 
             margin-bottom: 15px; letter-spacing: 3px; 
-            text-shadow: 0 0 15px var(--aqua), 0 0 30px var(--aqua); /* СВЕЧЕНИЕ ТЕКСТА */
+            text-shadow: 0 0 15px var(--aqua), 0 0 30px var(--aqua); 
             animation: pulse-glow 2s infinite ease-in-out;
         }
         @keyframes pulse-glow { 0%, 100% { opacity: 1; } 50% { opacity: 0.6; } }
 
-        .load-bar-container { width: 300px; height: 3px; background: rgba(0, 255, 216, 0.05); position: relative; overflow: visible; border: 1px solid rgba(0, 255, 216, 0.2); }
+        .load-bar-container { width: 300px; height: 3px; background: rgba(0, 255, 216, 0.05); position: relative; border: 1px solid rgba(0, 255, 216, 0.2); }
         .load-bar-fill { 
             position: absolute; height: 100%; width: 0; background: var(--aqua); 
-            box-shadow: 0 0 20px var(--aqua), 0 0 40px var(--aqua); /* ИНТЕНСИВНОЕ СВЕЧЕНИЕ ПОЛОСЫ */
+            box-shadow: 0 0 20px var(--aqua), 0 0 40px var(--aqua);
             animation: load-anim 3.2s forwards cubic-bezier(0.15, 0, 0.3, 1); 
         }
         @keyframes load-anim { to { width: 100%; } }
@@ -185,15 +192,15 @@
     <div id="custom-cursor"></div>
 
     <div id="term-console">
-        <div style="color:var(--current-accent); font-size: 10px; margin-bottom: 5px; opacity: 0.7;">[SECURE_CHANNEL_v.6.3]</div>
+        <div style="color:var(--current-accent); font-size: 10px; margin-bottom: 5px; opacity: 0.7;">[STATION_ACTIVE_v.6.4]</div>
         <span style="color:var(--current-accent)">EVO_OS > </span>
         <input type="text" id="term-input" placeholder="..." autocomplete="off">
     </div>
 
     <div id="sys-status">
-        [ CPU_UNIT: <span id="cpu-val">00</span>% ] <br>
-        [ ENCRYPTION: AES-256 ] <br>
-        [ ACTIVE_MODE: <span id="mode-text">AQUA_CORE</span> ]
+        [ CPU: <span id="cpu-val">00</span>% ] <br>
+        [ STATUS: ENCRYPTED ] <br>
+        [ MODE: <span id="mode-text">AQUA_CORE</span> ]
     </div>
 
     <div id="loading-screen">
@@ -215,8 +222,8 @@
         </div>
 
         <div class="card aqua-style parallax-node" data-speed="110">
-            <h2><span style="color:var(--aqua)">EV</span>olution Pack</h2>
-            <div class="typewriter-box" data-text="Премиальный набор текстур. Включает полную замену UI, уникальные модели снаряжения и переработанную библиотеку SFX-Pack."></div>
+            <h2><span>EV</span>olution <span>Pa</span>ck</h2>
+            <div class="typewriter-box" data-text="Премиальный набор текстур. Включает полную замену UI, уникальные модели снаряжения и переработанную библиотеку звуков SFX-Pack."></div>
             <div style="display:flex; gap:15px;">
                 <a href="https://drive.google.com/file/d/1Qw3G5LnlaEteiOD51bF1Oy1uh2A63R9O/view" target="_blank" class="btn">PC</a>
                 <a href="https://drive.google.com/file/d/19GXDO7E-SCvKzvF9ZIklORNZ1xmfN8dC/view" target="_blank" class="btn">Android</a>
@@ -224,13 +231,13 @@
         </div>
 
         <div class="card night-style parallax-node" data-speed="110">
-            <h2>PROJECT <span style="color:var(--blood-red)">NIGHT</span></h2>
+            <h2>PROJECT <span>NIGHT</span></h2>
             <div class="typewriter-box" data-text="Экспериментальный протокол визуализации. Максимальное погружение через контрастные аномалии и механику 'Абсолютной Тьмы'."></div>
             <a href="https://drive.google.com/file/d/1nIO79tg17x5P7VQxxa_dwtIzr42Kk9fq/view" target="_blank" class="btn">Access Files</a>
         </div>
 
         <div class="footer">
-            SIGNAL_STRENGTH: 100% // <div class="scramble-node" id="nickname" style="display:inline-block; font-family:monospace; cursor:pointer;">M45T0D0NM4N</div> // V.6.3
+            SECURE_LINK // <div class="scramble-node" id="nickname" style="display:inline-block; font-family:monospace; cursor:pointer;">M45T0D0NM4N</div> // 2026
         </div>
     </div>
 
@@ -257,10 +264,6 @@
                     const dist = Math.hypot(x - mouse.x, y - mouse.y);
                     ctx.globalAlpha = Math.max(0.08, 0.45 - dist / 350);
                     ctx.strokeRect(x, y, step, step);
-                    if (dist < 150) {
-                        ctx.globalAlpha = (150 - dist) / 150 * 0.3;
-                        ctx.fillRect(x + 25, y + 25, 10, 10);
-                    }
                 }
             }
             requestAnimationFrame(drawGrid);
@@ -342,7 +345,7 @@
         }
 
         window.addEventListener('load', () => {
-            const statusArr = ["SYNCING_CORES...", "DECRYPTING_PACKS...", "STABILIZING_BLOOM...", "ACCESS_GRANTED"];
+            const statusArr = ["SYNCING_FILES...", "ENCRYPTING...", "FINALIZING...", "WELCOME"];
             let sIdx = 0;
             const logInterval = setInterval(() => {
                 document.getElementById('load-status').innerText = statusArr[sIdx]; sIdx++;
@@ -357,7 +360,7 @@
                     runPrinter();
                 }, 1000);
             }, 3500);
-            setInterval(() => { document.getElementById('cpu-val').innerText = Math.floor(Math.random() * 15) + 5; }, 2500);
+            setInterval(() => { document.getElementById('cpu-val').innerText = Math.floor(Math.random() * 10) + 5; }, 2500);
         });
 
         const nick = document.getElementById('nickname');
