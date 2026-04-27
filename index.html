@@ -46,16 +46,27 @@
             will-change: background;
         }
 
-        /* --- ДЕМО-МЕТКА (НОВОЕ) --- */
+        /* --- ИСПРАВЛЕННАЯ ДЕМО-МЕТКА (В ПРЕДЕЛАХ ГРАНИЦ) --- */
         .demo-badge {
-            position: fixed; top: 20px; right: -35px;
-            background: var(--current-accent); color: #000;
-            padding: 5px 40px; font-family: 'Orbitron', sans-serif;
-            font-size: 10px; font-weight: bold; text-transform: uppercase;
-            transform: rotate(45deg); z-index: 10006;
-            box-shadow: 0 0 15px var(--current-accent);
-            letter-spacing: 2px; pointer-events: none; opacity: 0.8;
-            transition: background 0.4s, box-shadow 0.4s;
+            position: fixed;
+            top: 0;
+            right: 0;
+            background: var(--current-accent);
+            color: #000;
+            padding: 8px 30px;
+            font-family: 'Orbitron', sans-serif;
+            font-size: 11px;
+            font-weight: bold;
+            text-transform: uppercase;
+            transform: rotate(45deg) translate(29%, -60%);
+            transform-origin: top right;
+            z-index: 100000;
+            box-shadow: 0 0 20px 5px var(--current-accent);
+            letter-spacing: 2px;
+            pointer-events: none;
+            opacity: 1;
+            transition: background 0.4s, box-shadow 0.4s, transform 0.4s;
+            white-space: nowrap;
         }
 
         /* --- СОЦСЕТИ --- */
@@ -208,7 +219,7 @@
             html, body { overflow-y: auto; overflow-x: hidden; height: auto; min-height: 100%; }
             body { padding: 40px 0; justify-content: flex-start; }
             #main-content { padding: 0 20px; width: calc(100% - 40px); }
-            .demo-badge { top: 10px; right: -40px; font-size: 8px; }
+            .demo-badge { transform: rotate(45deg) translate(25%, -70%); font-size: 9px; box-shadow: 0 0 15px 3px var(--current-accent); }
             .social-sidebar { position: static; transform: none; flex-direction: row; justify-content: center; margin-bottom: 20px; order: -1; }
             .logo-wrapper { width: 100px; height: 100px; margin-bottom: 15px; }
             .header h1 { font-size: 1.4rem; letter-spacing: 6px; }
