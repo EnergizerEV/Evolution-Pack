@@ -15,143 +15,111 @@
         /* --- ЭКРАН ЗАГРУЗКИ --- */
         #loading-screen {
             position: fixed;
-            top: 0; left: 0;
-            width: 100%; height: 100%;
+            top: 0; left: 0; width: 100%; height: 100%;
             background-color: #000;
             z-index: 9999;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
+            display: flex; flex-direction: column; justify-content: center; align-items: center;
             color: var(--aqua);
             font-family: 'Source Code Pro', monospace;
-            transition: opacity 1s ease, visibility 1s;
-        }
-
-        .loading-text {
-            font-size: 14px;
-            margin-bottom: 15px;
-            letter-spacing: 2px;
-            text-transform: uppercase;
-            text-align: center;
-            min-height: 20px;
-        }
-
-        .progress-bar-container {
-            width: 200px;
-            height: 2px;
-            background: rgba(0, 255, 216, 0.1);
-            border: 1px solid rgba(0, 255, 216, 0.3);
-            position: relative;
             overflow: hidden;
         }
 
-        .progress-bar-fill {
+        /* Череп для эффекта взлома */
+        #hacker-skull {
             position: absolute;
-            height: 100%;
-            width: 0%;
-            background: var(--aqua);
-            box-shadow: 0 0 15px var(--aqua);
-            animation: loadProgress 4s cubic-bezier(0.1, 0, 0.2, 1) forwards;
+            width: 300px;
+            opacity: 0;
+            transform: scale(0.1);
+            pointer-events: none;
+            z-index: 10000;
+            filter: drop-shadow(0 0 20px var(--blood-red));
         }
 
-        @keyframes loadProgress {
-            0% { width: 0%; }
-            100% { width: 100%; }
+        /* Анимация влета черепа */
+        .skull-jumpscare {
+            animation: skullIn 0.5s cubic-bezier(0.17, 0.89, 0.32, 1.28) forwards, 
+                       glitchShake 0.2s infinite;
+            opacity: 1 !important;
+        }
+
+        @keyframes skullIn {
+            0% { transform: scale(0.1) rotate(0deg); opacity: 0; }
+            50% { transform: scale(1.5) rotate(10deg); opacity: 1; }
+            100% { transform: scale(1.2) rotate(-5deg); opacity: 0.8; }
+        }
+
+        @keyframes glitchShake {
+            0% { transform: translate(0) scale(1.2); }
+            20% { transform: translate(-10px, 5px) scale(1.2) skew(5deg); filter: hue-rotate(90deg); }
+            40% { transform: translate(10px, -5px) scale(1.3) skew(-5deg); }
+            60% { transform: translate(-5px, -10px) scale(1.2); filter: saturate(5); }
+            100% { transform: translate(0); }
+        }
+
+        .loading-text { font-size: 14px; margin-bottom: 15px; letter-spacing: 2px; text-transform: uppercase; }
+        
+        .progress-bar-container {
+            width: 200px; height: 2px;
+            background: rgba(0, 255, 216, 0.1);
+            border: 1px solid rgba(0, 255, 216, 0.3);
+            position: relative; overflow: hidden;
+        }
+
+        .progress-bar-fill {
+            position: absolute; height: 100%; width: 0%;
+            background: var(--aqua);
+            box-shadow: 0 0 15px var(--aqua);
+        }
+
+        /* Класс для финала загрузки (глюк всей страницы) */
+        .system-glitch {
+            animation: rgbSplit 0.1s infinite;
+        }
+
+        @keyframes rgbSplit {
+            0% { text-shadow: 3px 0 red, -3px 0 blue; transform: translate(2px, 0); }
+            50% { text-shadow: -3px 0 red, 3px 0 blue; transform: translate(-2px, 0); }
+            100% { text-shadow: 3px 0 red, -3px 0 blue; }
         }
 
         /* --- ОСНОВНОЙ КОНТЕНТ --- */
         #main-content {
             opacity: 0;
-            transition: opacity 2s ease;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            width: 100%;
+            transition: opacity 1s ease;
+            display: flex; flex-direction: column; align-items: center; width: 100%;
         }
 
         body {
             background-color: var(--bg-color);
             color: #e0e6ed;
             font-family: 'Orbitron', sans-serif;
-            margin: 0;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            padding: 60px 20px;
-            overflow-x: hidden;
-            min-height: 100vh;
-            position: relative;
+            margin: 0; display: flex; flex-direction: column; align-items: center;
+            padding: 60px 20px; overflow-x: hidden; min-height: 100vh;
         }
 
-        .vignette {
-            position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background: radial-gradient(circle, transparent 50%, rgba(0,0,0,0.9) 100%);
-            pointer-events: none;
-            z-index: 1000;
-        }
-
-        .crt-scanlines {
-            position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.4) 50%);
-            background-size: 100% 4px;
-            pointer-events: none;
-            z-index: 999;
-            opacity: 0.4;
-        }
-
-        .scanline {
-            width: 100%; height: 100px; z-index: 1010;
-            background: linear-gradient(0deg, rgba(0, 255, 216, 0) 0%, rgba(0, 255, 216, 0.03) 50%, rgba(0, 255, 216, 0) 100%);
-            position: fixed; top: -100px; left: 0; pointer-events: none;
-            animation: scanline-run 10s linear infinite;
-        }
-
+        /* Твои оригинальные стили окружения */
+        .vignette { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: radial-gradient(circle, transparent 50%, rgba(0,0,0,0.9) 100%); pointer-events: none; z-index: 1000; }
+        .crt-scanlines { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.4) 50%); background-size: 100% 4px; pointer-events: none; z-index: 999; opacity: 0.4; }
+        .scanline { width: 100%; height: 100px; z-index: 1010; background: linear-gradient(0deg, rgba(0, 255, 216, 0) 0%, rgba(0, 255, 216, 0.03) 50%, rgba(0, 255, 216, 0) 100%); position: fixed; top: -100px; left: 0; pointer-events: none; animation: scanline-run 10s linear infinite; }
         @keyframes scanline-run { 0% { top: -100px; } 100% { top: 100%; } }
 
-        .logo-wrapper {
-            position: relative; width: 150px; height: 150px; margin-bottom: 20px; z-index: 10;
-        }
-
-        .glitch-logo {
-            position: absolute; width: 100%; height: 100%; background-size: contain; background-repeat: no-repeat; background-position: center;
-        }
-
+        /* Лого */
+        .logo-wrapper { position: relative; width: 150px; height: 150px; margin-bottom: 20px; z-index: 10; }
+        .glitch-logo { position: absolute; width: 100%; height: 100%; background-size: contain; background-repeat: no-repeat; background-position: center; }
         .logo-base { background-image: url('EV_Dark_2k.png'); filter: drop-shadow(0 0 10px var(--aqua)); }
         .logo-glitch { background-image: url('EV_Dark_2k_ERR.png'); opacity: 0; animation: glitch-step 4s infinite step-end; }
+        @keyframes glitch-step { 0%, 90%, 100% { opacity: 0; transform: none; } 92% { opacity: 1; transform: translate(6px, -3px) hue-rotate(45deg); } 94% { opacity: 1; transform: translate(-6px, 3px) saturate(2); } 95% { opacity: 0.4; transform: scale(1.05); } }
 
-        @keyframes glitch-step {
-            0%, 90%, 100% { opacity: 0; transform: none; }
-            92% { opacity: 1; transform: translate(6px, -3px); filter: hue-rotate(45deg); }
-            94% { opacity: 1; transform: translate(-6px, 3px); filter: saturate(2); }
-            95% { opacity: 0.4; transform: scale(1.05); }
-        }
-
-        .header h1 { font-size: 2.2rem; letter-spacing: 12px; text-transform: uppercase; z-index: 10; margin: 10px 0; }
-        .header h1 span { color: var(--aqua); }
-
-        .card {
-            background: rgba(10, 15, 20, 0.9); border: 1px solid #1a262b; padding: 40px; width: 100%; max-width: 600px; margin-bottom: 30px;
-            transition: all 0.5s cubic-bezier(0.165, 0.84, 0.44, 1); position: relative; z-index: 20;
-        }
-
-        .card h2 { margin-top: 0; color: #fff; transition: 0.4s; font-weight: normal; }
+        /* Карточки */
+        .card { background: rgba(10, 15, 20, 0.9); border: 1px solid #1a262b; padding: 40px; width: 100%; max-width: 600px; margin-bottom: 30px; transition: all 0.5s cubic-bezier(0.165, 0.84, 0.44, 1); position: relative; z-index: 20; }
+        .card h2 { margin-top: 0; color: #fff; font-weight: normal; }
         .glow-part, .night-glow { transition: 0.4s; color: #fff; }
-
-        .aqua-style:hover { border-left: 4px solid var(--aqua); box-shadow: 0 0 40px rgba(0, 255, 216, 0.2); transform: scale(1.03); background: rgba(10, 25, 25, 0.95); }
-        .aqua-style:hover .glow-part { color: var(--aqua); text-shadow: 0 0 15px var(--aqua); font-weight: bold; }
-
-        .night-style:hover { border-left: 4px solid var(--blood-red); box-shadow: 0 0 40px rgba(255, 0, 0, 0.2); transform: scale(1.03); background: rgba(25, 10, 10, 0.95); }
-        .night-style:hover .night-glow { color: var(--blood-red); text-shadow: 0 0 15px var(--blood-red); font-weight: bold; }
-
-        p { font-size: 0.85rem; color: #8da0a9; line-height: 1.6; }
-
-        .btn {
-            display: inline-block; padding: 12px 25px; text-decoration: none; font-weight: bold; font-size: 0.75rem; text-transform: uppercase;
-            border: 1px solid #1a262b; transition: 0.3s; margin-top: 10px; color: #555; cursor: pointer; position: relative; z-index: 30;
-        }
+        .aqua-style:hover { border-left: 4px solid var(--aqua); box-shadow: 0 0 40px rgba(0, 255, 216, 0.2); transform: scale(1.03); }
+        .aqua-style:hover .glow-part { color: var(--aqua); text-shadow: 0 0 15px var(--aqua); }
+        .night-style:hover { border-left: 4px solid var(--blood-red); box-shadow: 0 0 40px rgba(255, 0, 0, 0.2); transform: scale(1.03); }
+        .night-style:hover .night-glow { color: var(--blood-red); text-shadow: 0 0 15px var(--blood-red); }
+        
+        .btn { display: inline-block; padding: 12px 25px; text-decoration: none; font-weight: bold; font-size: 0.75rem; text-transform: uppercase; border: 1px solid #1a262b; transition: 0.3s; margin-top: 10px; color: #555; cursor: pointer; }
         .aqua-style:hover .btn { color: var(--aqua); border-color: var(--aqua); }
         .night-style:hover .btn { color: var(--blood-red); border-color: var(--blood-red); }
         .btn:hover { background: #fff !important; color: #000 !important; }
@@ -164,9 +132,10 @@
 <body>
 
     <div id="loading-screen">
+        <img src="xthtg.png" id="hacker-skull" alt="Skull">
         <div class="loading-text" id="status-text">SYSTEM STANDBY...</div>
         <div class="progress-bar-container">
-            <div class="progress-bar-fill"></div>
+            <div class="progress-bar-fill" id="bar"></div>
         </div>
     </div>
 
@@ -180,20 +149,18 @@
             <div class="glitch-logo logo-glitch"></div>
         </div>
 
-        <div class="header">
-            <h1><span>EV</span>olution</h1>
-        </div>
+        <div class="header"><h1><span>EV</span>olution</h1></div>
 
         <div class="card aqua-style">
             <h2><span class="glow-part">EV</span>olution <span class="glow-part">Pa</span>ck</h2>
             <p>Классический набор текстур включающий в себя: Dark-Aqua, Equipments&Skins, SFX-Pack</p>
-            <a href="https://drive.google.com/file/d/1Qw3G5LnlaEteiOD51bF1Oy1uh2A63R9O/view?usp=drive_link" target="_blank" class="btn">Download Pack</a>
+            <a href="#" class="btn">Download Pack</a>
         </div>
 
         <div class="card night-style">
             <h2>PROJECT <span class="night-glow">NIGHT</span></h2>
-            <p>Протокол запущен./// Набор Текстур, который добавляет механику "Тьмы". Как долго ты протянешь?...\\\\\\</p>
-            <a href="https://drive.google.com/file/d/1nIO79tg17x5P7VQxxa_dwtIzr42Kk9fq/view?usp=drive_link" target="_blank" class="btn">Access Files</a>
+            <p>Протокол запущен./// Набор Текстур, который добавляет механику "Тьмы".</p>
+            <a href="#" class="btn">Access Files</a>
         </div>
 
         <div class="footer">
@@ -204,69 +171,71 @@
     </div>
 
     <script>
-        // ОБНОВЛЕННАЯ ЛОГИКА ЗАГРУЗКИ
         window.addEventListener('load', () => {
             const statusText = document.getElementById('status-text');
+            const bar = document.getElementById('bar');
+            const skull = document.getElementById('hacker-skull');
+            const screen = document.getElementById('loading-screen');
+            
             const messages = [
                 "ESTABLISHING CONNECTION...",
                 "DECRYPTING ASSETS...",
                 "EXECUTING EV_Core.exe...",
-                "LOADING CORE MODULES...",
-                "STABILIZING INTERFACE...",
-                "ACCESS GRANTED."
+                "OVERRIDING SECURITY...",
+                "SYSTEM COMPROMISED."
             ];
             
             let i = 0;
-            const interval = setInterval(() => {
+            let progress = 0;
+
+            // Имитация прогресса
+            const progressInterval = setInterval(() => {
+                progress += 1;
+                bar.style.width = progress + "%";
+                if(progress >= 100) clearInterval(progressInterval);
+            }, 30);
+
+            // Смена сообщений
+            const msgInterval = setInterval(() => {
                 if (i < messages.length) {
                     statusText.innerText = messages[i];
-                    // Если это активация exe, можно чуть подсветить текст
-                    if(messages[i].includes("EV_Core.exe")) {
-                        statusText.style.color = "#fff";
-                        statusText.style.textShadow = "0 0 10px var(--aqua)";
-                    } else {
-                        statusText.style.color = "var(--aqua)";
-                        statusText.style.textShadow = "none";
-                    }
+                    if(messages[i].includes("EV_Core.exe")) statusText.style.color = "#fff";
                     i++;
                 } else {
-                    clearInterval(interval);
+                    clearInterval(msgInterval);
+                    
+                    // ФИНАЛЬНЫЙ ЭФФЕКТ ВЗЛОМА
                     setTimeout(() => {
-                        const loader = document.getElementById('loading-screen');
-                        const content = document.getElementById('main-content');
-                        loader.style.opacity = '0';
-                        loader.style.visibility = 'hidden';
-                        content.style.opacity = '1';
+                        skull.classList.add('skull-jumpscare');
+                        screen.classList.add('system-glitch');
+                        
+                        // Через 1.5 секунды глюков — переключение
+                        setTimeout(() => {
+                            screen.style.display = 'none';
+                            document.getElementById('main-content').style.opacity = '1';
+                        }, 1500);
                     }, 500);
                 }
             }, 800);
         });
 
         // СКРЕМБЛЕР (M45T0D0NM4N)
-        const element = document.getElementById('nickname');
-        const originalText = element.innerText;
+        const el = document.getElementById('nickname');
+        const originalText = el.innerText;
         const symbols = "!<>-_\\/[]{}—=+*^?#________";
-        let scrambleInterval = null;
+        let scInterval = null;
 
-        element.onmouseover = event => {
-            let iteration = 0;
-            clearInterval(scrambleInterval);
-            scrambleInterval = setInterval(() => {
-                event.target.innerText = event.target.innerText
-                    .split("")
-                    .map((letter, index) => {
-                        if(index < iteration) return originalText[index];
-                        return symbols[Math.floor(Math.random() * symbols.length)];
-                    })
-                    .join("");
-                if(iteration >= originalText.length) clearInterval(scrambleInterval);
-                iteration += 1 / 3;
+        el.onmouseover = e => {
+            let iter = 0;
+            clearInterval(scInterval);
+            scInterval = setInterval(() => {
+                e.target.innerText = e.target.innerText.split("").map((l, idx) => {
+                    if(idx < iter) return originalText[idx];
+                    return symbols[Math.floor(Math.random() * symbols.length)];
+                }).join("");
+                if(iter >= originalText.length) clearInterval(scInterval);
+                iter += 1 / 3;
             }, 30);
-        }
-
-        element.onmouseout = () => {
-            clearInterval(scrambleInterval);
-            element.innerText = originalText;
         }
     </script>
 </body>
