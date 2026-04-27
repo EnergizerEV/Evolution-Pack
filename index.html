@@ -24,83 +24,79 @@
             overflow-x: hidden;
             position: relative;
             min-height: 100vh;
-            animation: terminal-flicker 0.15s infinite;
         }
 
-        @keyframes terminal-flicker {
-            0% { opacity: 0.99; }
-            50% { opacity: 1; }
-            100% { opacity: 0.98; }
-        }
-
-        /* Анимированная цифровая пыль */
-        .dust-overlay {
+        /* Еле различимый фон (G-logo) */
+        .g-logo-background {
             position: fixed;
-            top: -50%; left: -50%; width: 200%; height: 200%;
-            background-image: url('https://grainy-gradients.vercel.app/noise.svg');
-            opacity: 0.07;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background-image: url('https://w7.pngwing.com/pngs/397/413/png-transparent-logo-brand-font-ghost-icon-logo-ghost-brand.png');
+            background-size: contain;
+            background-position: center;
+            background-repeat: no-repeat;
+            opacity: 0.05; /* Почти неразличим */
             pointer-events: none;
-            z-index: 5000;
-            animation: dust-move 0.2s steps(4) infinite;
+            z-index: 1;
         }
 
-        @keyframes dust-move {
-            0% { transform: translate(0,0); }
-            50% { transform: translate(-1%, 1%); }
-            100% { transform: translate(0,0); }
-        }
-
+        /* Виньетка (затемнение по краям) */
         .vignette {
             position: fixed;
             top: 0; left: 0; width: 100%; height: 100%;
-            background: radial-gradient(circle, transparent 40%, rgba(0,0,0,0.85) 100%);
+            background: radial-gradient(circle, transparent 40%, rgba(0,0,0,0.8) 100%);
             pointer-events: none;
-            z-index: 5;
+            z-index: 1000;
         }
 
+        /* Контурные полосы (CRT эффект) */
         .crt-lines {
             position: fixed;
             top: 0; left: 0; width: 100%; height: 100%;
-            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.3) 50%);
+            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.4) 50%);
             background-size: 100% 4px;
             pointer-events: none;
-            z-index: 4;
+            z-index: 999;
             opacity: 0.6;
         }
 
+        /* Бегущая полоса */
         .scanline {
             width: 100%;
-            height: 100px;
-            z-index: 6;
+            height: 150px;
+            z-index: 10;
             background: linear-gradient(0deg, rgba(0, 255, 216, 0) 0%, rgba(0, 255, 216, 0.03) 50%, rgba(0, 255, 216, 0) 100%);
             position: fixed;
-            top: -100px; left: 0;
+            bottom: 100%;
+            left: 0;
             pointer-events: none;
-            animation: scanline-run 10s linear infinite;
+            animation: scanline 8s linear infinite;
         }
 
-        @keyframes scanline-run {
-            0% { top: -100px; }
-            100% { top: 100%; }
+        @keyframes scanline {
+            0% { bottom: 100%; }
+            100% { bottom: -150px; }
         }
 
+        /* Твой оригинальный логотип в углу */
         .logo-container {
-            width: 130px; height: 130px;
+            width: 130px;
+            height: 130px;
             margin-bottom: 20px;
-            background-image: url('EV_Dark_2k.png');
+            background-image: url('https://w7.pngwing.com/pngs/397/413/png-transparent-logo-brand-font-ghost-icon-logo-ghost-brand.png');
             background-size: cover;
+            background-position: center;
             border-radius: 50%;
             border: 2px solid var(--aqua);
             box-shadow: 0 0 20px var(--aqua);
             animation: glitch-soft 6s infinite;
             position: relative;
-            z-index: 10;
+            z-index: 10; /* Выше фона */
         }
 
         @keyframes glitch-soft {
-            0%, 92%, 96%, 100% { background-image: url('EV_Dark_2k.png'); transform: none; }
-            94% { background-image: url('EV_Dark_2k_ERR.png'); transform: translateX(2px); }
-            95% { background-image: url('EV_Dark_2k_ERR.png'); transform: translateX(-2px); }
+            0%, 92%, 96%, 100% { transform: none; filter: none; }
+            94% { transform: translateX(3px) skewX(2deg); }
+            95% { transform: translateX(-3px); }
         }
 
         .header h1 {
@@ -111,40 +107,48 @@
             z-index: 10;
         }
         .header h1 span { color: var(--aqua); text-shadow: 0 0 10px var(--aqua); }
+        .header h1 i { color: #fff; font-style: normal; }
 
         .card {
-            background: rgba(10, 15, 20, 0.95);
+            background: rgba(8, 12, 15, 0.9);
             border: 1px solid #1a262b;
             padding: 40px;
             width: 100%;
             max-width: 600px;
             margin-bottom: 30px;
-            transition: 0.4s;
+            transition: all 0.4s cubic-bezier(0.23, 1, 0.32, 1);
             position: relative;
-            z-index: 100; /* Выше виньетки */
+            z-index: 10;
             overflow: hidden;
         }
 
+        /* EVO Card */
         .aqua-style { border-left: 4px solid #1a262b; }
         .aqua-style h2 { transition: 0.4s; margin-top: 0; color: #fff; }
-        .aqua-style h2 .glow-part { color: #fff; transition: 0.5s; }
+        /* EV, o и Pa теперь одного класса для синхронного зажигания */
+        .aqua-style h2 .glow-part, .aqua-style h2 i { color: #fff; transition: 0.5s; font-weight: normal; font-style: normal; }
 
         .aqua-style:hover { 
             border-left: 4px solid var(--aqua);
-            box-shadow: 0 0 30px rgba(0, 255, 216, 0.15), inset 0 0 25px rgba(0, 255, 216, 0.08); 
+            box-shadow: 0 0 30px rgba(0, 255, 216, 0.15), inset 0 0 25px rgba(0, 255, 216, 0.07); 
             transform: scale(1.02); 
         }
-        .aqua-style:hover h2 .glow-part { color: var(--aqua); text-shadow: 0 0 15px var(--aqua); font-weight: bold; }
+        .aqua-style:hover h2 .glow-part, .aqua-style:hover h2 i { 
+            color: var(--aqua); 
+            text-shadow: 0 0 15px var(--aqua); 
+            font-weight: bold; 
+        }
 
+        /* Night Card */
         .night-style { border-left: 4px solid #1a262b; }
         .night-title { margin-top: 0; transition: 0.4s; color: #fff; }
         .night-title b { color: var(--blood-red); text-shadow: 0 0 5px var(--blood-red); }
 
         .night-style:hover { 
             border-left: 4px solid var(--blood-red);
-            box-shadow: 0 0 30px rgba(255, 0, 0, 0.15), inset 0 0 25px rgba(255, 0, 0, 0.08); 
+            box-shadow: 0 0 30px rgba(255, 0, 0, 0.15), inset 0 0 25px rgba(255, 0, 0, 0.07); 
             transform: scale(1.02);
-            background: rgba(20, 10, 10, 0.95);
+            background: rgba(15, 8, 8, 0.95);
         }
         .night-style:hover .night-title { text-shadow: 0 0 15px var(--blood-red); transform: skewX(-5deg); }
 
@@ -162,23 +166,51 @@
             transition: 0.3s;
             margin-top: 10px;
             position: relative;
-            z-index: 200;
-            cursor: pointer;
+            z-index: 100;
         }
         .btn-aqua { color: #555; }
         .aqua-style:hover .btn-aqua { color: var(--aqua); border-color: var(--aqua); }
-        .btn-aqua:hover { background: var(--aqua) !important; color: #000 !important; }
+        .btn-aqua:hover { background: var(--aqua) !important; color: #000 !important; box-shadow: 0 0 15px var(--aqua); }
 
         .btn-night { color: #555; }
         .night-style:hover .btn-night { color: var(--blood-red); border-color: var(--blood-red); }
-        .btn-night:hover { background: var(--blood-red) !important; color: #fff !important; }
+        .btn-night:hover { background: var(--blood-red) !important; color: #fff !important; box-shadow: 0 0 15px var(--blood-red); }
 
-        .footer { margin-top: auto; padding-top: 40px; font-size: 0.65rem; color: #444; text-align: center; z-index: 10; }
+        /* Футер */
+        .footer {
+            margin-top: auto;
+            padding-top: 40px;
+            font-size: 0.65rem;
+            color: #222;
+            letter-spacing: 2px;
+            text-align: center;
+            z-index: 10;
+        }
+
+        /* Глючный шифр в футере */
+        .glitch-wrapper {
+            display: inline-block;
+            color: #333; /* В обычном состоянии серый */
+            cursor: help;
+            transition: color 0.2s;
+        }
+
+        /* При наведении — паника шифра */
+        .glitch-wrapper:hover {
+            animation: cipher-panic 0.1s infinite;
+            color: var(--blood-red); /* Краснеет при наведении */
+        }
+
+        @keyframes cipher-panic {
+            0% { transform: translate(1px, -1px); opacity: 0.8; }
+            50% { transform: translate(-1px, 1px); opacity: 1; }
+            100% { transform: translate(0); }
+        }
     </style>
 </head>
 <body>
 
-    <div class="dust-overlay"></div>
+    <div class="g-logo-background"></div>
     <div class="vignette"></div>
     <div class="crt-lines"></div>
     <div class="scanline"></div>
@@ -186,11 +218,11 @@
     <div class="logo-container"></div>
 
     <div class="header">
-        <h1><span>EV</span>olution</h1>
+        <h1><span>EV</span><i>olution</i></h1>
     </div>
 
     <div class="card aqua-style">
-        <h2><span class="glow-part">EV</span>o<i>lution</i> <span class="glow-part">Pa</span>ck</h2>
+        <h2><span class="glow-part">EV</span><i>o</i><span>lution</span> <span class="glow-part">Pa</span>ck</h2>
         <p>Глобальная переработка визуальных ассетов. Повышение детализации текстур до стандарта High-Res.</p>
         <a href="https://drive.google.com/file/d/1Qw3G5LnlaEteiOD51bF1Oy1uh2A63R9O/view?usp=drive_link" target="_blank" class="btn btn-aqua">Download Pack</a>
     </div>
@@ -202,7 +234,11 @@
     </div>
 
     <div class="footer">
-        UNAUTHORIZED ACCESS IS PROHIBITED // M45T0D0NM4N // _SYSTEM_V.4.0
+        UNAUTHORIZED ACCESS IS PROHIBITED // 
+        <div class="glitch-wrapper">
+            M45T0D0NM4N
+        </div>
+        _SYSTEM_V.4.0
     </div>
 
 </body>
