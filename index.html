@@ -24,90 +24,56 @@
             overflow-x: hidden;
             position: relative;
             min-height: 100vh;
-            /* Высокочастотное тусклое мерцание */
-            animation: terminal-flicker 0.15s infinite;
         }
 
-        @keyframes terminal-flicker {
-            0% { opacity: 0.98; }
-            50% { opacity: 1; }
-            100% { opacity: 0.99; }
-        }
-
-        /* Анимированная цифровая пыль */
-        .dust-overlay {
-            position: fixed;
-            top: -50%; left: -50%; width: 200%; height: 200%;
-            background-image: url('https://grainy-gradients.vercel.app/noise.svg');
-            opacity: 0.08;
-            pointer-events: none;
-            z-index: 5000;
-            animation: dust-move 0.2s steps(4) infinite;
-        }
-
-        @keyframes dust-move {
-            0% { transform: translate(0,0); }
-            25% { transform: translate(1%, 1%); }
-            50% { transform: translate(-1%, -1%); }
-            75% { transform: translate(1%, -2%); }
-        }
-
-        /* Виньетка */
-        .vignette {
-            position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background: radial-gradient(circle, transparent 30%, rgba(0,0,0,0.9) 100%);
-            pointer-events: none;
-            z-index: 1000;
-        }
-
-        /* CRT линии */
-        .crt-lines {
-            position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.4) 50%);
-            background-size: 100% 4px;
-            pointer-events: none;
-            z-index: 999;
-            opacity: 0.6;
-        }
-
-        /* Бегущая линия */
+        /* Сканирующая полоса */
         .scanline {
             width: 100%;
-            height: 80px;
-            z-index: 1010;
-            background: linear-gradient(0deg, rgba(0, 255, 216, 0) 0%, rgba(0, 255, 216, 0.06) 50%, rgba(0, 255, 216, 0) 100%);
+            height: 150px;
+            z-index: 10;
+            background: linear-gradient(0deg, rgba(0, 255, 216, 0) 0%, rgba(0, 255, 216, 0.03) 50%, rgba(0, 255, 216, 0) 100%);
             position: fixed;
-            top: -100px;
+            bottom: 100%;
             left: 0;
             pointer-events: none;
-            animation: scanline-run 12s linear infinite;
+            animation: scanline 8s linear infinite;
         }
 
-        @keyframes scanline-run {
-            0% { top: -100px; }
-            100% { top: 100%; }
+        @keyframes scanline {
+            0% { bottom: 100%; }
+            100% { bottom: -150px; }
+        }
+
+        body::before {
+            content: " ";
+            display: block;
+            position: fixed;
+            top: 0; left: 0; bottom: 0; right: 0;
+            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%);
+            z-index: 999;
+            background-size: 100% 3px;
+            pointer-events: none;
         }
 
         /* Логотип */
         .logo-container {
-            width: 130px; height: 130px;
+            width: 130px;
+            height: 130px;
             margin-bottom: 20px;
             background-image: url('EV_Dark_2k.png');
             background-size: cover;
             background-position: center;
             border-radius: 50%;
             border: 2px solid var(--aqua);
-            box-shadow: 0 0 20px var(--aqua);
+            box-shadow: 0 0 15px var(--aqua);
             animation: glitch-soft 6s infinite;
             position: relative;
-            z-index: 20;
+            z-index: 2;
         }
 
         @keyframes glitch-soft {
-            0%, 92%, 96%, 100% { background-image: url('EV_Dark_2k.png'); transform: none; }
-            94% { background-image: url('EV_Dark_2k_ERR.png'); transform: translateX(2px); }
+            0%, 92%, 96%, 100% { background-image: url('EV_Dark_2k.png'); transform: none; filter: none; }
+            94% { background-image: url('EV_Dark_2k_ERR.png'); transform: translateX(2px); filter: brightness(1.1); }
             95% { background-image: url('EV_Dark_2k_ERR.png'); transform: translateX(-2px); }
         }
 
@@ -116,42 +82,135 @@
             letter-spacing: 12px;
             text-transform: uppercase;
             margin: 10px 0;
-            z-index: 20;
+            z-index: 2;
         }
-        .header h1 span { color: var(--aqua); text-shadow: 0 0 10px var(--aqua); }
+        .header h1 span { color: var(--aqua); }
         .header h1 i { color: #fff; font-style: normal; }
 
+        /* Карточки */
         .card {
-            background: rgba(10, 15, 20, 0.92);
+            background: rgba(10, 15, 20, 0.95);
             border: 1px solid #1a262b;
             padding: 40px;
             width: 100%;
             max-width: 600px;
             margin-bottom: 30px;
-            transition: 0.4s;
+            transition: all 0.4s cubic-bezier(0.23, 1, 0.32, 1);
             position: relative;
-            z-index: 20;
+            z-index: 2;
             overflow: hidden;
         }
 
         /* EVO Card */
         .aqua-style { border-left: 4px solid #1a262b; }
         .aqua-style h2 { transition: 0.4s; margin-top: 0; color: #fff; }
-        .aqua-style h2 .glow-part { color: #fff; transition: 0.5s; font-weight: normal; }
-        .aqua-style h2 i { color: #fff; font-style: normal; transition: 0.5s; }
+        .aqua-style h2 span { color: var(--aqua); } 
+        .aqua-style h2 i { color: #fff; font-style: normal; } 
+        .aqua-style h2 b { color: #fff; font-weight: normal; transition: 0.5s; } 
 
         .aqua-style:hover { 
             border-left: 4px solid var(--aqua);
-            box-shadow: 0 0 30px rgba(0, 255, 216, 0.15), inset 0 0 25px rgba(0, 255, 216, 0.08); 
+            box-shadow: 0 0 30px rgba(0, 255, 216, 0.1), inset 0 0 20px rgba(0, 255, 216, 0.05); 
             transform: scale(1.02); 
         }
-        .aqua-style:hover h2 .glow-part, .aqua-style:hover h2 i { 
-            color: var(--aqua); 
-            text-shadow: 0 0 15px var(--aqua); 
-            font-weight: bold; 
-        }
+        .aqua-style:hover h2 { text-shadow: 0 0 15px var(--aqua); }
+        .aqua-style:hover h2 b { color: var(--aqua); font-weight: bold; }
 
         /* Night Card */
         .night-style { border-left: 4px solid #1a262b; }
         .night-title { margin-top: 0; transition: 0.4s; color: #fff; }
-        .night-title b { color: var(--blood-red); text-shadow: 0 0 5px var(--blood-red); }
+        .night-title b { color: var(--blood-red); transition: 0.4s; }
+
+        .night-style:hover { 
+            border-left: 4px solid var(--blood-red);
+            box-shadow: 0 0 30px rgba(255, 0, 0, 0.1), inset 0 0 20px rgba(255, 0, 0, 0.05); 
+            transform: scale(1.02);
+            background: rgba(20, 10, 10, 0.9);
+        }
+        .night-style:hover .night-title { 
+            text-shadow: 0 0 15px var(--blood-red); 
+            transform: skewX(-5deg);
+        }
+
+        p { font-size: 0.85rem; color: #8da0a9; letter-spacing: 1px; line-height: 1.6; }
+
+        /* Кнопки */
+        .btn {
+            display: inline-block;
+            padding: 12px 25px;
+            text-decoration: none;
+            font-weight: bold;
+            font-size: 0.75rem;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            border: 1px solid #1a262b;
+            transition: 0.3s;
+            margin-top: 10px;
+            cursor: pointer;
+        }
+        .btn-aqua { color: #555; border-color: #222; }
+        .aqua-style:hover .btn-aqua { color: var(--aqua); border-color: var(--aqua); }
+        .btn-aqua:hover { background: var(--aqua) !important; color: #000 !important; }
+
+        .btn-night { color: #555; border-color: #222; }
+        .night-style:hover .btn-night { color: var(--blood-red); border-color: var(--blood-red); }
+        .btn-night:hover { background: var(--blood-red) !important; color: #fff !important; }
+
+        /* Футер */
+        .footer {
+            margin-top: auto;
+            padding-top: 40px;
+            font-size: 0.65rem;
+            color: #222;
+            letter-spacing: 2px;
+            text-align: center;
+        }
+
+        .glitch-wrapper {
+            display: inline-block;
+            color: #333;
+            cursor: help;
+        }
+
+        .glitch-wrapper:hover {
+            animation: panic 0.1s infinite;
+            color: var(--blood-red);
+        }
+
+        @keyframes panic {
+            0% { transform: translate(1px, -1px); }
+            50% { transform: translate(-1px, 1px); }
+            100% { transform: translate(0); }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="scanline"></div>
+    
+    <div class="logo-container"></div>
+
+    <div class="header">
+        <h1><span>EV</span><i>olution</i></h1>
+    </div>
+
+    <div class="card aqua-style">
+        <h2><span>EV</span>o<i>lution</i> <b>Pa</b>ck</h2>
+        <p>Глобальная переработка визуальных ассетов. Повышение детализации текстур до стандарта High-Res.</p>
+        <a href="https://drive.google.com/file/d/1Qw3G5LnlaEteiOD51bF1Oy1uh2A63R9O/view?usp=drive_link" target="_blank" class="btn btn-aqua">Download Pack</a>
+    </div>
+
+    <div class="card night-style">
+        <h2 class="night-title">PROJECT <b>NIGHT</b></h2>
+        <p>Протокол запущен. Глубокое затенение и динамический контраст для ночных операций.</p>
+        <a href="https://drive.google.com/file/d/1nIO79tg17x5P7VQxxa_dwtIzr42Kk9fq/view?usp=drive_link" target="_blank" class="btn btn-night">Access Files</a>
+    </div>
+
+    <div class="footer">
+        UNAUTHORIZED ACCESS IS PROHIBITED // 
+        <div class="glitch-wrapper">M45T0D0NM4N</div>
+        _SYSTEM_V.4.0
+    </div>
+
+</body>
+</html>
