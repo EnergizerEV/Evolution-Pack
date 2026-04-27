@@ -111,6 +111,7 @@
 
         @keyframes scanline-run { 0% { top: -100px; } 100% { top: 100%; } }
 
+        /* ЛОГОТИП (ВОССТАНОВЛЕН) */
         .logo-wrapper {
             position: relative; width: 150px; height: 150px; margin-bottom: 20px; z-index: 10;
         }
@@ -132,6 +133,7 @@
         .header h1 { font-size: 2.2rem; letter-spacing: 12px; text-transform: uppercase; z-index: 10; margin: 10px 0; }
         .header h1 span { color: var(--aqua); }
 
+        /* КАРТОЧКИ (ВОССТАНОВЛЕНЫ) */
         .card {
             background: rgba(10, 15, 20, 0.9); border: 1px solid #1a262b; padding: 40px; width: 100%; max-width: 600px; margin-bottom: 30px;
             transition: all 0.5s cubic-bezier(0.165, 0.84, 0.44, 1); position: relative; z-index: 20;
@@ -147,6 +149,9 @@
         .night-style:hover .night-glow { color: var(--blood-red); text-shadow: 0 0 15px var(--blood-red); font-weight: bold; }
 
         p { font-size: 0.85rem; color: #8da0a9; line-height: 1.6; }
+
+        /* КНОПКИ */
+        .btn-container { display: flex; gap: 15px; flex-wrap: wrap; } /* Контейнер для двух кнопок */
 
         .btn {
             display: inline-block; padding: 12px 25px; text-decoration: none; font-weight: bold; font-size: 0.75rem; text-transform: uppercase;
@@ -187,7 +192,10 @@
         <div class="card aqua-style">
             <h2><span class="glow-part">EV</span>olution <span class="glow-part">Pa</span>ck</h2>
             <p>Классический набор текстур включающий в себя: Dark-Aqua, Equipments&Skins, SFX-Pack</p>
-            <a href="https://drive.google.com/file/d/1Qw3G5LnlaEteiOD51bF1Oy1uh2A63R9O/view?usp=drive_link" target="_blank" class="btn">Download Pack</a>
+            <div class="btn-container">
+                <a href="https://drive.google.com/file/d/1Qw3G5LnlaEteiOD51bF1Oy1uh2A63R9O/view?usp=drive_link" target="_blank" class="btn">PC</a>
+                <a href="https://drive.google.com/file/d/19GXDO7E-SCvKzvF9ZIklORNZ1xmfN8dC/view?usp=drive_link" target="_blank" class="btn">Android</a>
+            </div>
         </div>
 
         <div class="card night-style">
