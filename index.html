@@ -7,12 +7,19 @@
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Source+Code+Pro:wght@400&display=swap" rel="stylesheet">
     <style>
         :root {
-            --aqua: #00ffd8; /* Глобальный акцентный цвет */
+            --aqua: #00ffd8;
             --blood-red: #ff0000;
             --bg-color: #06080a;
         }
 
-        /* ОТКЛЮЧАЕМ СТАНДАРТНЫЙ КУРСОР */
+        /* БЛОКИРОВКА ПРОКРУТКИ */
+        html, body {
+            overflow: hidden;
+            height: 100%;
+            margin: 0;
+            padding: 0;
+        }
+
         * { cursor: none !important; }
 
         /* КАСТОМНЫЙ КУРСОР */
@@ -21,14 +28,23 @@
             background-image: url('Cursor1-F1-32x32x32.png');
             background-size: contain; background-repeat: no-repeat;
             pointer-events: none; z-index: 99999; will-change: transform;
-            transform: translate(0, 0);
         }
         #custom-cursor.pressed { background-image: url('Cursor2-F1-32x32x32.png'); }
 
-        /* МЯГКИЙ КЛИК-ЭФФЕКТ */
-        body.click-glitch {
-            filter: brightness(1.2) contrast(1.1);
-            transform: scale(0.998);
+        /* НОВЫЙ ЭФФЕКТ НАЖАТИЯ (ИМПУЛЬС) */
+        .click-ripple {
+            position: fixed;
+            border: 2px solid var(--aqua);
+            border-radius: 50%;
+            pointer-events: none;
+            transform: translate(-50%, -50%);
+            z-index: 9998;
+            animation: ripple-out 0.6s ease-out forwards;
+        }
+
+        @keyframes ripple-out {
+            0% { width: 0; height: 0; opacity: 0.8; }
+            100% { width: 150px; height: 150px; opacity: 0; border-width: 1px; }
         }
 
         /* ИНТЕРАКТИВНАЯ СЕТКА */
@@ -37,7 +53,7 @@
             z-index: -1; opacity: 0.15; pointer-events: none;
         }
 
-        /* КРАСИВАЯ КОНСОЛЬ */
+        /* КОНСОЛЬ (Ё) */
         #term-console {
             position: fixed; top: -150px; left: 50%; transform: translateX(-50%);
             width: 80%; max-width: 600px; background: rgba(0, 10, 10, 0.95);
@@ -52,13 +68,13 @@
             outline: none; font-family: inherit; font-size: 14px; caret-color: var(--aqua);
         }
 
-        /* БАЗОВЫЕ СТИЛИ (ИЗ ИДЕАЛЬНОГО КОДА) */
+        /* БАЗОВЫЕ СТИЛИ */
         body {
             background-color: var(--bg-color); color: #e0e6ed;
-            font-family: 'Orbitron', sans-serif; margin: 0;
+            font-family: 'Orbitron', sans-serif;
             display: flex; flex-direction: column; align-items: center;
-            padding: 60px 20px; overflow-x: hidden; min-height: 100vh;
-            transition: filter 0.1s ease;
+            justify-content: center; /* Центрируем контент */
+            position: relative;
         }
 
         #loading-screen { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #000; z-index: 9999; display: flex; flex-direction: column; justify-content: center; align-items: center; color: var(--aqua); font-family: 'Source Code Pro', monospace; transition: opacity 1s; }
@@ -73,57 +89,55 @@
         .parallax-layer { transition: transform 0.4s cubic-bezier(0.23, 1, 0.32, 1); will-change: transform; }
 
         /* ЛОГОТИП */
-        .logo-wrapper { position: relative; width: 150px; height: 150px; margin-bottom: 20px; z-index: 10; }
+        .logo-wrapper { position: relative; width: 130px; height: 130px; margin-bottom: 20px; z-index: 10; }
         .glitch-logo { position: absolute; width: 100%; height: 100%; background-size: contain; background-repeat: no-repeat; background-position: center; }
         .logo-base { background-image: url('EV_Dark_2k.png'); filter: drop-shadow(0 0 10px var(--aqua)); }
         .logo-glitch { background-image: url('EV_Dark_2k_ERR.png'); opacity: 0; animation: glitch-step 4s infinite step-end; }
-        @keyframes glitch-step { 0%, 90%, 100% { opacity: 0; transform: none; } 92% { opacity: 1; transform: translate(6px, -3px); } 94% { opacity: 1; transform: translate(-6px, 3px); } }
+        @keyframes glitch-step { 0%, 90%, 100% { opacity: 0; transform: none; } 92% { opacity: 1; transform: translate(4px, -2px); } 94% { opacity: 1; transform: translate(-4px, 2px); } }
 
-        .header h1 { font-size: 2.2rem; letter-spacing: 12px; text-transform: uppercase; z-index: 10; margin: 10px 0; }
-        .header h1 span { color: var(--aqua); transition: 0.4s; }
+        .header h1 { font-size: 1.8rem; letter-spacing: 10px; text-transform: uppercase; z-index: 10; margin: 5px 0; }
+        .header h1 span { color: var(--aqua); transition: color 0.4s; }
 
-        /* КАРТОЧКИ (ИДЕАЛЬНАЯ ЛОГИКА) */
+        /* КАРТОЧКИ (ИЗ ИДЕАЛЬНОГО КОДА) */
         .card {
-            background: rgba(10, 15, 20, 0.9); border: 1px solid #1a262b; padding: 40px; 
-            width: 100%; max-width: 600px; margin-bottom: 30px; position: relative; z-index: 20;
+            background: rgba(10, 15, 20, 0.9); border: 1px solid #1a262b; padding: 30px; 
+            width: 100%; max-width: 500px; margin-bottom: 20px; position: relative; z-index: 20;
             transition: transform 0.5s cubic-bezier(0.165, 0.84, 0.44, 1), border 0.4s, box-shadow 0.4s, background 0.4s;
         }
-        .card h2 { margin-top: 0; color: #fff; transition: 0.4s; font-weight: normal; }
-        .glow-part, .night-glow { transition: 0.4s; color: #fff; }
+        .card h2 { margin-top: 0; color: #fff; transition: 0.4s; font-weight: normal; font-size: 1.2rem; }
+        .glow-part { transition: 0.4s; color: #fff; }
 
         .aqua-style:hover { 
             border-left: 4px solid var(--aqua); 
-            box-shadow: 0 0 40px rgba(0, 255, 216, 0.2); 
-            transform: scale(1.03); 
+            box-shadow: 0 0 40px rgba(0, 255, 216, 0.15); 
+            transform: scale(1.02); 
             background: rgba(10, 25, 25, 0.95); 
         }
-        .aqua-style:hover .glow-part { color: var(--aqua); text-shadow: 0 0 15px var(--aqua); font-weight: bold; }
+        .aqua-style:hover .glow-part { color: var(--aqua); text-shadow: 0 0 15px var(--aqua); }
 
         .night-style:hover { 
             border-left: 4px solid var(--blood-red); 
-            box-shadow: 0 0 40px rgba(255, 0, 0, 0.2); 
-            transform: scale(1.03); 
+            box-shadow: 0 0 40px rgba(255, 0, 0, 0.15); 
+            transform: scale(1.02); 
             background: rgba(25, 10, 10, 0.95); 
         }
-        .night-style:hover .night-glow { color: var(--blood-red); text-shadow: 0 0 15px var(--blood-red); font-weight: bold; }
+        .night-style:hover .night-glow { color: var(--blood-red); text-shadow: 0 0 15px var(--blood-red); }
 
-        p { font-size: 0.85rem; color: #8da0a9; line-height: 1.6; }
+        p { font-size: 0.8rem; color: #8da0a9; line-height: 1.5; }
 
         .btn {
-            display: inline-block; padding: 12px 25px; text-decoration: none; font-weight: bold; font-size: 0.75rem; 
-            text-transform: uppercase; border: 1px solid #1a262b; transition: 0.3s; margin-top: 10px; color: #555; position: relative; z-index: 30;
+            display: inline-block; padding: 10px 20px; text-decoration: none; font-weight: bold; font-size: 0.7rem; 
+            text-transform: uppercase; border: 1px solid #1a262b; transition: 0.3s; margin-top: 5px; color: #555; position: relative; z-index: 30;
         }
-        .aqua-style:hover .btn { color: var(--aqua); border-color: var(--aqua); }
-        .night-style:hover .btn { color: var(--blood-red); border-color: var(--blood-red); }
+        .card:hover .btn { border-color: inherit; color: inherit; }
         .btn:hover { background: #fff !important; color: #000 !important; }
 
-        .footer { margin-top: auto; padding-top: 40px; font-size: 0.65rem; color: #333; text-align: center; z-index: 10; letter-spacing: 2px; }
-        .scramble-text { display: inline-block; font-family: 'Source Code Pro', monospace; color: #444; transition: 0.3s; }
-        .scramble-text:hover { color: var(--blood-red); }
+        .footer { margin-top: 20px; font-size: 0.6rem; color: #333; text-align: center; z-index: 10; letter-spacing: 2px; }
+        .scramble-text { display: inline-block; font-family: 'Source Code Pro', monospace; color: #444; }
 
         #sys-status {
             position: fixed; bottom: 20px; left: 20px; font-family: 'Source Code Pro', monospace;
-            font-size: 10px; color: var(--aqua); opacity: 0.5; pointer-events: none;
+            font-size: 9px; color: var(--aqua); opacity: 0.4; pointer-events: none;
         }
     </style>
 </head>
@@ -134,12 +148,12 @@
 
     <div id="term-console">
         <span style="color:var(--aqua)">EVO_OS ></span>
-        <input type="text" id="term-input" placeholder="Type command..." autocomplete="off">
+        <input type="text" id="term-input" placeholder="Введите команду..." autocomplete="off">
     </div>
 
     <div id="sys-status">
         CPU_LOAD: <span id="cpu-val">00</span>% <br>
-        STATUS: ONLINE
+        STATUS: STABLE_V5
     </div>
 
     <div id="loading-screen">
@@ -171,12 +185,12 @@
 
         <div class="card night-style parallax-layer" data-strength="150">
             <h2>PROJECT <span class="night-glow">NIGHT</span></h2>
-            <p>Протокол запущен./// Набор Текстур, который добавляет механику "Тьмы". Как долго ты протянешь?...\\\\\\</p>
+            <p>Набор Текстур, добавляющий механику "Тьмы".</p>
             <a href="https://drive.google.com/file/d/1nIO79tg17x5P7VQxxa_dwtIzr42Kk9fq/view" target="_blank" class="btn">Access Files</a>
         </div>
 
         <div class="footer">
-            UNAUTHORIZED ACCESS // <div class="scramble-text" id="nickname">M45T0D0NM4N</div> // V.5.0
+            UNAUTHORIZED ACCESS // <div class="scramble-text" id="nickname">M45T0D0NM4N</div> // _OS_5.0
         </div>
     </div>
 
@@ -186,7 +200,7 @@
         const ctx = canvas.getContext('2d');
         let mouse = { x: -1000, y: -1000 };
 
-        // --- СЕТКА ---
+        // СЕТКА
         function resize() { canvas.width = window.innerWidth; canvas.height = window.innerHeight; }
         window.addEventListener('resize', resize);
         resize();
@@ -199,8 +213,8 @@
             for (let x = 0; x < canvas.width; x += size) {
                 for (let y = 0; y < canvas.height; y += size) {
                     const dist = Math.hypot(x - mouse.x, y - mouse.y);
-                    const offset = Math.max(0, 10 - dist / 25);
-                    ctx.globalAlpha = offset > 0 ? 0.6 : 0.15;
+                    const offset = Math.max(0, 8 - dist / 30);
+                    ctx.globalAlpha = offset > 0 ? 0.5 : 0.12;
                     ctx.strokeRect(x - offset/2, y - offset/2, size + offset, size + offset);
                 }
             }
@@ -208,7 +222,7 @@
         }
         drawGrid();
 
-        // --- МЫШЬ И ПАРАЛЛАКС ---
+        // УПРАВЛЕНИЕ
         document.addEventListener('mousemove', (e) => {
             mouse.x = e.clientX; mouse.y = e.clientY;
             requestAnimationFrame(() => {
@@ -219,31 +233,35 @@
             const centerX = window.innerWidth / 2;
             const centerY = window.innerHeight / 2;
             document.querySelectorAll('.parallax-layer').forEach(layer => {
-                const strength = layer.getAttribute('data-strength');
-                const moveX = (e.clientX - centerX) / strength;
-                const moveY = (e.clientY - centerY) / strength;
-                
-                // Чтобы не конфликтовать с CSS scale при ховере:
+                const str = layer.getAttribute('data-strength');
                 const isHovered = layer.classList.contains('card') && layer.matches(':hover');
-                const scale = isHovered ? 1.03 : 1;
-                layer.style.transform = `translate3d(${moveX}px, ${moveY}px, 0) scale(${scale})`;
+                const scale = isHovered ? 1.02 : 1;
+                layer.style.transform = `translate3d(${(e.clientX - centerX) / str}px, ${(e.clientY - centerY) / str}px, 0) scale(${scale})`;
             });
         });
 
-        // --- ГЛИТЧ ПРИ КЛИКЕ (МЯГКИЙ) ---
-        document.addEventListener('mousedown', () => {
+        // НОВЫЙ ЭФФЕКТ НАЖАТИЯ
+        document.addEventListener('mousedown', (e) => {
             cursor.classList.add('pressed');
-            document.body.classList.add('click-glitch');
-            setTimeout(() => document.body.classList.remove('click-glitch'), 60);
+            
+            // Создаем импульс
+            const ripple = document.createElement('div');
+            ripple.className = 'click-ripple';
+            ripple.style.left = e.clientX + 'px';
+            ripple.style.top = e.clientY + 'px';
+            ripple.style.borderColor = getComputedStyle(document.documentElement).getPropertyValue('--aqua');
+            document.body.appendChild(ripple);
+            
+            // Удаляем через время анимации
+            setTimeout(() => ripple.remove(), 600);
         });
         document.addEventListener('mouseup', () => cursor.classList.remove('pressed'));
 
-        // --- КОНСОЛЬ (ФИКС Ё) ---
+        // КОНСОЛЬ (Ё)
         const consoleEl = document.getElementById('term-console');
         const inputEl = document.getElementById('term-input');
-
         window.addEventListener('keydown', (e) => {
-            if (e.code === 'Backquote') { // Любая раскладка
+            if (e.code === 'Backquote') {
                 e.preventDefault();
                 consoleEl.classList.toggle('active');
                 if (consoleEl.classList.contains('active')) inputEl.focus();
@@ -253,31 +271,25 @@
         inputEl.addEventListener('keypress', (e) => {
             if (e.key === 'Enter') {
                 const cmd = inputEl.value.toLowerCase();
-                // ГЛОБАЛЬНАЯ СМЕНА ЦВЕТА
-                if (cmd === 'red') {
-                    document.documentElement.style.setProperty('--aqua', 'var(--blood-red)');
-                } else if (cmd === 'aqua') {
-                    document.documentElement.style.setProperty('--aqua', '#00ffd8');
-                } else if (cmd === 'clear') {
-                    consoleEl.classList.remove('active');
-                }
+                if (cmd === 'red') document.documentElement.style.setProperty('--aqua', '#ff0000');
+                if (cmd === 'aqua') document.documentElement.style.setProperty('--aqua', '#00ffd8');
+                if (cmd === 'clear') consoleEl.classList.remove('active');
                 inputEl.value = '';
             }
         });
 
-        // --- СКРЕМБЛЕР ---
+        // СКРЕМБЛЕР
         const nick = document.getElementById('nickname');
         const original = nick.innerText;
         nick.onmouseover = () => {
             let i = 0;
             const iter = setInterval(() => {
-                nick.innerText = original.split("").map((l, idx) => idx < i ? original[idx] : "!<>-_/[]{}—=+*^?#"[Math.floor(Math.random()*15)]).join("");
+                nick.innerText = original.split("").map((l, idx) => idx < i ? original[idx] : "X_#$@&"[Math.floor(Math.random()*6)]).join("");
                 if (i >= original.length) clearInterval(iter);
                 i += 1/3;
             }, 30);
         };
 
-        // --- ЗАГРУЗКА ---
         window.addEventListener('load', () => {
             setTimeout(() => {
                 document.getElementById('loading-screen').style.opacity = '0';
