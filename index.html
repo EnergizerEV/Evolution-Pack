@@ -135,9 +135,9 @@
         }
         .night-style:hover .night-glow { color: var(--blood-red); text-shadow: 0 0 20px var(--blood-red); font-weight: bold; }
 
-        p { font-size: 0.85rem; color: #8da0a9; line-height: 1.6; }
+        /* СТИЛЬ ДЛЯ ТЕКСТОВОГО ПРИНТЕРА */
+        .type-output { font-size: 0.85rem; color: #8da0a9; line-height: 1.6; min-height: 2.5em; }
 
-        /* ПЛАВНОЕ МЕРЦАНИЕ КНОПКИ (1.5 СЕКУНДЫ) */
         .btn {
             display: inline-block; padding: 12px 28px; text-decoration: none; font-weight: bold; font-size: 0.75rem; 
             text-transform: uppercase; border: 1px solid #1a262b; transition: 0.3s; margin-top: 10px; color: #555; position: relative; z-index: 30;
@@ -213,7 +213,7 @@
 
         <div class="card aqua-style parallax-layer" data-strength="150">
             <h2><span class="glow-part">EV</span>olution <span class="glow-part">Pa</span>ck</h2>
-            <p>Классический набор текстур включающий в себя: Dark-Aqua, Equipments&Skins, SFX-Pack</p>
+            <p class="type-output" data-text="Классический набор текстур включающий в себя: Dark-Aqua, Equipments&Skins, SFX-Pack"></p>
             <div style="display:flex; gap:12px;">
                 <a href="https://drive.google.com/file/d/1Qw3G5LnlaEteiOD51bF1Oy1uh2A63R9O/view" target="_blank" class="btn">PC</a>
                 <a href="https://drive.google.com/file/d/19GXDO7E-SCvKzvF9ZIklORNZ1xmfN8dC/view" target="_blank" class="btn">Android</a>
@@ -222,7 +222,7 @@
 
         <div class="card night-style parallax-layer" data-strength="150">
             <h2>PROJECT <span class="night-glow">NIGHT</span></h2>
-            <p>Набор Текстур, добавляющий механику "Тьмы". На грани возможного.</p>
+            <p class="type-output" data-text="Набор Текстур, добавляющий механику 'Тьмы'. На грани возможного."></p>
             <a href="https://drive.google.com/file/d/1nIO79tg17x5P7VQxxa_dwtIzr42Kk9fq/view" target="_blank" class="btn">Access Files</a>
         </div>
 
@@ -329,10 +329,27 @@
             }, 30);
         };
 
+        // ФУНКЦИЯ ТЕКСТОВОГО ПРИНТЕРА
+        function startTyping() {
+            document.querySelectorAll('.type-output').forEach(el => {
+                const text = el.getAttribute('data-text');
+                let charIdx = 0;
+                el.innerText = '';
+                const type = setInterval(() => {
+                    el.innerText += text[charIdx];
+                    charIdx++;
+                    if (charIdx >= text.length) clearInterval(type);
+                }, 30);
+            });
+        }
+
         window.addEventListener('load', () => {
             setTimeout(() => {
                 document.getElementById('loading-screen').style.opacity = '0';
-                setTimeout(() => document.getElementById('loading-screen').style.display = 'none', 1000);
+                setTimeout(() => {
+                    document.getElementById('loading-screen').style.display = 'none';
+                    startTyping(); // Запуск принтера после загрузки
+                }, 1000);
                 document.getElementById('main-content').style.opacity = '1';
             }, 3000);
             setInterval(() => { document.getElementById('cpu-val').innerText = Math.floor(Math.random()*15)+5; }, 2000);
