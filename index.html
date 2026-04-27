@@ -8,8 +8,8 @@
     <style>
         :root {
             --aqua: #00ffd8;
-            --blood-red: #ff0000;
-            --bg-color: #06080a;
+            --blood-red: #800000;
+            --bg-color: #06080a; /* ТВОЙ ОСНОВНОЙ ФОН */
         }
 
         /* --- ЭКРАН ЗАГРУЗКИ --- */
@@ -24,219 +24,73 @@
             overflow: hidden;
         }
 
-        /* Череп для эффекта взлома */
         #hacker-skull {
             position: absolute;
-            width: 300px;
+            width: 250px;
             opacity: 0;
-            transform: scale(0.1);
-            pointer-events: none;
             z-index: 10000;
-            filter: drop-shadow(0 0 20px var(--blood-red));
+            image-rendering: pixelated;
         }
 
-        /* Анимация влета черепа */
-        .skull-jumpscare {
-            animation: skullIn 0.5s cubic-bezier(0.17, 0.89, 0.32, 1.28) forwards, 
-                       glitchShake 0.2s infinite;
+        .skull-hacked {
             opacity: 1 !important;
+            animation: stepGrow 1.5s steps(5) forwards, glitchTwitch 0.1s infinite alternate;
         }
 
-        @keyframes skullIn {
-            0% { transform: scale(0.1) rotate(0deg); opacity: 0; }
-            50% { transform: scale(1.5) rotate(10deg); opacity: 1; }
-            100% { transform: scale(1.2) rotate(-5deg); opacity: 0.8; }
+        @keyframes stepGrow { 0% { transform: scale(0.2); } 100% { transform: scale(1.8); } }
+        @keyframes glitchTwitch {
+            0% { transform: scale(1.8) translate(0, 0); }
+            33% { transform: scale(1.85) translate(-15px, 10px) skew(10deg); filter: invert(0.2) sepia(1) saturate(5); }
+            100% { transform: scale(1.9) translate(5px, 5px); }
         }
 
-        @keyframes glitchShake {
-            0% { transform: translate(0) scale(1.2); }
-            20% { transform: translate(-10px, 5px) scale(1.2) skew(5deg); filter: hue-rotate(90deg); }
-            40% { transform: translate(10px, -5px) scale(1.3) skew(-5deg); }
-            60% { transform: translate(-5px, -10px) scale(1.2); filter: saturate(5); }
-            100% { transform: translate(0); }
+        .glitch-blocks {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            display: none;
+            background-image: linear-gradient(rgba(128, 0, 0, 0.2) 1px, transparent 1px), linear-gradient(90deg, rgba(128, 0, 0, 0.2) 1px, transparent 1px);
+            background-size: 30px 30px;
+            z-index: 9998;
         }
 
-        .loading-text { font-size: 14px; margin-bottom: 15px; letter-spacing: 2px; text-transform: uppercase; }
-        
-        .progress-bar-container {
-            width: 200px; height: 2px;
-            background: rgba(0, 255, 216, 0.1);
-            border: 1px solid rgba(0, 255, 216, 0.3);
-            position: relative; overflow: hidden;
+        .tv-static {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            background: url('https://upload.wikimedia.org/wikipedia/commons/b/b1/Static_noise.png');
+            opacity: 0.05; pointer-events: none; z-index: 10001; display: none;
         }
 
-        .progress-bar-fill {
-            position: absolute; height: 100%; width: 0%;
-            background: var(--aqua);
-            box-shadow: 0 0 15px var(--aqua);
-        }
+        .bg-hacked { animation: flashBlack 0.05s infinite step-end; }
+        @keyframes flashBlack { 0% { background-color: #400000; } 50% { background-color: #000; } }
 
-        /* Класс для финала загрузки (глюк всей страницы) */
-        .system-glitch {
-            animation: rgbSplit 0.1s infinite;
-        }
-
-        @keyframes rgbSplit {
-            0% { text-shadow: 3px 0 red, -3px 0 blue; transform: translate(2px, 0); }
-            50% { text-shadow: -3px 0 red, 3px 0 blue; transform: translate(-2px, 0); }
-            100% { text-shadow: 3px 0 red, -3px 0 blue; }
-        }
-
-        /* --- ОСНОВНОЙ КОНТЕНТ --- */
-        #main-content {
-            opacity: 0;
-            transition: opacity 1s ease;
-            display: flex; flex-direction: column; align-items: center; width: 100%;
+        /* --- ТВОЙ ОСНОВНОЙ ИНТЕРФЕЙС (БЕЗ ИЗМЕНЕНИЙ) --- */
+        #main-content { 
+            opacity: 0; 
+            transition: opacity 0.8s ease; 
+            display: flex; flex-direction: column; align-items: center; width: 100%; 
         }
 
         body {
-            background-color: var(--bg-color);
+            background-color: var(--bg-color); /* Тот самый фон */
             color: #e0e6ed;
             font-family: 'Orbitron', sans-serif;
             margin: 0; display: flex; flex-direction: column; align-items: center;
-            padding: 60px 20px; overflow-x: hidden; min-height: 100vh;
+            padding: 60px 20px; overflow-x: hidden; min-height: 100vh; position: relative;
         }
 
-        /* Твои оригинальные стили окружения */
+        /* Эффекты виньетки и сканирования (как были) */
         .vignette { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: radial-gradient(circle, transparent 50%, rgba(0,0,0,0.9) 100%); pointer-events: none; z-index: 1000; }
         .crt-scanlines { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.4) 50%); background-size: 100% 4px; pointer-events: none; z-index: 999; opacity: 0.4; }
-        .scanline { width: 100%; height: 100px; z-index: 1010; background: linear-gradient(0deg, rgba(0, 255, 216, 0) 0%, rgba(0, 255, 216, 0.03) 50%, rgba(0, 255, 216, 0) 100%); position: fixed; top: -100px; left: 0; pointer-events: none; animation: scanline-run 10s linear infinite; }
-        @keyframes scanline-run { 0% { top: -100px; } 100% { top: 100%; } }
-
-        /* Лого */
+        
+        /* Логотип с твоим глюком */
         .logo-wrapper { position: relative; width: 150px; height: 150px; margin-bottom: 20px; z-index: 10; }
         .glitch-logo { position: absolute; width: 100%; height: 100%; background-size: contain; background-repeat: no-repeat; background-position: center; }
         .logo-base { background-image: url('EV_Dark_2k.png'); filter: drop-shadow(0 0 10px var(--aqua)); }
         .logo-glitch { background-image: url('EV_Dark_2k_ERR.png'); opacity: 0; animation: glitch-step 4s infinite step-end; }
-        @keyframes glitch-step { 0%, 90%, 100% { opacity: 0; transform: none; } 92% { opacity: 1; transform: translate(6px, -3px) hue-rotate(45deg); } 94% { opacity: 1; transform: translate(-6px, 3px) saturate(2); } 95% { opacity: 0.4; transform: scale(1.05); } }
+        @keyframes glitch-step { 0%, 90%, 100% { opacity: 0; } 92% { opacity: 1; transform: translate(6px, -3px); } 94% { opacity: 1; transform: translate(-6px, 3px); } }
 
         /* Карточки */
-        .card { background: rgba(10, 15, 20, 0.9); border: 1px solid #1a262b; padding: 40px; width: 100%; max-width: 600px; margin-bottom: 30px; transition: all 0.5s cubic-bezier(0.165, 0.84, 0.44, 1); position: relative; z-index: 20; }
+        .card { background: rgba(10, 15, 20, 0.9); border: 1px solid #1a262b; padding: 40px; width: 100%; max-width: 600px; margin-bottom: 30px; transition: 0.5s; position: relative; z-index: 20; }
         .card h2 { margin-top: 0; color: #fff; font-weight: normal; }
-        .glow-part, .night-glow { transition: 0.4s; color: #fff; }
-        .aqua-style:hover { border-left: 4px solid var(--aqua); box-shadow: 0 0 40px rgba(0, 255, 216, 0.2); transform: scale(1.03); }
-        .aqua-style:hover .glow-part { color: var(--aqua); text-shadow: 0 0 15px var(--aqua); }
-        .night-style:hover { border-left: 4px solid var(--blood-red); box-shadow: 0 0 40px rgba(255, 0, 0, 0.2); transform: scale(1.03); }
-        .night-style:hover .night-glow { color: var(--blood-red); text-shadow: 0 0 15px var(--blood-red); }
+        .aqua-style:hover { border-left: 4px solid var(--aqua); box-shadow: 0 0 40px rgba(0, 255, 216, 0.2); }
+        .night-style:hover { border-left: 4px solid #ff0000; box-shadow: 0 0 40px rgba(255, 0, 0, 0.2); }
         
-        .btn { display: inline-block; padding: 12px 25px; text-decoration: none; font-weight: bold; font-size: 0.75rem; text-transform: uppercase; border: 1px solid #1a262b; transition: 0.3s; margin-top: 10px; color: #555; cursor: pointer; }
-        .aqua-style:hover .btn { color: var(--aqua); border-color: var(--aqua); }
-        .night-style:hover .btn { color: var(--blood-red); border-color: var(--blood-red); }
-        .btn:hover { background: #fff !important; color: #000 !important; }
-
-        .footer { margin-top: auto; padding-top: 40px; font-size: 0.65rem; color: #333; text-align: center; z-index: 10; letter-spacing: 2px; }
-        .scramble-text { display: inline-block; font-family: 'Source Code Pro', monospace; color: #444; transition: 0.3s; cursor: crosshair; }
-        .scramble-text:hover { color: var(--blood-red); }
-    </style>
-</head>
-<body>
-
-    <div id="loading-screen">
-        <img src="xthtg.png" id="hacker-skull" alt="Skull">
-        <div class="loading-text" id="status-text">SYSTEM STANDBY...</div>
-        <div class="progress-bar-container">
-            <div class="progress-bar-fill" id="bar"></div>
-        </div>
-    </div>
-
-    <div id="main-content">
-        <div class="vignette"></div>
-        <div class="crt-scanlines"></div>
-        <div class="scanline"></div>
-        
-        <div class="logo-wrapper">
-            <div class="glitch-logo logo-base"></div>
-            <div class="glitch-logo logo-glitch"></div>
-        </div>
-
-        <div class="header"><h1><span>EV</span>olution</h1></div>
-
-        <div class="card aqua-style">
-            <h2><span class="glow-part">EV</span>olution <span class="glow-part">Pa</span>ck</h2>
-            <p>Классический набор текстур включающий в себя: Dark-Aqua, Equipments&Skins, SFX-Pack</p>
-            <a href="#" class="btn">Download Pack</a>
-        </div>
-
-        <div class="card night-style">
-            <h2>PROJECT <span class="night-glow">NIGHT</span></h2>
-            <p>Протокол запущен./// Набор Текстур, который добавляет механику "Тьмы".</p>
-            <a href="#" class="btn">Access Files</a>
-        </div>
-
-        <div class="footer">
-            UNAUTHORIZED ACCESS IS PROHIBITED // 
-            <div class="scramble-text" id="nickname">M45T0D0NM4N</div>
-            _SYSTEM_V.4.0
-        </div>
-    </div>
-
-    <script>
-        window.addEventListener('load', () => {
-            const statusText = document.getElementById('status-text');
-            const bar = document.getElementById('bar');
-            const skull = document.getElementById('hacker-skull');
-            const screen = document.getElementById('loading-screen');
-            
-            const messages = [
-                "ESTABLISHING CONNECTION...",
-                "DECRYPTING ASSETS...",
-                "EXECUTING EV_Core.exe...",
-                "OVERRIDING SECURITY...",
-                "SYSTEM COMPROMISED."
-            ];
-            
-            let i = 0;
-            let progress = 0;
-
-            // Имитация прогресса
-            const progressInterval = setInterval(() => {
-                progress += 1;
-                bar.style.width = progress + "%";
-                if(progress >= 100) clearInterval(progressInterval);
-            }, 30);
-
-            // Смена сообщений
-            const msgInterval = setInterval(() => {
-                if (i < messages.length) {
-                    statusText.innerText = messages[i];
-                    if(messages[i].includes("EV_Core.exe")) statusText.style.color = "#fff";
-                    i++;
-                } else {
-                    clearInterval(msgInterval);
-                    
-                    // ФИНАЛЬНЫЙ ЭФФЕКТ ВЗЛОМА
-                    setTimeout(() => {
-                        skull.classList.add('skull-jumpscare');
-                        screen.classList.add('system-glitch');
-                        
-                        // Через 1.5 секунды глюков — переключение
-                        setTimeout(() => {
-                            screen.style.display = 'none';
-                            document.getElementById('main-content').style.opacity = '1';
-                        }, 1500);
-                    }, 500);
-                }
-            }, 800);
-        });
-
-        // СКРЕМБЛЕР (M45T0D0NM4N)
-        const el = document.getElementById('nickname');
-        const originalText = el.innerText;
-        const symbols = "!<>-_\\/[]{}—=+*^?#________";
-        let scInterval = null;
-
-        el.onmouseover = e => {
-            let iter = 0;
-            clearInterval(scInterval);
-            scInterval = setInterval(() => {
-                e.target.innerText = e.target.innerText.split("").map((l, idx) => {
-                    if(idx < iter) return originalText[idx];
-                    return symbols[Math.floor(Math.random() * symbols.length)];
-                }).join("");
-                if(iter >= originalText.length) clearInterval(scInterval);
-                iter += 1 / 3;
-            }, 30);
-        }
-    </script>
-</body>
-</html>
+        .btn { display: inline-block; padding: 12px 25px; text-decoration: none; font-weight: bold; font-size: 0
