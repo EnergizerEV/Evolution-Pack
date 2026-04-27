@@ -46,29 +46,6 @@
             will-change: background;
         }
 
-        /* --- ИСПРАВЛЕННАЯ ДЕМО-МЕТКА (В ПРЕДЕЛАХ ГРАНИЦ) --- */
-        .demo-badge {
-            position: fixed;
-            top: 0;
-            right: 0;
-            background: var(--current-accent);
-            color: #000;
-            padding: 8px 30px;
-            font-family: 'Orbitron', sans-serif;
-            font-size: 11px;
-            font-weight: bold;
-            text-transform: uppercase;
-            transform: rotate(45deg) translate(29%, -60%);
-            transform-origin: top right;
-            z-index: 100000;
-            box-shadow: 0 0 20px 5px var(--current-accent);
-            letter-spacing: 2px;
-            pointer-events: none;
-            opacity: 1;
-            transition: background 0.4s, box-shadow 0.4s, transform 0.4s;
-            white-space: nowrap;
-        }
-
         /* --- СОЦСЕТИ --- */
         .social-sidebar {
             position: fixed; left: 30px; top: 50%; transform: translateY(-50%);
@@ -176,7 +153,15 @@
         .night-style:hover { border-left: 5px solid var(--blood-red); box-shadow: 0 0 50px rgba(255, 0, 0, 0.2); background: rgba(25, 10, 10, 0.95); }
         .night-style:hover .night-glow { color: var(--blood-red); text-shadow: 0 0 20px var(--blood-red); font-weight: bold; }
 
-        .type-output { font-size: 0.85rem; color: #8da0a9; line-height: 1.6; min-height: 2.5em; }
+        /* ИСПРАВЛЕНИЕ: добавил свойства для корректного переноса текста */
+        .type-output { 
+            font-size: 0.85rem; 
+            color: #8da0a9; 
+            line-height: 1.6; 
+            min-height: 2.5em; 
+            white-space: normal; 
+            word-wrap: break-word; 
+        }
 
         .btn {
             display: inline-block; padding: 12px 28px; text-decoration: none; font-weight: bold; font-size: 0.75rem; 
@@ -195,6 +180,16 @@
         .footer { margin-top: 20px; font-size: 0.65rem; color: #333; text-align: center; z-index: 10; letter-spacing: 2px; }
         .scramble-text { display: inline-block; font-family: 'Source Code Pro', monospace; color: #444; transition: 0.3s; }
         .scramble-text:hover { color: var(--current-accent); }
+
+        /* ПРОСТОЙ ВАРИАНТ ДЕМО-ВЕРСИИ СНИЗУ */
+        .demo-footer-text {
+            margin-top: 10px;
+            font-size: 9px;
+            color: #222;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-family: 'Source Code Pro', monospace;
+        }
 
         #sys-status { position: fixed; bottom: 25px; left: 25px; font-family: 'Source Code Pro', monospace; font-size: 10px; color: var(--current-accent); opacity: 0.5; pointer-events: none; z-index: 1001; }
 
@@ -219,7 +214,6 @@
             html, body { overflow-y: auto; overflow-x: hidden; height: auto; min-height: 100%; }
             body { padding: 40px 0; justify-content: flex-start; }
             #main-content { padding: 0 20px; width: calc(100% - 40px); }
-            .demo-badge { transform: rotate(45deg) translate(25%, -70%); font-size: 9px; box-shadow: 0 0 15px 3px var(--current-accent); }
             .social-sidebar { position: static; transform: none; flex-direction: row; justify-content: center; margin-bottom: 20px; order: -1; }
             .logo-wrapper { width: 100px; height: 100px; margin-bottom: 15px; }
             .header h1 { font-size: 1.4rem; letter-spacing: 6px; }
@@ -238,8 +232,6 @@
     </style>
 </head>
 <body class="aqua-mode">
-
-    <div class="demo-badge">Demo Version</div>
 
     <canvas id="grid-canvas"></canvas>
     <div id="custom-cursor"></div>
@@ -298,6 +290,8 @@
         <div class="footer">
             UNAUTHORIZED ACCESS // <div class="scramble-text" id="nickname">M45T0D0NM4N</div> // V.5.5
         </div>
+
+        <div class="demo-footer-text">Demo version</div>
     </div>
 
     <script>
