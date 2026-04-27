@@ -87,6 +87,7 @@
             flex-direction: column; 
             align-items: center; 
             justify-content: center; 
+            perspective: 1000px; /* Добавлено для корректного 3D поворота */
         }
 
         #main-content { opacity: 0; transition: opacity 2s ease; display: flex; flex-direction: column; align-items: center; width: 100%; }
@@ -114,6 +115,7 @@
             width: 100%; max-width: 600px; margin-bottom: 30px; position: relative; z-index: 20;
             transition: transform 0.5s cubic-bezier(0.165, 0.84, 0.44, 1), border 0.4s, box-shadow 0.4s, background 0.4s;
             backdrop-filter: blur(2px);
+            transform-style: preserve-3d;
         }
         .card h2 { margin-top: 0; color: #fff; transition: 0.4s; font-weight: normal; font-size: 1.4rem; }
         .glow-part, .night-glow { transition: 0.4s; color: #fff; }
@@ -121,7 +123,6 @@
         .aqua-style:hover { 
             border-left: 5px solid var(--current-accent); 
             box-shadow: 0 0 50px rgba(0, 255, 216, 0.15); 
-            transform: scale(1.03); 
             background: rgba(10, 25, 25, 0.95);
         }
         body.red-mode .aqua-style:hover { box-shadow: 0 0 50px rgba(255, 0, 0, 0.2); }
@@ -130,7 +131,6 @@
         .night-style:hover { 
             border-left: 5px solid var(--blood-red); 
             box-shadow: 0 0 50px rgba(255, 0, 0, 0.2); 
-            transform: scale(1.03); 
             background: rgba(25, 10, 10, 0.95);
         }
         .night-style:hover .night-glow { color: var(--blood-red); text-shadow: 0 0 20px var(--blood-red); font-weight: bold; }
@@ -266,11 +266,32 @@
 
             const centerX = window.innerWidth / 2;
             const centerY = window.innerHeight / 2;
+
             document.querySelectorAll('.parallax-layer').forEach(layer => {
                 const str = layer.getAttribute('data-strength');
                 const isHovered = layer.classList.contains('card') && layer.matches(':hover');
-                const scale = isHovered ? 1.03 : 1;
-                layer.style.transform = `translate3d(${(e.clientX - centerX) / str}px, ${(e.clientY - centerY) / str}px, 0) scale(${scale})`;
+                
+                // Параллакс смещение
+                const transX = (e.clientX - centerX) / str;
+                const transY = (e.clientY - centerY) / str;
+                
+                let scale = 1;
+                let rotateX = 0;
+                let rotateY = 0;
+
+                if (isHovered) {
+                    scale = 1.03;
+                    // Рассчитываем поворот относительно центра самой карточки
+                    const rect = layer.getBoundingClientRect();
+                    const cardCenterX = rect.left + rect.width / 2;
+                    const cardCenterY = rect.top + rect.height / 2;
+                    
+                    // Небольшой коэффициент поворота (чем больше число, тем меньше наклон)
+                    rotateY = (e.clientX - cardCenterX) / 25; 
+                    rotateX = (cardCenterY - e.clientY) / 25;
+                }
+
+                layer.style.transform = `translate3d(${transX}px, ${transY}px, 0) scale(${scale}) rotateX(${rotateX}deg) rotateY(${rotateY}deg)`;
             });
         });
 
