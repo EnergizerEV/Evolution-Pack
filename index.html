@@ -3,145 +3,190 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>EnergizerEV | SAS4 Hub</title>
+    <title>Evolution | Terminal</title>
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap" rel="stylesheet">
     <style>
         :root {
             --aqua: #00ffd8;
-            --blood-red: #8b0000;
+            --blood-red: #ff0000;
             --bg-color: #06080a;
         }
 
         body {
             background-color: var(--bg-color);
             color: #e0e6ed;
-            font-family: 'Orbitron', sans-serif; /* Тот самый шрифт */
+            font-family: 'Orbitron', sans-serif;
             margin: 0;
             display: flex;
             flex-direction: column;
             align-items: center;
             padding: 60px 20px;
             overflow-x: hidden;
+            position: relative;
         }
 
-        /* Эффект скан-линий (как на старом мониторе) */
+        /* Анимация бегущей полосы сканера */
+        .scanline {
+            width: 100%;
+            height: 100px;
+            z-index: 10;
+            background: linear-gradient(0deg, rgba(0, 255, 216, 0) 0%, rgba(0, 255, 216, 0.05) 50%, rgba(0, 255, 216, 0) 100%);
+            opacity: 0.1;
+            position: fixed;
+            bottom: 100%;
+            left: 0;
+            pointer-events: none;
+            animation: scanline 6s linear infinite;
+        }
+
+        @keyframes scanline {
+            0% { bottom: 100%; }
+            100% { bottom: -100px; }
+        }
+
+        /* Эффект скан-линий монитора */
         body::before {
             content: " ";
             display: block;
             position: fixed;
             top: 0; left: 0; bottom: 0; right: 0;
-            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), 
-                        linear-gradient(90deg, rgba(255, 0, 0, 0.03), rgba(0, 255, 0, 0.01), rgba(0, 0, 255, 0.03));
-            z-index: 9999;
-            background-size: 100% 4px, 3px 100%;
+            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.2) 50%);
+            z-index: 999;
+            background-size: 100% 3px;
             pointer-events: none;
         }
 
-        .header {
-            text-align: center;
-            margin-bottom: 60px;
-            text-transform: uppercase;
+        /* Логотип с эффектом глюка */
+        .logo-container {
+            width: 120px;
+            height: 120px;
+            margin-bottom: 20px;
+            position: relative;
+            background-image: url('EV_Dark_2k.jpg');
+            background-size: cover;
+            border-radius: 50%;
+            border: 2px solid var(--aqua);
+            box-shadow: 0 0 15px var(--aqua);
+            animation: glitch-img 4s infinite;
         }
 
-        h1 {
-            font-size: 2.5rem;
-            letter-spacing: 8px;
-            color: #fff;
-            text-shadow: 0 0 10px rgba(255,255,255,0.2);
+        @keyframes glitch-img {
+            0%, 90%, 100% { background-image: url('EV_Dark_2k.jpg'); filter: hue-rotate(0deg); }
+            92% { background-image: url('EV_Dark_2k_ERR.jpg'); filter: hue-rotate(90deg) contrast(1.5); }
+            94% { background-image: url('EV_Dark_2k.jpg'); }
+            96% { background-image: url('EV_Dark_2k_ERR.jpg'); filter: brightness(2); }
+        }
+
+        .header h1 {
+            font-size: 2.2rem;
+            letter-spacing: 12px;
+            color: var(--aqua);
+            text-transform: uppercase;
+            margin: 10px 0;
         }
 
         /* Карточки */
         .card {
-            background: rgba(10, 15, 20, 0.9);
+            background: rgba(10, 15, 20, 0.95);
             border: 1px solid #1a262b;
             padding: 40px;
             width: 100%;
             max-width: 600px;
             margin-bottom: 30px;
             position: relative;
-            transition: all 0.4s ease;
+            transition: 0.3s;
         }
 
-        /* Стиль для Evolution (Аквамарин) */
         .aqua-style { border-left: 4px solid var(--aqua); }
-        .aqua-style:hover {
-            border-color: var(--aqua);
-            box-shadow: 0 0 20px rgba(0, 255, 216, 0.2);
-            transform: scale(1.02);
-        }
+        .aqua-style:hover { border-color: var(--aqua); box-shadow: 0 0 30px rgba(0, 255, 216, 0.15); }
 
-        /* Стиль для Project Night (Красный) */
-        .night-style { border-left: 4px solid #333; }
-        .night-style:hover {
-            border-left: 4px solid var(--blood-red);
-            box-shadow: 0 0 20px rgba(139, 0, 0, 0.3);
-            transform: scale(1.02);
-            background: rgba(20, 10, 10, 0.9);
-        }
-
-        /* Раскраска заголовков внутри карточек */
+        /* Текст EVO-lution Pack */
+        .evo-title { letter-spacing: 2px; }
         .evo-title span { color: var(--aqua); }
         .evo-title i { color: #fff; font-style: normal; }
 
-        .night-title { color: #fff; transition: 0.3s; }
-        .night-style:hover .night-title { color: var(--blood-red); text-shadow: 0 0 10px var(--blood-red); }
-
-        p {
-            font-size: 0.9rem;
-            line-height: 1.8;
-            color: #8da0a9;
-            margin: 20px 0;
-            letter-spacing: 1px;
+        /* Project Night в стиле NeonZone */
+        .night-style { border-left: 4px solid #222; }
+        .night-title { 
+            color: #fff; 
+            font-style: italic; 
+            font-weight: 700;
+            letter-spacing: -1px;
+            transition: 0.3s;
+        }
+        .night-style:hover .night-title { 
+            color: var(--blood-red); 
+            text-shadow: 0 0 8px #ff0000, 0 0 20px #ff0000;
+            transform: skewX(-10deg);
         }
 
-        /* Кнопки */
+        p { font-size: 0.85rem; color: #8da0a9; letter-spacing: 1px; }
+
         .btn {
             display: inline-block;
-            padding: 12px 30px;
+            padding: 12px 25px;
             text-decoration: none;
             font-weight: bold;
-            font-size: 0.8rem;
-            letter-spacing: 3px;
+            font-size: 0.75rem;
+            letter-spacing: 2px;
             text-transform: uppercase;
-            transition: 0.3s;
             border: 1px solid;
+            transition: 0.3s;
         }
 
         .btn-aqua { color: var(--aqua); border-color: var(--aqua); }
-        .btn-aqua:hover { background: var(--aqua); color: #000; box-shadow: 0 0 15px var(--aqua); }
+        .btn-aqua:hover { background: var(--aqua); color: #000; }
 
-        .btn-night { color: #666; border-color: #333; }
+        .btn-night { color: #444; border-color: #222; }
         .night-style:hover .btn-night { color: var(--blood-red); border-color: var(--blood-red); }
         .btn-night:hover { background: var(--blood-red) !important; color: #fff !important; }
 
+        /* Футер с анимацией дешифровки */
         .footer {
             margin-top: 50px;
-            font-size: 0.7rem;
-            color: #444;
+            font-size: 0.65rem;
+            color: #333;
             letter-spacing: 2px;
+            text-align: center;
+        }
+
+        .decrypt {
+            display: inline-block;
+            color: #555;
+            animation: decrypt-blink 2s steps(4) infinite;
+        }
+
+        @keyframes decrypt-blink {
+            0%, 100% { opacity: 1; color: #555; }
+            50% { opacity: 0.5; color: var(--aqua); }
         }
     </style>
 </head>
 <body>
 
+    <div class="scanline"></div>
+
+    <div class="logo-container"></div>
+
     <div class="header">
-        <h1>STATION Terminal</h1>
+        <h1>Evolution</h1>
     </div>
 
     <div class="card aqua-style">
-        <h2 class="evo-title"><span>EVO</span><i>lution</i> <span>Pa</span><i>ck</i></h2>
-        <p>Глобальная переработка визуальных ассетов. Повышение детализации брони, оружия и объектов окружения до стандарта High-Res.</p>
-        <a href="#" class="btn btn-aqua">Download Initializing...</a>
+        <h2 class="evo-title"><span>EVO</span>lution <span>Pa</span>ck</h2>
+        <p>Глобальная переработка визуальных ассетов. Повышение детализации текстур до стандарта 2K/4K.</p>
+        <a href="#" class="btn btn-aqua">Download Pack</a>
     </div>
 
     <div class="card night-style">
         <h2 class="night-title">PROJECT NIGHT</h2>
-        <p>Протокол «Тьма». Изменение глобального освещения, контрастности и теней. Предназначено для глубокого погружения в спецоперации.</p>
+        <p>Протокол запущен. Глубокое затенение и динамический контраст для ночных операций.</p>
         <a href="#" class="btn btn-night">Access Files</a>
     </div>
 
     <div class="footer">
-        UNAUTHORIZED ACCESS IS PROHIBITED // ENERGIZEREV SYSTEM
+        UNAUTHORIZED ACCESS IS PROHIBITED // 
+        <span class="decrypt">M45T0D0NM4N</span>_SYSTEM_V.4.0
     </div>
 
 </body>
