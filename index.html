@@ -5,81 +5,94 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>EnergizerEV | SAS4 Packs</title>
     <style>
-        /* Минималистичный темный стиль */
         body {
-            background-color: #050505;
-            color: #e0e0e0;
-            font-family: 'Segoe UI', sans-serif;
+            background-color: #080808;
+            color: #d1d1d1;
+            font-family: 'Inter', -apple-system, sans-serif;
             margin: 0;
             display: flex;
             justify-content: center;
+            line-height: 1.6;
         }
         .container {
-            max-width: 700px;
+            max-width: 600px;
             width: 100%;
-            padding: 60px 20px;
+            padding: 80px 20px;
         }
         h1 {
-            font-size: 2rem;
-            letter-spacing: -1px;
-            border-bottom: 1px solid #222;
-            padding-bottom: 20px;
-            margin-bottom: 40px;
+            color: #ffffff;
+            font-size: 24px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            border-left: 3px solid #58a6ff;
+            padding-left: 15px;
+            margin-bottom: 50px;
         }
-        .pack {
-            background: #111;
-            border: 1px solid #222;
-            padding: 25px;
-            border-radius: 8px;
-            margin-bottom: 30px;
-            transition: 0.3s;
+        .pack-card {
+            background: #121212;
+            border: 1px solid #1f1f1f;
+            padding: 30px;
+            border-radius: 12px;
+            margin-bottom: 25px;
+            transition: all 0.3s ease;
         }
-        .pack:hover {
-            border-color: #444;
+        .pack-card:hover {
+            border-color: #30363d;
+            background: #161616;
             transform: translateY(-2px);
         }
-        .pack h2 {
+        h2 {
             margin-top: 0;
-            color: #fff;
+            color: #58a6ff;
+            font-size: 20px;
         }
-        .btn {
+        p {
+            font-size: 15px;
+            color: #8b949e;
+        }
+        .download-btn {
             display: inline-block;
-            background: #fff;
-            color: #000;
-            padding: 10px 20px;
-            border-radius: 4px;
-            text-decoration: none;
-            font-weight: bold;
             margin-top: 15px;
+            color: #ffffff;
+            text-decoration: none;
+            font-weight: 600;
             font-size: 14px;
+            border: 1px solid #30363d;
+            padding: 8px 20px;
+            border-radius: 6px;
+            transition: 0.2s;
         }
-        .btn:hover { background: #ccc; }
+        .download-btn:hover {
+            background: #ffffff;
+            color: #000000;
+        }
         .footer {
-            text-align: center;
-            font-size: 12px;
-            color: #444;
             margin-top: 60px;
+            font-size: 11px;
+            color: #484f58;
+            text-align: center;
+            letter-spacing: 1px;
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>SAS4 Texture Hub</h1>
+        <h1>EnergizerEV SAS4 Hub</h1>
 
-        <div class="pack">
+        <div class="pack-card">
             <h2>Evolution Pack</h2>
-            <p>Глобальное улучшение четкости текстур, переработка окружения и спецэффектов.</p>
-            <a href="#" class="btn">Скачать Pack</a>
+            <p>Глобальное улучшение текстур. Повышенная четкость и детализация игровых объектов.</p>
+            <a href="#" class="download-btn">DOWNLOAD</a>
         </div>
 
-        <div class="pack">
-            <h2>Project Night</h2>
-            <p>Мрачный визуальный стиль, изменяющий атмосферу игры на более темную и серьезную.</p>
-            <a href="#" class="btn">Скачать Pack</a>
+        <div class="pack-card">
+            <h2>Project Night Pack</h2>
+            <p>Атмосферное ночное освещение. Полное погружение в хоррор-составляющую игры.</p>
+            <a href="#" class="download-btn">DOWNLOAD</a>
         </div>
 
         <div class="footer">
-            © 2026 EnergizerEV. Сделано для фанатов SAS4.
+            2026 • DEVELOPED BY ENERGIZEREV • SAS 4 MODDING COMMUNITY
         </div>
     </div>
 </body>
