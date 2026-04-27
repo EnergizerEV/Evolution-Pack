@@ -25,7 +25,6 @@
             position: relative;
         }
 
-        /* Сканирующая полоса */
         .scanline {
             width: 100%;
             height: 150px;
@@ -43,7 +42,6 @@
             100% { bottom: -150px; }
         }
 
-        /* Скан-линии монитора */
         body::before {
             content: " ";
             display: block;
@@ -55,36 +53,36 @@
             pointer-events: none;
         }
 
-        /* Аватарка с глюками (ИСПРАВЛЕНО НА .PNG) */
+        /* Логотип с мягким глюком */
         .logo-container {
             width: 130px;
             height: 130px;
             margin-bottom: 20px;
-            background-image: url('EV_Dark_2k.png'); /* Ссылка на твой PNG */
+            background-image: url('EV_Dark_2k.png');
             background-size: cover;
             background-position: center;
             border-radius: 50%;
             border: 2px solid var(--aqua);
             box-shadow: 0 0 15px var(--aqua);
-            animation: glitch-img 5s infinite;
+            animation: glitch-soft 6s infinite;
         }
 
-        @keyframes glitch-img {
-            /* Мягкие глюки с PNG прозрачностью */
-            0%, 88%, 93%, 100% { background-image: url('EV_Dark_2k.png'); filter: hue-rotate(0deg); transform: scale(1); opacity: 1; }
-            90% { background-image: url('EV_Dark_2k_ERR.png'); filter: hue-rotate(90deg) contrast(1.5) blur(1px); transform: scale(1.05) skewX(5deg); opacity: 0.8; }
-            95% { background-image: url('EV_Dark_2k_ERR.png'); filter: brightness(2) contrast(2); transform: scale(0.95); opacity: 0.9; }
+        @keyframes glitch-soft {
+            0%, 92%, 96%, 100% { background-image: url('EV_Dark_2k.png'); transform: none; filter: none; }
+            94% { background-image: url('EV_Dark_2k_ERR.png'); transform: translateX(2px) skewX(2deg); filter: brightness(1.2); }
+            95% { background-image: url('EV_Dark_2k_ERR.png'); transform: translateX(-2px); filter: contrast(1.1); }
         }
 
+        /* Шапка сайта */
         .header h1 {
             font-size: 2.2rem;
             letter-spacing: 12px;
-            color: var(--aqua);
             text-transform: uppercase;
             margin: 10px 0;
         }
+        .header h1 span { color: var(--aqua); }
+        .header h1 i { color: #fff; font-style: normal; }
 
-        /* Карточки */
         .card {
             background: rgba(10, 15, 20, 0.95);
             border: 1px solid #1a262b;
@@ -95,25 +93,38 @@
             transition: all 0.4s cubic-bezier(0.23, 1, 0.32, 1);
         }
 
-        .aqua-style { border-left: 4px solid var(--aqua); }
+        /* EVolution Pack Стиль */
+        .aqua-style { border-left: 4px solid #222; }
+        .aqua-style h2 { color: #fff; transition: 0.3s; }
+        .aqua-style h2 span { color: #fff; transition: 0.5s; } /* Изначально белые */
+
         .aqua-style:hover { 
             border-color: var(--aqua); 
-            box-shadow: 0 0 30px rgba(0, 255, 216, 0.15); 
+            box-shadow: 0 0 30px rgba(0, 255, 216, 0.1); 
             transform: scale(1.03); 
         }
+        .aqua-style:hover h2 { 
+            text-shadow: 0 0 10px var(--aqua), 0 0 20px rgba(0, 255, 216, 0.5); 
+        }
+        /* Загораются буквы при наведении на карточку */
+        .aqua-style:hover h2 span { color: var(--aqua); }
 
-        .night-style { border-left: 4px solid #333; }
+        /* Project Night Стиль */
+        .night-style { border-left: 4px solid #222; }
+        .night-title i { color: #fff; font-style: normal; transition: 0.3s; }
+        .night-title b { color: var(--blood-red); font-weight: 700; transition: 0.3s; opacity: 0.8; }
+
         .night-style:hover { 
             border-left: 4px solid var(--blood-red);
             box-shadow: 0 0 30px rgba(255, 0, 0, 0.1); 
             transform: scale(1.03);
             background: rgba(20, 10, 10, 0.9);
         }
-
-        /* Тексты */
-        .evo-title span { color: var(--aqua); }
-        .night-title { color: #fff; font-style: italic; font-weight: 700; transition: 0.3s; }
-        .night-style:hover .night-title { color: var(--blood-red); text-shadow: 0 0 8px #ff0000; transform: skewX(-10deg); }
+        .night-style:hover .night-title { 
+            text-shadow: 0 0 10px var(--blood-red), 0 0 20px rgba(255, 0, 0, 0.5); 
+            transform: skewX(-10deg);
+        }
+        .night-style:hover .night-title b { opacity: 1; }
 
         p { font-size: 0.85rem; color: #8da0a9; letter-spacing: 1px; }
 
@@ -129,80 +140,23 @@
             border: 1px solid;
             transition: 0.3s;
         }
-        .btn-aqua { color: var(--aqua); border-color: var(--aqua); }
-        .btn-aqua:hover { background: var(--aqua); color: #000; }
+        .btn-aqua { color: #444; border-color: #222; }
+        .aqua-style:hover .btn-aqua { color: var(--aqua); border-color: var(--aqua); }
+        .btn-aqua:hover { background: var(--aqua) !important; color: #000 !important; }
+
         .btn-night { color: #444; border-color: #222; }
         .night-style:hover .btn-night { color: var(--blood-red); border-color: var(--blood-red); }
-        .btn-night:hover { background: var(--blood-red); color: #fff; }
+        .btn-night:hover { background: var(--blood-red) !important; color: #fff !important; }
 
-        /* Глючный шифр */
+        /* Футер */
         .footer {
             margin-top: 50px;
             font-size: 0.65rem;
-            color: #333;
+            color: #222;
             letter-spacing: 2px;
             text-align: center;
         }
 
         .glitch-wrapper {
             display: inline-block;
-            position: relative;
-            color: #444;
-            cursor: crosshair;
-        }
-
-        .glitch-text {
-            display: inline-block;
-            animation: cipher-glitch 5s infinite;
-        }
-
-        @keyframes cipher-glitch {
-            0%, 94%, 98%, 100% { transform: none; filter: none; opacity: 1; }
-            95% { transform: skew(15deg); filter: blur(1px); color: var(--aqua); }
-            96% { transform: skew(-15deg); color: #fff; }
-            97% { transform: none; opacity: 0.5; }
-        }
-
-        .glitch-wrapper:hover .glitch-text {
-            animation: cipher-panic 0.1s infinite;
-            color: var(--blood-red);
-        }
-
-        @keyframes cipher-panic {
-            0% { transform: translate(2px, -2px); }
-            50% { transform: translate(-2px, 2px); }
-            100% { transform: translate(0); }
-        }
-    </style>
-</head>
-<body>
-
-    <div class="scanline"></div>
-    <div class="logo-container"></div>
-
-    <div class="header">
-        <h1>Evolution</h1>
-    </div>
-
-    <div class="card aqua-style">
-        <h2 class="evo-title"><span>EVO</span>lution <span>Pa</span>ck</h2>
-        <p>Глобальная переработка визуальных ассетов. Повышение детализации текстур до стандарта 2K/4K.</p>
-        <a href="#" class="btn btn-aqua">Download Pack</a>
-    </div>
-
-    <div class="card night-style">
-        <h2 class="night-title">PROJECT NIGHT</h2>
-        <p>Протокол запущен. Глубокое затенение и динамический контраст для ночных операций.</p>
-        <a href="#" class="btn btn-night">Access Files</a>
-    </div>
-
-    <div class="footer">
-        UNAUTHORIZED ACCESS IS PROHIBITED // 
-        <div class="glitch-wrapper">
-            <span class="glitch-text">M45T0D0NM4N</span>
-        </div>
-        _SYSTEM_V.4.0
-    </div>
-
-</body>
-</html>
+            color: #333
