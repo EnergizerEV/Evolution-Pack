@@ -3,97 +3,146 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>EnergizerEV | SAS4 Packs</title>
+    <title>EnergizerEV | SAS4 Hub</title>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap" rel="stylesheet">
     <style>
+        :root {
+            --aqua: #00ffd8;
+            --blood-red: #8b0000;
+            --bg-color: #06080a;
+        }
+
         body {
-            background-color: #080808;
-            color: #d1d1d1;
-            font-family: 'Inter', -apple-system, sans-serif;
+            background-color: var(--bg-color);
+            color: #e0e6ed;
+            font-family: 'Orbitron', sans-serif; /* Тот самый шрифт */
             margin: 0;
             display: flex;
-            justify-content: center;
-            line-height: 1.6;
+            flex-direction: column;
+            align-items: center;
+            padding: 60px 20px;
+            overflow-x: hidden;
         }
-        .container {
-            max-width: 600px;
-            width: 100%;
-            padding: 80px 20px;
+
+        /* Эффект скан-линий (как на старом мониторе) */
+        body::before {
+            content: " ";
+            display: block;
+            position: fixed;
+            top: 0; left: 0; bottom: 0; right: 0;
+            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), 
+                        linear-gradient(90deg, rgba(255, 0, 0, 0.03), rgba(0, 255, 0, 0.01), rgba(0, 0, 255, 0.03));
+            z-index: 9999;
+            background-size: 100% 4px, 3px 100%;
+            pointer-events: none;
         }
-        h1 {
-            color: #ffffff;
-            font-size: 24px;
-            text-transform: uppercase;
-            letter-spacing: 2px;
-            border-left: 3px solid #58a6ff;
-            padding-left: 15px;
-            margin-bottom: 50px;
-        }
-        .pack-card {
-            background: #121212;
-            border: 1px solid #1f1f1f;
-            padding: 30px;
-            border-radius: 12px;
-            margin-bottom: 25px;
-            transition: all 0.3s ease;
-        }
-        .pack-card:hover {
-            border-color: #30363d;
-            background: #161616;
-            transform: translateY(-2px);
-        }
-        h2 {
-            margin-top: 0;
-            color: #58a6ff;
-            font-size: 20px;
-        }
-        p {
-            font-size: 15px;
-            color: #8b949e;
-        }
-        .download-btn {
-            display: inline-block;
-            margin-top: 15px;
-            color: #ffffff;
-            text-decoration: none;
-            font-weight: 600;
-            font-size: 14px;
-            border: 1px solid #30363d;
-            padding: 8px 20px;
-            border-radius: 6px;
-            transition: 0.2s;
-        }
-        .download-btn:hover {
-            background: #ffffff;
-            color: #000000;
-        }
-        .footer {
-            margin-top: 60px;
-            font-size: 11px;
-            color: #484f58;
+
+        .header {
             text-align: center;
+            margin-bottom: 60px;
+            text-transform: uppercase;
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            letter-spacing: 8px;
+            color: #fff;
+            text-shadow: 0 0 10px rgba(255,255,255,0.2);
+        }
+
+        /* Карточки */
+        .card {
+            background: rgba(10, 15, 20, 0.9);
+            border: 1px solid #1a262b;
+            padding: 40px;
+            width: 100%;
+            max-width: 600px;
+            margin-bottom: 30px;
+            position: relative;
+            transition: all 0.4s ease;
+        }
+
+        /* Стиль для Evolution (Аквамарин) */
+        .aqua-style { border-left: 4px solid var(--aqua); }
+        .aqua-style:hover {
+            border-color: var(--aqua);
+            box-shadow: 0 0 20px rgba(0, 255, 216, 0.2);
+            transform: scale(1.02);
+        }
+
+        /* Стиль для Project Night (Красный) */
+        .night-style { border-left: 4px solid #333; }
+        .night-style:hover {
+            border-left: 4px solid var(--blood-red);
+            box-shadow: 0 0 20px rgba(139, 0, 0, 0.3);
+            transform: scale(1.02);
+            background: rgba(20, 10, 10, 0.9);
+        }
+
+        /* Раскраска заголовков внутри карточек */
+        .evo-title span { color: var(--aqua); }
+        .evo-title i { color: #fff; font-style: normal; }
+
+        .night-title { color: #fff; transition: 0.3s; }
+        .night-style:hover .night-title { color: var(--blood-red); text-shadow: 0 0 10px var(--blood-red); }
+
+        p {
+            font-size: 0.9rem;
+            line-height: 1.8;
+            color: #8da0a9;
+            margin: 20px 0;
             letter-spacing: 1px;
+        }
+
+        /* Кнопки */
+        .btn {
+            display: inline-block;
+            padding: 12px 30px;
+            text-decoration: none;
+            font-weight: bold;
+            font-size: 0.8rem;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            transition: 0.3s;
+            border: 1px solid;
+        }
+
+        .btn-aqua { color: var(--aqua); border-color: var(--aqua); }
+        .btn-aqua:hover { background: var(--aqua); color: #000; box-shadow: 0 0 15px var(--aqua); }
+
+        .btn-night { color: #666; border-color: #333; }
+        .night-style:hover .btn-night { color: var(--blood-red); border-color: var(--blood-red); }
+        .btn-night:hover { background: var(--blood-red) !important; color: #fff !important; }
+
+        .footer {
+            margin-top: 50px;
+            font-size: 0.7rem;
+            color: #444;
+            letter-spacing: 2px;
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <h1>EnergizerEV SAS4 Hub</h1>
 
-        <div class="pack-card">
-            <h2>Evolution Pack</h2>
-            <p>Глобальное улучшение текстур. Повышенная четкость и детализация игровых объектов.</p>
-            <a href="#" class="download-btn">DOWNLOAD</a>
-        </div>
-
-        <div class="pack-card">
-            <h2>Project Night Pack</h2>
-            <p>Атмосферное ночное освещение. Полное погружение в хоррор-составляющую игры.</p>
-            <a href="#" class="download-btn">DOWNLOAD</a>
-        </div>
-
-        <div class="footer">
-            2026 • DEVELOPED BY ENERGIZEREV • SAS 4 MODDING COMMUNITY
-        </div>
+    <div class="header">
+        <h1>STATION Terminal</h1>
     </div>
+
+    <div class="card aqua-style">
+        <h2 class="evo-title"><span>EVO</span><i>lution</i> <span>Pa</span><i>ck</i></h2>
+        <p>Глобальная переработка визуальных ассетов. Повышение детализации брони, оружия и объектов окружения до стандарта High-Res.</p>
+        <a href="#" class="btn btn-aqua">Download Initializing...</a>
+    </div>
+
+    <div class="card night-style">
+        <h2 class="night-title">PROJECT NIGHT</h2>
+        <p>Протокол «Тьма». Изменение глобального освещения, контрастности и теней. Предназначено для глубокого погружения в спецоперации.</p>
+        <a href="#" class="btn btn-night">Access Files</a>
+    </div>
+
+    <div class="footer">
+        UNAUTHORIZED ACCESS IS PROHIBITED // ENERGIZEREV SYSTEM
+    </div>
+
 </body>
 </html>
