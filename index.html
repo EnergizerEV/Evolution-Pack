@@ -46,7 +46,19 @@
             will-change: background;
         }
 
-        /* --- СОЦСЕТИ (НОВОЕ) --- */
+        /* --- ДЕМО-МЕТКА (НОВОЕ) --- */
+        .demo-badge {
+            position: fixed; top: 20px; right: -35px;
+            background: var(--current-accent); color: #000;
+            padding: 5px 40px; font-family: 'Orbitron', sans-serif;
+            font-size: 10px; font-weight: bold; text-transform: uppercase;
+            transform: rotate(45deg); z-index: 10006;
+            box-shadow: 0 0 15px var(--current-accent);
+            letter-spacing: 2px; pointer-events: none; opacity: 0.8;
+            transition: background 0.4s, box-shadow 0.4s;
+        }
+
+        /* --- СОЦСЕТИ --- */
         .social-sidebar {
             position: fixed; left: 30px; top: 50%; transform: translateY(-50%);
             display: flex; flex-direction: column; gap: 25px; z-index: 1005;
@@ -66,9 +78,7 @@
             position: fixed;
             top: 0; left: 0; width: 100%; height: 100px;
             background: linear-gradient(to bottom, transparent, rgba(0, 255, 216, 0.05), transparent);
-            opacity: 0.1;
-            pointer-events: none;
-            z-index: 1001;
+            opacity: 0.1; pointer-events: none; z-index: 1001;
             animation: scanning 4s linear infinite;
         }
         @keyframes scanning {
@@ -87,8 +97,7 @@
         .click-ripple {
             position: fixed; border: 2px solid var(--current-accent);
             border-radius: 50%; pointer-events: none; transform: translate(-50%, -50%);
-            z-index: 1003; 
-            animation: ripple-out 0.6s ease-out forwards;
+            z-index: 1003; animation: ripple-out 0.6s ease-out forwards;
         }
         @keyframes ripple-out {
             0% { width: 0; height: 0; opacity: 0.8; }
@@ -101,8 +110,7 @@
             position: fixed; top: -160px; left: 50%; transform: translateX(-50%);
             width: 80%; max-width: 600px; background: rgba(0, 5, 5, 0.98);
             border: 1px solid var(--current-accent); padding: 20px;
-            z-index: 10005;
-            font-family: 'Source Code Pro', monospace;
+            z-index: 10005; font-family: 'Source Code Pro', monospace;
             transition: top 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
             box-shadow: 0 0 40px rgba(0, 0, 0, 0.5);
         }
@@ -113,30 +121,21 @@
         }
 
         body { 
-            color: #e0e6ed; 
-            font-family: 'Orbitron', sans-serif; 
-            display: flex; 
-            flex-direction: column; 
-            align-items: center; 
-            justify-content: center; 
-            perspective: 1000px;
+            color: #e0e6ed; font-family: 'Orbitron', sans-serif; 
+            display: flex; flex-direction: column; align-items: center; 
+            justify-content: center; perspective: 1000px;
         }
 
         #main-content { 
             opacity: 0; transition: opacity 2s ease; 
-            display: flex; flex-direction: column; 
-            align-items: center; width: 100%; 
-            z-index: 1001; 
+            display: flex; flex-direction: column; align-items: center; width: 100%; z-index: 1001; 
         }
         
         .crt-scanlines { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.4) 50%); background-size: 100% 4px; pointer-events: none; z-index: 999; opacity: 0.3; }
 
         .parallax-layer { transition: transform 0.4s cubic-bezier(0.23, 1, 0.32, 1); will-change: transform; }
 
-        .logo-wrapper { 
-            position: relative; width: 150px; height: 150px; margin-bottom: 25px; 
-            z-index: 10; 
-        }
+        .logo-wrapper { position: relative; width: 150px; height: 150px; margin-bottom: 25px; z-index: 10; }
         .glitch-logo { position: absolute; width: 100%; height: 100%; background-size: contain; background-repeat: no-repeat; background-position: center; transition: background-image 0.4s ease; }
         .logo-base { background-image: url('EV_Dark_2k.png'); filter: drop-shadow(0 0 15px var(--current-accent)); }
         .logo-glitch { background-image: url('EV_Dark_2k_ERR.png'); opacity: 0; animation: glitch-step 4s infinite step-end; }
@@ -147,55 +146,36 @@
             94% { opacity: 1; transform: translate(-6px, 3px); } 
         }
 
-        .header h1 { 
-            font-size: 2.2rem; letter-spacing: 12px; text-transform: uppercase; 
-            z-index: 10; margin: 10px 0; 
-        }
+        .header h1 { font-size: 2.2rem; letter-spacing: 12px; text-transform: uppercase; z-index: 10; margin: 10px 0; }
         .header h1 span { color: var(--current-accent); transition: color 0.4s; }
 
         .card {
             background: rgba(10, 15, 20, 0.92); border: 1px solid #1a262b; padding: 40px; 
-            width: 100%; max-width: 600px; margin-bottom: 30px; position: relative; 
-            z-index: 20;
+            width: 100%; max-width: 600px; margin-bottom: 30px; position: relative; z-index: 20;
             transition: transform 0.5s cubic-bezier(0.165, 0.84, 0.44, 1), border 0.4s, box-shadow 0.4s, background 0.4s;
-            backdrop-filter: blur(2px);
-            transform-style: preserve-3d;
+            backdrop-filter: blur(2px); transform-style: preserve-3d;
         }
         .card h2 { margin-top: 0; color: #fff; transition: 0.4s; font-weight: normal; font-size: 1.4rem; }
         .glow-part, .night-glow { transition: 0.4s; color: #fff; }
 
-        .aqua-style:hover { 
-            border-left: 5px solid var(--current-accent); 
-            box-shadow: 0 0 50px rgba(0, 255, 216, 0.15); 
-            background: rgba(10, 25, 25, 0.95);
-        }
+        .aqua-style:hover { border-left: 5px solid var(--current-accent); box-shadow: 0 0 50px rgba(0, 255, 216, 0.15); background: rgba(10, 25, 25, 0.95); }
         body.red-mode .aqua-style:hover { box-shadow: 0 0 50px rgba(255, 0, 0, 0.2); }
         .aqua-style:hover .glow-part { color: var(--current-accent); text-shadow: 0 0 20px var(--current-accent); font-weight: bold; }
 
-        .night-style:hover { 
-            border-left: 5px solid var(--blood-red); 
-            box-shadow: 0 0 50px rgba(255, 0, 0, 0.2); 
-            background: rgba(25, 10, 10, 0.95);
-        }
+        .night-style:hover { border-left: 5px solid var(--blood-red); box-shadow: 0 0 50px rgba(255, 0, 0, 0.2); background: rgba(25, 10, 10, 0.95); }
         .night-style:hover .night-glow { color: var(--blood-red); text-shadow: 0 0 20px var(--blood-red); font-weight: bold; }
 
         .type-output { font-size: 0.85rem; color: #8da0a9; line-height: 1.6; min-height: 2.5em; }
 
         .btn {
             display: inline-block; padding: 12px 28px; text-decoration: none; font-weight: bold; font-size: 0.75rem; 
-            text-transform: uppercase; border: 1px solid #1a262b; transition: 0.3s; margin-top: 10px; color: #555; position: relative; 
-            z-index: 30;
+            text-transform: uppercase; border: 1px solid #1a262b; transition: 0.3s; margin-top: 10px; color: #555; position: relative; z-index: 30;
         }
         .card:hover .btn { border-color: inherit; color: inherit; }
         .aqua-style:hover .btn { border-color: var(--current-accent); color: var(--current-accent); }
         .night-style:hover .btn { border-color: var(--blood-red); color: var(--blood-red); }
 
-        .btn:hover { 
-            background: #fff !important; 
-            color: #000 !important; 
-            animation: btn-flicker 1.5s ease-in-out;
-            box-shadow: 0 0 25px rgba(255, 255, 255, 0.5);
-        }
+        .btn:hover { background: #fff !important; color: #000 !important; animation: btn-flicker 1.5s ease-in-out; box-shadow: 0 0 25px rgba(255, 255, 255, 0.5); }
 
         @keyframes btn-flicker {
             0% { opacity: 0.2; } 15% { opacity: 1; } 30% { opacity: 0.4; } 45% { opacity: 1; } 60% { opacity: 0.7; } 75% { opacity: 0.9; } 90% { opacity: 0.8; } 100% { opacity: 1; }
@@ -212,22 +192,10 @@
             z-index: 99999; display: flex; flex-direction: column; justify-content: center; align-items: center; 
             color: var(--aqua); font-family: 'Source Code Pro', monospace; transition: opacity 1s; 
         }
-        .loading-text {
-            letter-spacing: 4px;
-            margin-bottom: 20px;
-            text-shadow: 0 0 10px var(--aqua), 0 0 20px var(--aqua);
-            animation: pulse-glow 2s infinite ease-in-out;
-        }
-        .progress-bar-container { 
-            width: 250px; height: 4px; background: rgba(0, 255, 216, 0.05); 
-            border: 1px solid rgba(0, 255, 216, 0.2); position: relative; overflow: hidden; 
-            box-shadow: 0 0 15px rgba(0, 255, 216, 0.1);
-        }
-        .progress-bar-fill { 
-            position: absolute; height: 100%; width: 0%; background: var(--aqua); 
-            box-shadow: 0 0 20px var(--aqua), 0 0 40px var(--aqua); 
-            animation: loadProgress 3.5s cubic-bezier(0.4, 0, 0.2, 1) forwards; 
-        }
+        .loading-text { letter-spacing: 4px; margin-bottom: 20px; text-shadow: 0 0 10px var(--aqua), 0 0 20px var(--aqua); animation: pulse-glow 2s infinite ease-in-out; }
+        .progress-bar-container { width: 250px; height: 4px; background: rgba(0, 255, 216, 0.05); border: 1px solid rgba(0, 255, 216, 0.2); position: relative; overflow: hidden; box-shadow: 0 0 15px rgba(0, 255, 216, 0.1); }
+        .progress-bar-fill { position: absolute; height: 100%; width: 0%; background: var(--aqua); box-shadow: 0 0 20px var(--aqua), 0 0 40px var(--aqua); animation: loadProgress 3.5s cubic-bezier(0.4, 0, 0.2, 1) forwards; }
+        
         @keyframes pulse-glow {
             0%, 100% { opacity: 1; text-shadow: 0 0 10px var(--aqua), 0 0 20px var(--aqua); }
             50% { opacity: 0.6; text-shadow: 0 0 5px var(--aqua); }
@@ -240,14 +208,8 @@
             html, body { overflow-y: auto; overflow-x: hidden; height: auto; min-height: 100%; }
             body { padding: 40px 0; justify-content: flex-start; }
             #main-content { padding: 0 20px; width: calc(100% - 40px); }
-
-            /* Мобильные соцсети */
-            .social-sidebar {
-                position: static; transform: none; 
-                flex-direction: row; justify-content: center; 
-                margin-bottom: 20px; order: -1; 
-            }
-
+            .demo-badge { top: 10px; right: -40px; font-size: 8px; }
+            .social-sidebar { position: static; transform: none; flex-direction: row; justify-content: center; margin-bottom: 20px; order: -1; }
             .logo-wrapper { width: 100px; height: 100px; margin-bottom: 15px; }
             .header h1 { font-size: 1.4rem; letter-spacing: 6px; }
             .card { padding: 25px; width: 100%; margin-bottom: 20px; box-sizing: border-box; }
@@ -255,11 +217,7 @@
             .type-output { font-size: 0.75rem; }
             .btn { padding: 10px 20px; font-size: 0.65rem; width: 100%; text-align: center; box-sizing: border-box; }
             .card div[style*="flex"] { flex-direction: column; width: 100%; }
-            #sys-status { 
-                position: static; margin-top: 30px; text-align: center; 
-                opacity: 0.8; font-size: 8px; width: 100%; 
-                display: flex; justify-content: center; gap: 15px;
-            }
+            #sys-status { position: static; margin-top: 30px; text-align: center; opacity: 0.8; font-size: 8px; width: 100%; display: flex; justify-content: center; gap: 15px; }
             #sys-status br { display: none; }
             #term-console { width: 90%; padding: 15px; }
             #term-input { font-size: 14px; width: 70%; }
@@ -270,20 +228,16 @@
 </head>
 <body class="aqua-mode">
 
+    <div class="demo-badge">Demo Version</div>
+
     <canvas id="grid-canvas"></canvas>
     <div id="custom-cursor"></div>
     <div class="vignette" id="vignette"></div>
 
     <div class="social-sidebar">
-        <a href="https://www.youtube.com/@energizerSAS4" target="_blank" class="social-link" title="YouTube">
-            <i class="fab fa-youtube"></i>
-        </a>
-        <a href="https://discord.gg/6heUegeJWj" target="_blank" class="social-link" title="Discord">
-            <i class="fab fa-discord"></i>
-        </a>
-        <a href="https://www.tiktok.com/@energizerev_sas4" target="_blank" class="social-link" title="TikTok">
-            <i class="fab fa-tiktok"></i>
-        </a>
+        <a href="https://www.youtube.com/@energizerSAS4" target="_blank" class="social-link" title="YouTube"><i class="fab fa-youtube"></i></a>
+        <a href="https://discord.gg/6heUegeJWj" target="_blank" class="social-link" title="Discord"><i class="fab fa-discord"></i></a>
+        <a href="https://www.tiktok.com/@energizerev_sas4" target="_blank" class="social-link" title="TikTok"><i class="fab fa-tiktok"></i></a>
     </div>
 
     <div id="term-console">
@@ -311,7 +265,7 @@
 
         <div class="card aqua-style parallax-layer" data-strength="150">
             <h2><span class="glow-part">EV</span>olution <span class="glow-part">Pa</span>ck</h2>
-            <p class="type-output" data-text="Классический набор текстур включающий в себя: Dark-Aqua, Equipments&Skins, SFX-Pack"></p>
+            <p class="type-output" data-text="A classic texture pack that includes Dark-Aqua, Equipments & Skins."></p>
             <div style="display:flex; gap:12px;">
                 <a href="https://drive.google.com/file/d/1Qw3G5LnlaEteiOD51bF1Oy1uh2A63R9O/view" target="_blank" class="btn">PC</a>
                 <a href="https://drive.google.com/file/d/19GXDO7E-SCvKzvF9ZIklORNZ1xmfN8dC/view" target="_blank" class="btn">Android</a>
@@ -320,7 +274,7 @@
 
         <div class="card night-style parallax-layer" data-strength="150">
             <h2>PROJECT <span class="night-glow">NIGHT</span></h2>
-            <p class="type-output" data-text="Набор Текстур, добавляющий механику 'Тьмы'. На грани возможного."></p>
+            <p class="type-output" data-text="Night theme, new interface, and much more!"></p>
             <a href="https://drive.google.com/file/d/1nIO79tg17x5P7VQxxa_dwtIzr42Kk9fq/view" target="_blank" class="btn">Access Files</a>
         </div>
 
@@ -366,25 +320,20 @@
 
         document.addEventListener('mousemove', (e) => {
             if (window.innerWidth <= 768) return;
-            
             mouse.x = e.clientX; mouse.y = e.clientY;
             cursor.style.left = `${e.clientX}px`;
             cursor.style.top = `${e.clientY}px`;
-
             const xPct = (e.clientX / window.innerWidth) * 100;
             const yPct = (e.clientY / window.innerHeight) * 100;
             vignette.style.background = `radial-gradient(circle at ${xPct}% ${yPct}%, transparent 10%, rgba(0,0,0,0.95) 70%)`;
-
             const centerX = window.innerWidth / 2;
             const centerY = window.innerHeight / 2;
-
             document.querySelectorAll('.parallax-layer').forEach(layer => {
                 const str = layer.getAttribute('data-strength');
                 const isHovered = layer.classList.contains('card') && layer.matches(':hover');
                 const transX = (e.clientX - centerX) / str;
                 const transY = (e.clientY - centerY) / str;
                 let scale = 1, rotateX = 0, rotateY = 0;
-
                 if (isHovered) {
                     scale = 1.03;
                     const rect = layer.getBoundingClientRect();
