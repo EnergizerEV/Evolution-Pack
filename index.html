@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Evolution | Terminal Ultra Final</title>
+    <title>Evolution | Terminal Stable</title>
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Source+Code+Pro:wght@400&display=swap" rel="stylesheet">
     <style>
         :root {
@@ -25,20 +25,25 @@
 
         * { cursor: none !important; -webkit-tap-highlight-color: transparent; }
 
-        /* CRT СЕТКА И СКАН-ЛИНИЯ */
+        /* ВОССТАНОВЛЕННАЯ ВИНЬЕТКА И CRT */
+        .vignette { 
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
+            background: radial-gradient(circle, transparent 40%, rgba(0,0,0,0.9) 100%); 
+            pointer-events: none; z-index: 1000; 
+        }
+
         .crt-overlay {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.2) 50%), 
-                        linear-gradient(90deg, rgba(255, 0, 0, 0.02), rgba(0, 255, 0, 0.01), rgba(0, 0, 255, 0.02));
-            background-size: 100% 4px, 3px 100%;
-            pointer-events: none; z-index: 9999; opacity: 0.5;
+            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%);
+            background-size: 100% 4px;
+            pointer-events: none; z-index: 999; opacity: 0.3;
         }
 
         .scan-line {
             position: fixed; top: 0; left: 0; width: 100%; height: 100px;
             background: linear-gradient(to bottom, transparent, rgba(0, 255, 216, 0.05), transparent);
             opacity: 0.1; pointer-events: none; z-index: 1001;
-            animation: scanning 8s linear infinite;
+            animation: scanning 4s linear infinite;
         }
         @keyframes scanning { 0% { transform: translateY(-100px); } 100% { transform: translateY(100vh); } }
 
@@ -59,81 +64,99 @@
             width: 80%; max-width: 600px; background: rgba(5, 10, 10, 0.98);
             border: 1px solid var(--current-accent); padding: 20px;
             z-index: 100000; font-family: 'Source Code Pro', monospace;
-            transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            transition: top 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
         }
         #term-console.active { top: 30px; }
-        #term-input { background: transparent; border: none; color: #fff; width: 80%; outline: none; caret-color: var(--current-accent); }
+        #term-input { background: transparent; border: none; color: #fff; width: 80%; outline: none; caret-color: var(--current-accent); font-family: inherit; }
 
         /* КОНТЕНТ */
         #main-content { 
             opacity: 0; transition: opacity 2s ease; 
             display: flex; flex-direction: column; align-items: center; 
             width: 100%; height: 100vh; overflow-y: scroll; scrollbar-width: none; 
-            padding: 80px 0; perspective: 1500px; /* Глубокая перспектива */
+            padding: 60px 0; perspective: 1200px;
         }
         #main-content::-webkit-scrollbar { display: none; }
 
-        .logo-wrapper { position: relative; width: 150px; height: 150px; margin-bottom: 20px; transform-style: preserve-3d; }
-        .glitch-logo { position: absolute; width: 100%; height: 100%; background-size: contain; background-repeat: no-repeat; background-position: center; transition: 0.4s; }
+        /* ЛОГОТИП И НАДПИСЬ - СТАТИЧНЫ (ИДЕАЛЬНЫЙ КОД) */
+        .logo-wrapper { position: relative; width: 150px; height: 150px; margin-bottom: 10px; z-index: 10; pointer-events: none; }
+        .glitch-logo { position: absolute; width: 100%; height: 100%; background-size: contain; background-repeat: no-repeat; background-position: center; }
         .logo-base { background-image: url('EV_Dark_2k.png'); filter: drop-shadow(0 0 15px var(--current-accent)); }
         .logo-glitch { background-image: url('EV_Dark_2k_ERR.png'); opacity: 0; animation: glitch-step 4s infinite step-end; }
-        
         @keyframes glitch-step { 0%, 90% { opacity: 0; } 92% { opacity: 1; transform: translate(5px, -3px); } 94% { opacity: 1; transform: translate(-5px, 3px); } }
 
-        .header h1 { font-size: 2.5rem; letter-spacing: 12px; text-transform: uppercase; margin-bottom: 30px; text-align: center; }
-        .header span { color: var(--current-accent); }
+        .header h1 { 
+            font-size: 2.2rem; letter-spacing: 12px; text-transform: uppercase; 
+            margin-bottom: 30px; text-align: center; pointer-events: none; 
+        }
+        .header h1 span { color: var(--current-accent); transition: color 0.4s; }
 
-        /* КАРТОЧКИ */
+        /* ПАНЕЛИ С ПЛАВНЫМ УВЕЛИЧЕНИЕМ (ИДЕАЛЬНЫЙ КОД) */
         .card {
-            background: rgba(10, 15, 20, 0.9); border: 1px solid rgba(26, 38, 43, 0.5); 
-            padding: 40px; width: 85%; max-width: 580px; margin-bottom: 35px; 
-            position: relative; z-index: 20; transform-style: preserve-3d;
-            transition: border 0.4s, box-shadow 0.4s, background 0.4s;
-            backdrop-filter: blur(8px); min-height: 260px;
+            background: rgba(10, 15, 20, 0.92); border: 1px solid #1a262b; 
+            padding: 40px; width: 85%; max-width: 600px; margin-bottom: 30px; 
+            position: relative; z-index: 20;
+            transition: transform 0.5s cubic-bezier(0.165, 0.84, 0.44, 1), border 0.4s, box-shadow 0.4s, background 0.4s;
+            backdrop-filter: blur(2px);
             display: flex; flex-direction: column; justify-content: space-between;
+            min-height: 240px;
         }
 
-        .card h2 { margin: 0; font-weight: normal; font-size: 1.4rem; color: #fff; pointer-events: none; }
+        .card h2 { margin: 0; font-weight: normal; font-size: 1.4rem; color: #fff; transition: 0.4s; }
         .glow-part, .night-glow { transition: 0.4s; }
 
-        .aqua-style:hover { border-left: 5px solid var(--current-accent); box-shadow: 0 0 40px rgba(0, 255, 216, 0.1); background: rgba(10, 25, 25, 0.95); }
-        .aqua-style:hover .glow-part { color: var(--current-accent); text-shadow: 0 0 15px var(--current-accent); }
+        .aqua-style:hover { 
+            border-left: 5px solid var(--current-accent); 
+            box-shadow: 0 0 50px rgba(0, 255, 216, 0.15); 
+            transform: scale(1.03); /* Плавное увеличение вернул */
+            background: rgba(10, 25, 25, 0.95); 
+        }
+        .aqua-style:hover .glow-part { color: var(--current-accent); text-shadow: 0 0 20px var(--current-accent); font-weight: bold; }
 
-        .night-style:hover { border-left: 5px solid var(--blood-red); box-shadow: 0 0 40px rgba(255, 0, 0, 0.15); background: rgba(25, 10, 10, 0.95); }
-        .night-style:hover .night-glow { color: var(--blood-red); text-shadow: 0 0 15px var(--blood-red); }
+        .night-style:hover { 
+            border-left: 5px solid var(--blood-red); 
+            box-shadow: 0 0 50px rgba(255, 0, 0, 0.2); 
+            transform: scale(1.03); /* Плавное увеличение вернул */
+            background: rgba(25, 10, 10, 0.95); 
+        }
+        .night-style:hover .night-glow { color: var(--blood-red); text-shadow: 0 0 20px var(--blood-red); font-weight: bold; }
 
-        .type-output { font-size: 0.85rem; color: #8da0a9; line-height: 1.6; min-height: 4.5em; margin: 15px 0; font-family: 'Source Code Pro', monospace; }
+        .type-output { font-size: 0.85rem; color: #8da0a9; line-height: 1.6; min-height: 4em; margin-top: 15px; font-family: 'Source Code Pro', monospace; }
 
-        /* КНОПКИ */
+        /* КНОПКИ С МЕРЦАНИЕМ (ИДЕАЛЬНЫЙ КОД) */
         .btn {
             display: inline-block; padding: 12px 28px; text-decoration: none; font-weight: bold; font-size: 0.75rem; 
-            text-transform: uppercase; border: 1px solid #1a262b; transition: 0.3s; color: #444; width: fit-content;
+            text-transform: uppercase; border: 1px solid #1a262b; transition: 0.3s; color: #555; position: relative;
         }
         .card:hover .btn { border-color: inherit; color: inherit; }
         .btn:hover { 
             background: #fff !important; color: #000 !important; 
-            animation: btn-flicker 1.5s infinite; box-shadow: 0 0 20px #fff;
+            animation: btn-flicker 1.5s ease-in-out infinite; 
+            box-shadow: 0 0 25px rgba(255, 255, 255, 0.5);
         }
-        @keyframes btn-flicker { 0%, 100% { opacity: 1; } 20% { opacity: 0.5; } 40% { opacity: 0.9; } 60% { opacity: 0.6; } }
+        @keyframes btn-flicker { 0%, 100% { opacity: 1; } 15% { opacity: 0.4; } 30% { opacity: 1; } 45% { opacity: 0.7; } 60% { opacity: 1; } }
 
-        /* ФУТЕР И ЗАГРУЗКА */
-        #loading-screen { position: fixed; inset: 0; background: #000; z-index: 999999; display: flex; flex-direction: column; justify-content: center; align-items: center; color: var(--aqua); }
-        .progress-bar-container { width: 220px; height: 2px; background: rgba(0, 255, 216, 0.1); margin-top: 15px; }
-        .progress-bar-fill { height: 100%; width: 0%; background: var(--aqua); box-shadow: 0 0 15px var(--aqua); animation: loadProgress 3s forwards; }
+        /* СТАТУС И ФУТЕР */
+        #sys-status { position: fixed; bottom: 25px; left: 25px; font-family: 'Source Code Pro'; font-size: 10px; color: var(--current-accent); opacity: 0.5; z-index: 1001; }
+        .footer { padding: 40px 0; font-size: 0.65rem; color: #333; text-align: center; letter-spacing: 2px; }
+        .scramble-text { cursor: pointer; display: inline-block; transition: 0.3s; }
+        .scramble-text:hover { color: var(--current-accent); }
+
+        #loading-screen { position: fixed; inset: 0; background: #000; z-index: 999999; display: flex; flex-direction: column; justify-content: center; align-items: center; color: var(--aqua); font-family: 'Source Code Pro', monospace; }
+        .progress-bar-container { width: 250px; height: 2px; background: rgba(0, 255, 216, 0.1); border: 1px solid rgba(0, 255, 216, 0.3); position: relative; margin-top: 15px; }
+        .progress-bar-fill { height: 100%; width: 0%; background: var(--aqua); box-shadow: 0 0 15px var(--aqua); animation: loadProgress 3.5s forwards; }
         @keyframes loadProgress { to { width: 100%; } }
-
-        #sys-status { position: fixed; bottom: 20px; left: 20px; font-family: 'Source Code Pro'; font-size: 10px; color: var(--current-accent); opacity: 0.5; }
-        .footer { padding: 40px 0; font-size: 0.65rem; color: #222; text-align: center; letter-spacing: 2px; }
-        .scramble-text { cursor: pointer; display: inline-block; }
 
         @media (max-width: 768px) {
             #custom-cursor { display: none; }
-            .card { width: 88%; padding: 30px 20px; }
+            .card { width: 85%; padding: 30px; min-height: auto; }
+            .header h1 { font-size: 1.6rem; letter-spacing: 6px; }
         }
     </style>
 </head>
-<body>
+<body class="aqua-mode">
 
+    <div class="vignette"></div>
     <div class="crt-overlay"></div>
     <div class="scan-line"></div>
     <canvas id="grid-canvas"></canvas>
@@ -141,47 +164,51 @@
 
     <div id="term-console">
         <span style="color:var(--current-accent)">EVO_OS ></span>
-        <input type="text" id="term-input" placeholder="Type..." autocomplete="off">
+        <input type="text" id="term-input" placeholder="Type command..." autocomplete="off">
     </div>
 
-    <div id="sys-status">CPU: <span id="cpu-val">00</span>% | STABLE | <span id="mode-text">AQUA_CORE</span></div>
+    <div id="sys-status">
+        CPU_LOAD: <span id="cpu-val">00</span>% <br>
+        SYSTEM: STABLE <br>
+        MODE: <span id="mode-text">AQUA_CORE</span>
+    </div>
 
     <div id="loading-screen">
-        <div class="loading-text" style="letter-spacing: 5px;">INITIALIZING...</div>
+        <div class="loading-text">INITIALIZING EVO_OS...</div>
         <div class="progress-bar-container"><div class="progress-bar-fill"></div></div>
     </div>
 
     <div id="main-content">
-        <div class="logo-wrapper parallax-layer" data-strength="40">
+        <div class="logo-wrapper">
             <div id="logo-main" class="glitch-logo logo-base"></div>
             <div id="logo-err" class="glitch-logo logo-glitch"></div>
         </div>
 
-        <div class="header parallax-layer" data-strength="70">
-            <h1 class="scramble-trigger"><span>EV</span>olution</h1>
+        <div class="header">
+            <h1><span>EV</span>olution</h1>
         </div>
 
-        <div class="card aqua-style parallax-layer" data-strength="100">
+        <div class="card aqua-style parallax-layer" data-strength="120">
             <div>
-                <h2 class="scramble-trigger"><span class="glow-part">EV</span>olution <span class="glow-part">Pa</span>ck</h2>
-                <p class="type-output" data-text="Классический набор текстур включающий в себя: Dark-Aqua, Equipments&Skins, SFX-Pack. Полная интеграция."></p>
+                <h2><span class="glow-part">EV</span>olution <span class="glow-part">Pa</span>ck</h2>
+                <p class="type-output" data-text="Классический набор текстур включающий в себя: Dark-Aqua, Equipments&Skins, SFX-Pack."></p>
             </div>
-            <div style="display:flex; gap:12px;">
+            <div style="display:flex; gap:12px; flex-wrap: wrap;">
                 <a href="#" class="btn">PC</a>
                 <a href="#" class="btn">Android</a>
             </div>
         </div>
 
-        <div class="card night-style parallax-layer" data-strength="100">
+        <div class="card night-style parallax-layer" data-strength="120">
             <div>
-                <h2 class="scramble-trigger">PROJECT <span class="night-glow">NIGHT</span></h2>
-                <p class="type-output" data-text="Набор Текстур, добавляющий механику 'Тьмы'. Визуальное искажение реальности на грани возможного."></p>
+                <h2>PROJECT <span class="night-glow">NIGHT</span></h2>
+                <p class="type-output" data-text="Набор Текстур, добавляющий механику 'Тьмы'. На грани возможного."></p>
             </div>
             <a href="#" class="btn">Access Files</a>
         </div>
 
         <div class="footer">
-            UNAUTHORIZED // <div class="scramble-text" id="nickname">M45T0D0NM4N</div> // V.5.5
+            UNAUTHORIZED ACCESS // <div class="scramble-text" id="nickname">M45T0D0NM4N</div> // V.5.5
         </div>
     </div>
 
@@ -189,6 +216,8 @@
         const cursor = document.getElementById('custom-cursor');
         const canvas = document.getElementById('grid-canvas');
         const ctx = canvas.getContext('2d');
+        const logoMain = document.getElementById('logo-main');
+        const logoErr = document.getElementById('logo-err');
         let mouse = { x: -1000, y: -1000 };
 
         function resize() { canvas.width = window.innerWidth; canvas.height = window.innerHeight; }
@@ -201,37 +230,19 @@
             for (let x = 0; x < canvas.width; x += 50) {
                 for (let y = 0; y < canvas.height; y += 50) {
                     const dist = Math.hypot(x - mouse.x, y - mouse.y);
-                    ctx.globalAlpha = Math.max(0.1, 0.6 - dist/300);
-                    ctx.strokeRect(x, y, 50, 50);
+                    const offset = Math.max(0, 10 - dist / 30);
+                    ctx.globalAlpha = offset > 0 ? 0.6 : 0.15;
+                    ctx.strokeRect(x - offset/2, y - offset/2, 50 + offset, 50 + offset);
                 }
             }
             requestAnimationFrame(drawGrid);
         }
         drawGrid();
 
-        // SCRAMBLE EFFECT (ШИФРУ ПРИКОЛЫ)
-        const chars = "!@#$%^&*()_+{}:<>?[]/|~";
-        function scramble(el, originalText) {
-            let iteration = 0;
-            const interval = setInterval(() => {
-                el.innerHTML = originalText.split("").map((char, index) => {
-                    if(index < iteration) return originalText[index];
-                    return chars[Math.floor(Math.random() * chars.length)];
-                }).join("");
-                if(iteration >= originalText.length) clearInterval(interval);
-                iteration += 1/3;
-            }, 30);
-        }
-
-        document.querySelectorAll('.scramble-trigger, .scramble-text').forEach(el => {
-            const original = el.innerText;
-            el.addEventListener('mouseenter', () => scramble(el, original));
-        });
-
-        // 3D ПАРАЛЛАКС И ПОВОРОТЫ
+        // ОБНОВЛЕННЫЙ ПАРАЛЛАКС (ТОЛЬКО ДЛЯ ПАНЕЛЕЙ)
         const update = (e) => {
-            const x = e.clientX || e.touches[0].clientX;
-            const y = e.clientY || e.touches[0].clientY;
+            const x = e.clientX || (e.touches && e.touches[0].clientX);
+            const y = e.clientY || (e.touches && e.touches[0].clientY);
             mouse.x = x; mouse.y = y;
             if(cursor) cursor.style.transform = `translate3d(${x}px, ${y}px, 0)`;
 
@@ -240,20 +251,30 @@
 
             document.querySelectorAll('.parallax-layer').forEach(layer => {
                 const str = layer.getAttribute('data-strength');
-                const rx = (cy - y) / (str / 2); // Наклон по X
-                const ry = (x - cx) / (str / 2); // Наклон по Y
                 const mx = (x - cx) / str;
                 const my = (y - cy) / str;
-                
                 const isHovered = layer.matches(':hover');
-                const scale = isHovered ? 1.05 : 1;
-
-                layer.style.transform = `translate3d(${mx}px, ${my}px, 0) rotateX(${rx}deg) rotateY(${ry}deg) scale(${scale})`;
+                
+                // Мягкий 3D поворот только при наведении
+                const rx = isHovered ? (cy - y) / 15 : 0;
+                const ry = isHovered ? (x - cx) / 15 : 0;
+                
+                layer.style.transform = `translate3d(${mx}px, ${my}px, 0) rotateX(${rx}deg) rotateY(${ry}deg) scale(${isHovered ? 1.03 : 1})`;
             });
         };
 
         window.addEventListener('mousemove', update);
         window.addEventListener('touchmove', (e) => update(e.touches[0]));
+
+        document.addEventListener('mousedown', (e) => {
+            cursor?.classList.add('pressed');
+            const ripple = document.createElement('div');
+            ripple.className = 'click-ripple';
+            ripple.style.left = e.clientX + 'px'; ripple.style.top = e.clientY + 'px';
+            document.body.appendChild(ripple);
+            setTimeout(() => ripple.remove(), 600);
+        });
+        document.addEventListener('mouseup', () => cursor?.classList.remove('pressed'));
 
         // КОНСОЛЬ
         const inputEl = document.getElementById('term-input');
@@ -261,7 +282,7 @@
             if (e.code === 'Backquote') {
                 e.preventDefault();
                 document.getElementById('term-console').classList.toggle('active');
-                inputEl.focus();
+                if (document.getElementById('term-console').classList.contains('active')) inputEl.focus();
             }
         });
 
@@ -287,9 +308,21 @@
                 const t = setInterval(() => {
                     el.innerText += text[i++];
                     if (i >= text.length) clearInterval(t);
-                }, 25);
+                }, 30);
             });
         }
+
+        // ШИФР ДЛЯ НИКНЕЙМА
+        const nick = document.getElementById('nickname');
+        const original = nick.innerText;
+        nick.onmouseover = () => {
+            let i = 0;
+            const interval = setInterval(() => {
+                nick.innerText = original.split("").map((l, idx) => idx < i ? original[idx] : "!@#$%^&*()"[Math.floor(Math.random()*10)]).join("");
+                if (i >= original.length) clearInterval(interval);
+                i += 1/3;
+            }, 30);
+        };
 
         window.addEventListener('load', () => {
             setTimeout(() => {
@@ -299,7 +332,7 @@
                     startTyping();
                 }, 1000);
                 document.getElementById('main-content').style.opacity = '1';
-            }, 3000);
+            }, 3500);
             setInterval(() => { document.getElementById('cpu-val').innerText = Math.floor(Math.random()*15)+5; }, 2000);
         });
     </script>
