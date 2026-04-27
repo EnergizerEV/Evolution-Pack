@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Evolution | Terminal Stable Fix</title>
+    <title>Evolution | Terminal Absolute Final</title>
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Source+Code+Pro:wght@400&display=swap" rel="stylesheet">
     <style>
         :root {
@@ -25,7 +25,7 @@
 
         * { cursor: none !important; -webkit-tap-highlight-color: transparent; }
 
-        /* ВИНЬЕТКА И ЭФФЕКТЫ */
+        /* ОКРУЖЕНИЕ */
         .vignette { 
             position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
             background: radial-gradient(circle, transparent 40%, rgba(0,0,0,0.9) 100%); 
@@ -64,7 +64,7 @@
             width: 80%; max-width: 600px; background: rgba(5, 10, 10, 0.98);
             border: 1px solid var(--current-accent); padding: 20px;
             z-index: 100000; font-family: 'Source Code Pro', monospace;
-            transition: top 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            transition: top 0.4s cubic-bezier(0.19, 1, 0.22, 1);
         }
         #term-console.active { top: 30px; }
         #term-input { background: transparent; border: none; color: #fff; width: 80%; outline: none; caret-color: var(--current-accent); font-family: inherit; }
@@ -74,29 +74,37 @@
             opacity: 0; transition: opacity 2s ease; 
             display: flex; flex-direction: column; align-items: center; 
             width: 100%; height: 100vh; overflow-y: scroll; scrollbar-width: none; 
-            padding: 60px 0; perspective: 1500px;
+            padding: 80px 0; perspective: 2000px;
         }
         #main-content::-webkit-scrollbar { display: none; }
 
-        /* ЛОГОТИП (СТАТИЧНЫЙ) */
+        /* ЛОГО И ХЕДЕР - СТАТИЧНЫЕ */
         .logo-wrapper { position: relative; width: 150px; height: 150px; margin-bottom: 10px; z-index: 10; pointer-events: none; }
         .glitch-logo { position: absolute; width: 100%; height: 100%; background-size: contain; background-repeat: no-repeat; background-position: center; }
         .logo-base { background-image: url('EV_Dark_2k.png'); filter: drop-shadow(0 0 15px var(--current-accent)); transition: background-image 0.4s; }
         .logo-glitch { background-image: url('EV_Dark_2k_ERR.png'); opacity: 0; animation: glitch-step 4s infinite step-end; transition: background-image 0.4s; }
-        @keyframes glitch-step { 0%, 90% { opacity: 0; } 92% { opacity: 1; transform: translate(5px, -3px); } 94% { opacity: 1; transform: translate(-5px, 3px); } }
+        @keyframes glitch-step { 0%, 90% { opacity: 0; } 92% { opacity: 1; transform: translate(4px, -2px); } 94% { opacity: 1; transform: translate(-4px, 2px); } }
 
         .header h1 { font-size: 2.2rem; letter-spacing: 12px; text-transform: uppercase; margin-bottom: 30px; text-align: center; pointer-events: none; }
         .header h1 span { color: var(--current-accent); transition: color 0.4s; }
 
-        /* КАРТОЧКИ (ПЛАВНЫЙ СКЕЙЛ + МЯГКИЙ ПОВОРОТ) */
+        /* ПАНЕЛИ - ИДЕАЛЬНОЕ ПЛАВНОЕ УВЕЛИЧЕНИЕ */
         .card {
             background: rgba(10, 15, 20, 0.92); border: 1px solid #1a262b; 
-            padding: 40px; width: 85%; max-width: 600px; margin-bottom: 30px; 
+            padding: 40px; width: 85%; max-width: 600px; margin-bottom: 35px; 
             position: relative; z-index: 20;
-            transition: transform 0.6s cubic-bezier(0.165, 0.84, 0.44, 1), border 0.4s, box-shadow 0.4s, background 0.4s;
-            backdrop-filter: blur(2px);
+            transition: transform 0.6s cubic-bezier(0.165, 0.84, 0.44, 1), 
+                        border 0.4s ease, 
+                        box-shadow 0.4s ease, 
+                        background 0.4s ease;
+            backdrop-filter: blur(4px);
             display: flex; flex-direction: column; justify-content: space-between;
-            min-height: 240px; transform-style: preserve-3d;
+            min-height: 250px; transform-style: preserve-3d;
+        }
+
+        .card:hover {
+            transform: scale(1.04); /* Плавное увеличение */
+            z-index: 30;
         }
 
         .card h2 { margin: 0; font-weight: normal; font-size: 1.4rem; color: #fff; transition: 0.4s; }
@@ -104,21 +112,21 @@
 
         .aqua-style:hover { 
             border-left: 5px solid var(--current-accent); 
-            box-shadow: 0 0 50px rgba(0, 255, 216, 0.15); 
+            box-shadow: 0 15px 50px rgba(0, 255, 216, 0.15); 
             background: rgba(10, 25, 25, 0.95); 
         }
         .aqua-style:hover .glow-part { color: var(--current-accent); text-shadow: 0 0 20px var(--current-accent); font-weight: bold; }
 
         .night-style:hover { 
             border-left: 5px solid var(--blood-red); 
-            box-shadow: 0 0 50px rgba(255, 0, 0, 0.2); 
+            box-shadow: 0 15px 50px rgba(255, 0, 0, 0.2); 
             background: rgba(25, 10, 10, 0.95); 
         }
         .night-style:hover .night-glow { color: var(--blood-red); text-shadow: 0 0 20px var(--blood-red); font-weight: bold; }
 
         .type-output { font-size: 0.85rem; color: #8da0a9; line-height: 1.6; min-height: 4em; margin-top: 15px; font-family: 'Source Code Pro', monospace; }
 
-        /* КНОПКИ (МЕРЦАНИЕ) */
+        /* КНОПКИ - МЕРЦАНИЕ */
         .btn {
             display: inline-block; padding: 12px 28px; text-decoration: none; font-weight: bold; font-size: 0.75rem; 
             text-transform: uppercase; border: 1px solid #1a262b; transition: 0.3s; color: #555; position: relative;
@@ -131,11 +139,10 @@
         }
         @keyframes btn-flicker { 0%, 100% { opacity: 1; } 15% { opacity: 0.4; } 30% { opacity: 1; } 45% { opacity: 0.7; } 60% { opacity: 1; } }
 
-        /* СТАТУС И ФУТЕР */
+        /* ФУТЕР И СТАТУС */
         #sys-status { position: fixed; bottom: 25px; left: 25px; font-family: 'Source Code Pro'; font-size: 10px; color: var(--current-accent); opacity: 0.5; z-index: 1001; }
         .footer { padding: 40px 0; font-size: 0.65rem; color: #333; text-align: center; letter-spacing: 2px; }
-        .scramble-text { cursor: pointer; display: inline-block; transition: 0.3s; }
-        .scramble-text:hover { color: var(--current-accent); }
+        .scramble-text { cursor: pointer; display: inline-block; }
 
         #loading-screen { position: fixed; inset: 0; background: #000; z-index: 999999; display: flex; flex-direction: column; justify-content: center; align-items: center; color: var(--aqua); font-family: 'Source Code Pro', monospace; }
         .progress-bar-container { width: 250px; height: 2px; background: rgba(0, 255, 216, 0.1); border: 1px solid rgba(0, 255, 216, 0.3); position: relative; margin-top: 15px; }
@@ -197,7 +204,7 @@
         <div class="card night-style parallax-layer" data-strength="150">
             <div>
                 <h2>PROJECT <span class="night-glow">NIGHT</span></h2>
-                <p class="type-output" data-text="Набор Текстур, добавляющий механику 'Тьмы'. На грани возможного."></p>
+                <p class="type-output" data-text="Набор Текстур, добавляющий механику 'Тьмы'. Визуальное искажение реальности на грани возможного."></p>
             </div>
             <a href="#" class="btn">Access Files</a>
         </div>
@@ -249,34 +256,25 @@
                 const my = (y - cy) / str;
                 const isHovered = layer.matches(':hover');
                 
-                // ЗНАЧИТЕЛЬНО УМЕНЬШЕННЫЙ ПОВОРОТ (коэффициент 40)
-                const rx = isHovered ? (cy - y) / 40 : 0;
-                const ry = isHovered ? (x - cx) / 40 : 0;
+                // НЕЗАМЕТНЫЙ ПОВОРОТ
+                const rx = isHovered ? (cy - y) / 80 : 0;
+                const ry = isHovered ? (x - cx) / 80 : 0;
                 
-                layer.style.transform = `translate3d(${mx}px, ${my}px, 0) rotateX(${rx}deg) rotateY(${ry}deg) scale(${isHovered ? 1.03 : 1})`;
+                // Перемещение + поворот (скейл берется из CSS для плавности)
+                layer.style.transform = `translate3d(${mx}px, ${my}px, 0) rotateX(${rx}deg) rotateY(${ry}deg)`;
             });
         };
 
         window.addEventListener('mousemove', update);
         window.addEventListener('touchmove', (e) => update(e.touches[0]));
 
-        document.addEventListener('mousedown', (e) => {
-            cursor?.classList.add('pressed');
-            const ripple = document.createElement('div');
-            ripple.className = 'click-ripple';
-            ripple.style.left = e.clientX + 'px'; ripple.style.top = e.clientY + 'px';
-            document.body.appendChild(ripple);
-            setTimeout(() => ripple.remove(), 600);
-        });
-        document.addEventListener('mouseup', () => cursor?.classList.remove('pressed'));
-
-        // КОНСОЛЬ + ФИКС ЛОГОТИПА
+        // КОНСОЛЬ
         const inputEl = document.getElementById('term-input');
         window.addEventListener('keydown', (e) => {
             if (e.code === 'Backquote') {
                 e.preventDefault();
                 document.getElementById('term-console').classList.toggle('active');
-                if (document.getElementById('term-console').classList.contains('active')) inputEl.focus();
+                inputEl.focus();
             }
         });
 
@@ -286,13 +284,11 @@
                 if (cmd === 'red') {
                     document.documentElement.style.setProperty('--current-accent', 'var(--blood-red)');
                     document.getElementById('mode-text').innerText = "NIGHT_PROTOCOL";
-                    // Смена логотипов
                     logoMain.style.backgroundImage = "url('Project_Night_Icon.png')";
                     logoErr.style.backgroundImage = "url('Project_Night_Icon_ERR.png')";
                 } else if (cmd === 'aqua') {
                     document.documentElement.style.setProperty('--current-accent', 'var(--aqua)');
                     document.getElementById('mode-text').innerText = "AQUA_CORE";
-                    // Возврат логотипов
                     logoMain.style.backgroundImage = "url('EV_Dark_2k.png')";
                     logoErr.style.backgroundImage = "url('EV_Dark_2k_ERR.png')";
                 }
@@ -332,8 +328,7 @@
                     startTyping();
                 }, 1000);
                 document.getElementById('main-content').style.opacity = '1';
-            }, 3500);
-            setInterval(() => { document.getElementById('cpu-val').innerText = Math.floor(Math.random()*15)+5; }, 2000);
+            }, 3000);
         });
     </script>
 </body>
