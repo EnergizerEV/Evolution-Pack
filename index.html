@@ -22,196 +22,104 @@
             align-items: center;
             padding: 60px 20px;
             overflow-x: hidden;
-            position: relative;
             min-height: 100vh;
+            position: relative;
         }
 
-        /* Виньетка (затемнение по краям) */
+        /* Вотермарк на фоне */
+        .background-watermark {
+            position: fixed;
+            top: 50%; left: 50%;
+            transform: translate(-50%, -50%);
+            width: 80%; height: 80%;
+            background-image: url('Watermark_EV.png');
+            background-size: contain;
+            background-repeat: no-repeat;
+            background-position: center;
+            opacity: 0.03; /* Еле заметный */
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        /* Эффекты терминала */
         .vignette {
             position: fixed;
             top: 0; left: 0; width: 100%; height: 100%;
-            background: radial-gradient(circle, transparent 40%, rgba(0,0,0,0.8) 100%);
+            background: radial-gradient(circle, transparent 50%, rgba(0,0,0,0.9) 100%);
             pointer-events: none;
             z-index: 1000;
         }
 
-        /* Усиленные контурные полосы (CRT эффект) */
-        .crt-lines {
+        .crt-scanlines {
             position: fixed;
             top: 0; left: 0; width: 100%; height: 100%;
             background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.4) 50%);
             background-size: 100% 4px;
             pointer-events: none;
             z-index: 999;
-            opacity: 0.6;
+            opacity: 0.4;
         }
 
         .scanline {
-            width: 100%;
-            height: 150px;
-            z-index: 10;
+            width: 100%; height: 100px;
+            z-index: 1010;
             background: linear-gradient(0deg, rgba(0, 255, 216, 0) 0%, rgba(0, 255, 216, 0.03) 50%, rgba(0, 255, 216, 0) 100%);
             position: fixed;
-            bottom: 100%;
-            left: 0;
+            top: -100px; left: 0;
             pointer-events: none;
-            animation: scanline 8s linear infinite;
+            animation: scanline-run 10s linear infinite;
         }
 
-        @keyframes scanline {
-            0% { bottom: 100%; }
-            100% { bottom: -150px; }
-        }
+        @keyframes scanline-run { 0% { top: -100px; } 100% { top: 100%; } }
 
-        /* --- НОВЫЙ CSS ДЛЯ ГЛЮКА ЛОГОТИПА --- */
+        /* ИСПРАВЛЕННЫЙ ЛОГОТИП С ТВОИМИ НАЗВАНИЯМИ */
         .logo-wrapper {
             position: relative;
-            width: 130px;
-            height: 130px;
+            width: 150px; height: 150px;
             margin-bottom: 20px;
-            z-index: 2;
+            z-index: 10;
         }
 
-        /* Общие стили для всех слоев лого */
         .glitch-logo {
             position: absolute;
-            top: 0; left: 0;
             width: 100%; height: 100%;
-            background-size: cover;
+            background-size: contain;
+            background-repeat: no-repeat;
             background-position: center;
-            border-radius: 50%;
-            pointer-events: none;
         }
 
-        /* Основной слой лого (аквамарин) */
-        .glitch-base {
+        .logo-base {
             background-image: url('EV_Dark_2k.png');
-            border: 2px solid var(--aqua);
-            box-shadow: 0 0 20px var(--aqua);
-            animation: glitch-color 6s infinite;
+            filter: drop-shadow(0 0 10px var(--aqua));
         }
 
-        /* Красный слой (сдвиг) */
-        .glitch-red {
-            background-image: url('EV_Dark_2k_ERR.png'); /* Или glitch-версия, если есть */
-            border: 2px solid var(--blood-red);
+        .logo-glitch {
+            background-image: url('EV_Dark_2k_ERR.png');
             opacity: 0;
-            animation: glitch-anim-red 4s infinite step-end;
-            filter: drop-shadow(0 0 5px var(--blood-red));
+            animation: glitch-step 4s infinite step-end;
         }
 
-        /* Синий слой (сдвиг) */
-        .glitch-blue {
-            background-image: url('EV_Dark_2k.png');
-            border: 2px solid #0000ff;
-            opacity: 0;
-            animation: glitch-anim-blue 4s infinite step-end;
-            filter: drop-shadow(0 0 5px #0000ff);
+        @keyframes glitch-step {
+            0%, 90%, 100% { opacity: 0; transform: none; }
+            92% { opacity: 1; transform: translate(5px, -2px); filter: hue-rotate(90deg); }
+            94% { opacity: 1; transform: translate(-5px, 2px); filter: saturate(3); }
+            95% { opacity: 0.5; transform: scale(1.1); }
         }
 
-        /* Анимация основного цвета */
-        @keyframes glitch-color {
-            0%, 80%, 100% { filter: none; }
-            85% { filter: hue-rotate(90deg) saturate(2); }
-            90% { filter: hue-rotate(-90deg) invert(1); }
-        }
+        .header h1 { font-size: 2.2rem; letter-spacing: 12px; text-transform: uppercase; z-index: 10; }
+        .header h1 span { color: var(--aqua); }
 
-        /* Анимация красного сдвига (паника) */
-        @keyframes glitch-anim-red {
-            0%, 93%, 100% { opacity: 0; transform: none; }
-            94% { opacity: 0.8; transform: translate(4px, -2px) skewX(5deg); }
-            95% { opacity: 1; transform: translate(-4px, 2px); }
-            96% { opacity: 0.5; transform: translate(2px, 0); }
-        }
-
-        /* Анимация синего сдвига */
-        @keyframes glitch-anim-blue {
-            0%, 95%, 100% { opacity: 0; transform: none; }
-            96% { opacity: 0.8; transform: translate(-4px, 2px) skewX(-5deg); }
-            97% { opacity: 1; transform: translate(4px, -2px); }
-        }
-        /* --- КОНЕЦ CSS ДЛЯ ГЛЮКА --- */
-
-        .header h1 {
-            font-size: 2.2rem;
-            letter-spacing: 12px;
-            text-transform: uppercase;
-            margin: 10px 0;
-            z-index: 2;
-        }
-        .header h1 span { color: var(--aqua); text-shadow: 0 0 10px var(--aqua); }
-        .header h1 i { color: #fff; font-style: normal; }
-
+        /* КАРТОЧКИ (БЕЗ ИЗМЕНЕНИЙ) */
         .card {
-            background: rgba(8, 12, 15, 0.9);
+            background: rgba(10, 15, 20, 0.9);
             border: 1px solid #1a262b;
             padding: 40px;
             width: 100%;
             max-width: 600px;
             margin-bottom: 30px;
-            transition: all 0.4s cubic-bezier(0.23, 1, 0.32, 1);
+            transition: all 0.5s cubic-bezier(0.165, 0.84, 0.44, 1);
             position: relative;
-            z-index: 2;
-            overflow: hidden;
+            z-index: 20;
         }
 
-        /* EVO Card */
-        .aqua-style { border-left: 4px solid #1a262b; }
-        .aqua-style h2 { transition: 0.4s; margin-top: 0; color: #fff; }
-        /* EV и Pa теперь одного класса для синхронного зажигания */
-        .aqua-style h2 .glow-part { color: #fff; transition: 0.5s; font-weight: normal; }
-
-        .aqua-style:hover { 
-            border-left: 4px solid var(--aqua);
-            box-shadow: 0 0 30px rgba(0, 255, 216, 0.15), inset 0 0 25px rgba(0, 255, 216, 0.07); 
-            transform: scale(1.02); 
-        }
-        .aqua-style:hover h2 { text-shadow: 0 0 15px var(--aqua); }
-        .aqua-style:hover h2 .glow-part { color: var(--aqua); font-weight: bold; }
-
-        /* Night Card */
-        .night-style { border-left: 4px solid #1a262b; }
-        .night-title { margin-top: 0; transition: 0.4s; color: #fff; }
-        .night-title b { color: var(--blood-red); text-shadow: 0 0 5px var(--blood-red); }
-
-        .night-style:hover { 
-            border-left: 4px solid var(--blood-red);
-            box-shadow: 0 0 30px rgba(255, 0, 0, 0.15), inset 0 0 25px rgba(255, 0, 0, 0.07); 
-            transform: scale(1.02);
-            background: rgba(15, 8, 8, 0.95);
-        }
-        .night-style:hover .night-title { text-shadow: 0 0 15px var(--blood-red); transform: skewX(-5deg); }
-
-        p { font-size: 0.85rem; color: #8da0a9; letter-spacing: 1px; line-height: 1.6; }
-
-        .btn {
-            display: inline-block;
-            padding: 12px 25px;
-            text-decoration: none;
-            font-weight: bold;
-            font-size: 0.75rem;
-            letter-spacing: 2px;
-            text-transform: uppercase;
-            border: 1px solid #1a262b;
-            transition: 0.3s;
-            margin-top: 10px;
-            position: relative;
-            z-index: 5;
-        }
-        .btn-aqua { color: #555; }
-        .aqua-style:hover .btn-aqua { color: var(--aqua); border-color: var(--aqua); }
-        .btn-aqua:hover { background: var(--aqua) !important; color: #000 !important; box-shadow: 0 0 15px var(--aqua); }
-
-        .btn-night { color: #555; }
-        .night-style:hover .btn-night { color: var(--blood-red); border-color: var(--blood-red); }
-        .btn-night:hover { background: var(--blood-red) !important; color: #fff !important; box-shadow: 0 0 15px var(--blood-red); }
-
-        .footer {
-            margin-top: auto;
-            padding-top: 40px;
-            font-size: 0.65rem;
-            color: #222;
-            letter-spacing: 2px;
-            text-align: center;
-            z-index: 2;
-        }
+        .card h2 { margin-top: 0; color: #fff; transition
