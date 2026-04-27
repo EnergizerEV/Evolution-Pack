@@ -10,76 +10,217 @@
             --aqua: #00ffd8;
             --blood-red: #ff0000;
             --bg-color: #06080a;
-        }
-
-        body, html {
-            margin: 0;
-            padding: 0;
-            width: 100%;
-            min-height: 100vh;
-            background-color: var(--bg-color);
-            color: #e0e6ed;
-            font-family: 'Orbitron', sans-serif;
-            overflow-x: hidden;
+            --dirty-red: #4a0000; /* Грязно-красный для глюка */
         }
 
         /* --- ЭКРАН ЗАГРУЗКИ --- */
         #loading-screen {
             position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
             background-color: #000;
             z-index: 9999;
-            display: flex; flex-direction: column; justify-content: center; align-items: center;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
             color: var(--aqua);
             font-family: 'Source Code Pro', monospace;
-            transition: opacity 0.5s ease;
+            transition: opacity 0.5s ease, visibility 0.5s;
+            overflow: hidden;
         }
 
-        .loading-text { font-size: 14px; margin-bottom: 15px; letter-spacing: 2px; text-transform: uppercase; }
-        
+        /* Эффект сломанного ТВ (Шум) */
+        .tv-noise {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: url('https://upload.wikimedia.org/wikipedia/commons/b/b1/Static_noise.png');
+            opacity: 0;
+            pointer-events: none;
+            z-index: 9997;
+        }
+
+        /* Квадратики (Цифровой мусор) */
+        .glitch-grid {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background-image: 
+                linear-gradient(var(--dirty-red) 1px, transparent 1px),
+                linear-gradient(90deg, var(--dirty-red) 1px, transparent 1px);
+            background-size: 40px 40px;
+            opacity: 0;
+            z-index: 9996;
+        }
+
+        .loading-text {
+            font-size: 14px;
+            margin-bottom: 15px;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            text-align: center;
+            min-height: 20px;
+            z-index: 10000;
+        }
+
         .progress-bar-container {
-            width: 200px; height: 2px;
+            width: 200px;
+            height: 2px;
             background: rgba(0, 255, 216, 0.1);
             border: 1px solid rgba(0, 255, 216, 0.3);
-            position: relative; overflow: hidden;
+            position: relative;
+            overflow: hidden;
+            z-index: 10000;
         }
 
         .progress-bar-fill {
-            position: absolute; height: 100%; width: 0%;
+            position: absolute;
+            height: 100%;
+            width: 0%;
             background: var(--aqua);
             box-shadow: 0 0 15px var(--aqua);
-            transition: width 0.1s linear;
         }
 
-        /* --- ОСНОВНОЙ КОНТЕНТ --- */
+        /* Анимации взлома */
+        .hacked-bg {
+            animation: flashStep 0.1s infinite step-end;
+        }
+
+        @keyframes flashStep {
+            0% { background-color: #000; }
+            50% { background-color: var(--dirty-red); }
+        }
+
+        .glitch-active { opacity: 0.15 !important; }
+        .grid-active { opacity: 0.3 !important; animation: shiftGrid 0.2s infinite steps(2); }
+
+        @keyframes shiftGrid {
+            0% { transform: translate(0,0); }
+            100% { transform: translate(10px, -10px); }
+        }
+
+        /* --- ОСНОВНОЙ КОНТЕНТ (ТВОЙ ОРИГИНАЛ) --- */
         #main-content {
-            opacity: 0; /* Изначально скрыт, проявится через JS */
-            display: flex; 
-            flex-direction: column; 
-            align-items: center; 
+            opacity: 0;
+            transition: opacity 2s ease;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
             width: 100%;
-            padding: 60px 20px;
-            box-sizing: border-box;
         }
 
-        /* Окружение */
-        .vignette { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: radial-gradient(circle, transparent 50%, rgba(0,0,0,0.9) 100%); pointer-events: none; z-index: 1000; }
-        .crt-scanlines { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.4) 50%); background-size: 100% 4px; pointer-events: none; z-index: 999; opacity: 0.4; }
-        .scanline { width: 100%; height: 100px; z-index: 1010; background: linear-gradient(0deg, rgba(0, 255, 216, 0) 0%, rgba(0, 255, 216, 0.03) 50%, rgba(0, 255, 216, 0) 100%); position: fixed; top: -100px; left: 0; pointer-events: none; animation: scanline-run 10s linear infinite; }
+        body {
+            background-color: var(--bg-color);
+            color: #e0e6ed;
+            font-family: 'Orbitron', sans-serif;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 60px 20px;
+            overflow-x: hidden;
+            min-height: 100vh;
+            position: relative;
+        }
+
+        .vignette {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: radial-gradient(circle, transparent 50%, rgba(0,0,0,0.9) 100%);
+            pointer-events: none;
+            z-index: 1000;
+        }
+
+        .crt-scanlines {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.4) 50%);
+            background-size: 100% 4px;
+            pointer-events: none;
+            z-index: 999;
+            opacity: 0.4;
+        }
+
+        .scanline {
+            width: 100%; height: 100px; z-index: 1010;
+            background: linear-gradient(0deg, rgba(0, 255, 216, 0) 0%, rgba(0, 255, 216, 0.03) 50%, rgba(0, 255, 216, 0) 100%);
+            position: fixed; top: -100px; left: 0; pointer-events: none;
+            animation: scanline-run 10s linear infinite;
+        }
+
         @keyframes scanline-run { 0% { top: -100px; } 100% { top: 100%; } }
 
-        /* Логотип */
-        .logo-wrapper { position: relative; width: 150px; height: 150px; margin-bottom: 20px; z-index: 10; }
-        .glitch-logo { position: absolute; width: 100%; height: 100%; background-size: contain; background-repeat: no-repeat; background-position: center; }
+        .logo-wrapper {
+            position: relative; width: 150px; height: 150px; margin-bottom: 20px; z-index: 10;
+        }
+
+        .glitch-logo {
+            position: absolute; width: 100%; height: 100%; background-size: contain; background-repeat: no-repeat; background-position: center;
+        }
+
         .logo-base { background-image: url('EV_Dark_2k.png'); filter: drop-shadow(0 0 10px var(--aqua)); }
-        
-        .header h1 { font-size: 2.2rem; letter-spacing: 12px; text-transform: uppercase; z-index: 10; margin: 20px 0; }
+        .logo-glitch { background-image: url('EV_Dark_2k_ERR.png'); opacity: 0; animation: glitch-step 4s infinite step-end; }
+
+        @keyframes glitch-step {
+            0%, 90%, 100% { opacity: 0; transform: none; }
+            92% { opacity: 1; transform: translate(6px, -3px); filter: hue-rotate(45deg); }
+            94% { opacity: 1; transform: translate(-6px, 3px); filter: saturate(2); }
+            95% { opacity: 0.4; transform: scale(1.05); }
+        }
+
+        .header h1 { font-size: 2.2rem; letter-spacing: 12px; text-transform: uppercase; z-index: 10; margin: 10px 0; }
         .header h1 span { color: var(--aqua); }
 
-        /* Карточки */
-        .card { background: rgba(10, 15, 20, 0.9); border: 1px solid #1a262b; padding: 40px; width: 100%; max-width: 600px; margin-bottom: 30px; transition: 0.4s; position: relative; z-index: 20; }
-        .card h2 { margin-top: 0; color: #fff; font-weight: normal; }
-        .aqua-style:hover { border-left: 4px solid var(--aqua); box-shadow: 0 0 40px rgba(0, 255, 216, 0.1); }
-        .night-style:hover { border-left: 4px solid var(--blood-red); box-shadow: 0 0 40px rgba(255, 0, 0, 0.1); }
+        .card {
+            background: rgba(10, 15, 20, 0.9); border: 1px solid #1a262b; padding: 40px; width: 100%; max-width: 600px; margin-bottom: 30px;
+            transition: all 0.5s cubic-bezier(0.165, 0.84, 0.44, 1); position: relative; z-index: 20;
+        }
+
+        .card h2 { margin-top: 0; color: #fff; transition: 0.4s; font-weight: normal; }
+        .glow-part, .night-glow { transition: 0.4s; color: #fff; }
+
+        .aqua-style:hover { border-left: 4px solid var(--aqua); box-shadow: 0 0 40px rgba(0, 255, 216, 0.2); transform: scale(1.03); background: rgba(10, 25, 25, 0.95); }
+        .aqua-style:hover .glow-part { color: var(--aqua); text-shadow: 0 0 15px var(--aqua); font-weight: bold; }
+
+        .night-style:hover { border-left: 4px solid var(--blood-red); box-shadow: 0 0 40px rgba(255, 0, 0, 0.2); transform: scale(1.03); background: rgba(25, 10, 10, 0.95); }
+        .night-style:hover .night-glow { color: var(--blood-red); text-shadow: 0 0 15px var(--blood-red); font-weight: bold; }
+
+        p { font-size: 0.85rem; color: #8da0a9; line-height: 1.6; }
+
+        .btn {
+            display: inline-block; padding: 12px 25px; text-decoration: none; font-weight: bold; font-size: 0.75rem; text-transform: uppercase;
+            border: 1px solid #1a262b; transition: 0.3s; margin-top: 10px; color: #555; cursor: pointer; position: relative; z-index: 30;
+        }
+        .aqua-style:hover .btn { color: var(--aqua); border-color: var(--aqua); }
+        .night-style:hover .btn { color: var(--blood-red); border-color: var(--blood-red); }
+        .btn:hover { background: #fff !important; color: #000 !important; }
+
+        .footer { margin-top: auto; padding-top: 40px; font-size: 0.65rem; color: #333; text-align: center; z-index: 10; letter-spacing: 2px; }
+        .scramble-text { display: inline-block; font-family: 'Source Code Pro', monospace; color: #444; transition: 0.3s; cursor: crosshair; }
+        .scramble-text:hover { color: var(--blood-red); }
+    </style>
+</head>
+<body>
+
+    <div id="loading-screen">
+        <div class="tv-noise" id="noise"></div>
+        <div class="glitch-grid" id="grid"></div>
         
-        .btn { display: inline-block; padding: 12px 25px; text-decoration: none; font-weight: bold; font-size: 0.75rem; text-transform: uppercase; border:
+        <div class="loading-text" id="status-text">SYSTEM STANDBY...</div>
+        <div class="progress-bar-container">
+            <div class="progress-bar-fill" id="bar"></div>
+        </div>
+    </div>
+
+    <div id="main-content">
+        <div class="vignette"></div>
+        <div class="crt-scanlines"></div>
+        <div class="scanline"></div>
+        
+        <div class="logo-wrapper">
+            <div class="glitch-logo logo-base"></div>
+            <div class="glitch-logo logo-glitch"></div>
+        </div>
+
+        <div class="header">
+            <h1><span>EV</span>olution</h1>
+        </div>
