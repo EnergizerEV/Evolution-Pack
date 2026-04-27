@@ -23,6 +23,31 @@
 
         * { cursor: none !important; }
 
+        /* ЭФФЕКТ БЛИКА ЛИНЗЫ (LENS FLARE) */
+        #lens-flare-container {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            pointer-events: none;
+            z-index: 5000; /* Между контентом и курсором */
+            mix-blend-mode: screen;
+            opacity: 0.5;
+        }
+        .flare-part {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(20px);
+            will-change: transform;
+        }
+        .flare-main {
+            width: 400px; height: 400px;
+            background: radial-gradient(circle, rgba(255,255,255,0.2) 0%, rgba(0,255,216,0.05) 50%, transparent 70%);
+        }
+        .flare-halo {
+            width: 150px; height: 150px;
+            border: 2px solid rgba(0, 255, 216, 0.1);
+            background: radial-gradient(circle, rgba(0,255,216,0.05) 0%, transparent 80%);
+        }
+
         /* ВОССТАНОВЛЕННЫЙ ФОН И БЕГУЩАЯ ПОЛОСА */
         .scan-line {
             position: fixed;
@@ -137,7 +162,6 @@
 
         p { font-size: 0.85rem; color: #8da0a9; line-height: 1.6; }
 
-        /* ПЛАВНОЕ МЕРЦАНИЕ КНОПКИ (1.5 СЕКУНДЫ) */
         .btn {
             display: inline-block; padding: 12px 28px; text-decoration: none; font-weight: bold; font-size: 0.75rem; 
             text-transform: uppercase; border: 1px solid #1a262b; transition: 0.3s; margin-top: 10px; color: #555; position: relative; z-index: 30;
@@ -177,6 +201,12 @@
     </style>
 </head>
 <body class="aqua-mode">
+
+    <div id="lens-flare-container">
+        <div class="flare-part flare-main" id="flare-core"></div>
+        <div class="flare-part flare-halo" id="flare-h1"></div>
+        <div class="flare-part flare-halo" id="flare-h2" style="width: 80px; height: 80px; opacity: 0.3;"></div>
+    </div>
 
     <div class="scan-line"></div>
     <canvas id="grid-canvas"></canvas>
@@ -227,7 +257,7 @@
         </div>
 
         <div class="footer">
-            UNAUTHORIZED ACCESS // <div class="scramble-text" id="nickname">M45T0D0NM4N</div> // V.5.5
+            UNAUTHORIZED ACCESS // <div class="scramble-text" id="nickname">M45T0D0NM4N</div> // V.5.6
         </div>
     </div>
 
@@ -237,6 +267,12 @@
         const ctx = canvas.getContext('2d');
         const logoMain = document.getElementById('logo-main');
         const logoErr = document.getElementById('logo-err');
+        
+        // Элементы блика
+        const flareCore = document.getElementById('flare-core');
+        const flareH1 = document.getElementById('flare-h1');
+        const flareH2 = document.getElementById('flare-h2');
+
         let mouse = { x: -1000, y: -1000 };
 
         function resize() { canvas.width = window.innerWidth; canvas.height = window.innerHeight; }
@@ -266,12 +302,23 @@
 
             const centerX = window.innerWidth / 2;
             const centerY = window.innerHeight / 2;
+
+            // ПАРАЛЛАКС ДЛЯ КОНТЕНТА
             document.querySelectorAll('.parallax-layer').forEach(layer => {
                 const str = layer.getAttribute('data-strength');
                 const isHovered = layer.classList.contains('card') && layer.matches(':hover');
                 const scale = isHovered ? 1.03 : 1;
                 layer.style.transform = `translate3d(${(e.clientX - centerX) / str}px, ${(e.clientY - centerY) / str}px, 0) scale(${scale})`;
             });
+
+            // ИНВЕРСИВНЫЙ ПАРАЛЛАКС ДЛЯ БЛИКА (Lens Flare)
+            // Блик движется в противоположную от мыши сторону
+            const fx = (centerX - e.clientX);
+            const fy = (centerY - e.clientY);
+
+            flareCore.style.transform = `translate3d(${centerX + fx/10 - 200}px, ${centerY + fy/10 - 200}px, 0)`;
+            flareH1.style.transform = `translate3d(${centerX + fx/5 - 75}px, ${centerY + fy/5 - 75}px, 0)`;
+            flareH2.style.transform = `translate3d(${centerX + fx/2 - 40}px, ${centerY + fy/2 - 40}px, 0)`;
         });
 
         document.addEventListener('mousedown', (e) => {
