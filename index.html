@@ -24,56 +24,82 @@
             overflow-x: hidden;
             position: relative;
             min-height: 100vh;
+            animation: terminal-flicker 0.15s infinite;
         }
 
-        /* Сканирующая полоса */
+        @keyframes terminal-flicker {
+            0% { opacity: 0.99; }
+            50% { opacity: 1; }
+            100% { opacity: 0.98; }
+        }
+
+        /* Анимированная цифровая пыль */
+        .dust-overlay {
+            position: fixed;
+            top: -50%; left: -50%; width: 200%; height: 200%;
+            background-image: url('https://grainy-gradients.vercel.app/noise.svg');
+            opacity: 0.07;
+            pointer-events: none;
+            z-index: 5000;
+            animation: dust-move 0.2s steps(4) infinite;
+        }
+
+        @keyframes dust-move {
+            0% { transform: translate(0,0); }
+            50% { transform: translate(-1%, 1%); }
+            100% { transform: translate(0,0); }
+        }
+
+        .vignette {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: radial-gradient(circle, transparent 40%, rgba(0,0,0,0.85) 100%);
+            pointer-events: none;
+            z-index: 5;
+        }
+
+        .crt-lines {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.3) 50%);
+            background-size: 100% 4px;
+            pointer-events: none;
+            z-index: 4;
+            opacity: 0.6;
+        }
+
         .scanline {
             width: 100%;
-            height: 150px;
-            z-index: 10;
+            height: 100px;
+            z-index: 6;
             background: linear-gradient(0deg, rgba(0, 255, 216, 0) 0%, rgba(0, 255, 216, 0.03) 50%, rgba(0, 255, 216, 0) 100%);
             position: fixed;
-            bottom: 100%;
-            left: 0;
+            top: -100px; left: 0;
             pointer-events: none;
-            animation: scanline 8s linear infinite;
+            animation: scanline-run 10s linear infinite;
         }
 
-        @keyframes scanline {
-            0% { bottom: 100%; }
-            100% { bottom: -150px; }
+        @keyframes scanline-run {
+            0% { top: -100px; }
+            100% { top: 100%; }
         }
 
-        body::before {
-            content: " ";
-            display: block;
-            position: fixed;
-            top: 0; left: 0; bottom: 0; right: 0;
-            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%);
-            z-index: 999;
-            background-size: 100% 3px;
-            pointer-events: none;
-        }
-
-        /* Логотип */
         .logo-container {
-            width: 130px;
-            height: 130px;
+            width: 130px; height: 130px;
             margin-bottom: 20px;
             background-image: url('EV_Dark_2k.png');
             background-size: cover;
-            background-position: center;
             border-radius: 50%;
             border: 2px solid var(--aqua);
-            box-shadow: 0 0 15px var(--aqua);
+            box-shadow: 0 0 20px var(--aqua);
             animation: glitch-soft 6s infinite;
             position: relative;
-            z-index: 2;
+            z-index: 10;
         }
 
         @keyframes glitch-soft {
-            0%, 92%, 96%, 100% { background-image: url('EV_Dark_2k.png'); transform: none; filter: none; }
-            94% { background-image: url('EV_Dark_2k_ERR.png'); transform: translateX(2px); filter: brightness(1.1); }
+            0%, 92%, 96%, 100% { background-image: url('EV_Dark_2k.png'); transform: none; }
+            94% { background-image: url('EV_Dark_2k_ERR.png'); transform: translateX(2px); }
             95% { background-image: url('EV_Dark_2k_ERR.png'); transform: translateX(-2px); }
         }
 
@@ -82,12 +108,10 @@
             letter-spacing: 12px;
             text-transform: uppercase;
             margin: 10px 0;
-            z-index: 2;
+            z-index: 10;
         }
-        .header h1 span { color: var(--aqua); }
-        .header h1 i { color: #fff; font-style: normal; }
+        .header h1 span { color: var(--aqua); text-shadow: 0 0 10px var(--aqua); }
 
-        /* Карточки */
         .card {
             background: rgba(10, 15, 20, 0.95);
             border: 1px solid #1a262b;
@@ -95,46 +119,37 @@
             width: 100%;
             max-width: 600px;
             margin-bottom: 30px;
-            transition: all 0.4s cubic-bezier(0.23, 1, 0.32, 1);
+            transition: 0.4s;
             position: relative;
-            z-index: 2;
+            z-index: 100; /* Выше виньетки */
             overflow: hidden;
         }
 
-        /* EVO Card */
         .aqua-style { border-left: 4px solid #1a262b; }
         .aqua-style h2 { transition: 0.4s; margin-top: 0; color: #fff; }
-        .aqua-style h2 span { color: var(--aqua); } 
-        .aqua-style h2 i { color: #fff; font-style: normal; } 
-        .aqua-style h2 b { color: #fff; font-weight: normal; transition: 0.5s; } 
+        .aqua-style h2 .glow-part { color: #fff; transition: 0.5s; }
 
         .aqua-style:hover { 
             border-left: 4px solid var(--aqua);
-            box-shadow: 0 0 30px rgba(0, 255, 216, 0.1), inset 0 0 20px rgba(0, 255, 216, 0.05); 
+            box-shadow: 0 0 30px rgba(0, 255, 216, 0.15), inset 0 0 25px rgba(0, 255, 216, 0.08); 
             transform: scale(1.02); 
         }
-        .aqua-style:hover h2 { text-shadow: 0 0 15px var(--aqua); }
-        .aqua-style:hover h2 b { color: var(--aqua); font-weight: bold; }
+        .aqua-style:hover h2 .glow-part { color: var(--aqua); text-shadow: 0 0 15px var(--aqua); font-weight: bold; }
 
-        /* Night Card */
         .night-style { border-left: 4px solid #1a262b; }
         .night-title { margin-top: 0; transition: 0.4s; color: #fff; }
-        .night-title b { color: var(--blood-red); transition: 0.4s; }
+        .night-title b { color: var(--blood-red); text-shadow: 0 0 5px var(--blood-red); }
 
         .night-style:hover { 
             border-left: 4px solid var(--blood-red);
-            box-shadow: 0 0 30px rgba(255, 0, 0, 0.1), inset 0 0 20px rgba(255, 0, 0, 0.05); 
+            box-shadow: 0 0 30px rgba(255, 0, 0, 0.15), inset 0 0 25px rgba(255, 0, 0, 0.08); 
             transform: scale(1.02);
-            background: rgba(20, 10, 10, 0.9);
+            background: rgba(20, 10, 10, 0.95);
         }
-        .night-style:hover .night-title { 
-            text-shadow: 0 0 15px var(--blood-red); 
-            transform: skewX(-5deg);
-        }
+        .night-style:hover .night-title { text-shadow: 0 0 15px var(--blood-red); transform: skewX(-5deg); }
 
         p { font-size: 0.85rem; color: #8da0a9; letter-spacing: 1px; line-height: 1.6; }
 
-        /* Кнопки */
         .btn {
             display: inline-block;
             padding: 12px 25px;
@@ -146,56 +161,36 @@
             border: 1px solid #1a262b;
             transition: 0.3s;
             margin-top: 10px;
+            position: relative;
+            z-index: 200;
             cursor: pointer;
         }
-        .btn-aqua { color: #555; border-color: #222; }
+        .btn-aqua { color: #555; }
         .aqua-style:hover .btn-aqua { color: var(--aqua); border-color: var(--aqua); }
         .btn-aqua:hover { background: var(--aqua) !important; color: #000 !important; }
 
-        .btn-night { color: #555; border-color: #222; }
+        .btn-night { color: #555; }
         .night-style:hover .btn-night { color: var(--blood-red); border-color: var(--blood-red); }
         .btn-night:hover { background: var(--blood-red) !important; color: #fff !important; }
 
-        /* Футер */
-        .footer {
-            margin-top: auto;
-            padding-top: 40px;
-            font-size: 0.65rem;
-            color: #222;
-            letter-spacing: 2px;
-            text-align: center;
-        }
-
-        .glitch-wrapper {
-            display: inline-block;
-            color: #333;
-            cursor: help;
-        }
-
-        .glitch-wrapper:hover {
-            animation: panic 0.1s infinite;
-            color: var(--blood-red);
-        }
-
-        @keyframes panic {
-            0% { transform: translate(1px, -1px); }
-            50% { transform: translate(-1px, 1px); }
-            100% { transform: translate(0); }
-        }
+        .footer { margin-top: auto; padding-top: 40px; font-size: 0.65rem; color: #444; text-align: center; z-index: 10; }
     </style>
 </head>
 <body>
 
+    <div class="dust-overlay"></div>
+    <div class="vignette"></div>
+    <div class="crt-lines"></div>
     <div class="scanline"></div>
     
     <div class="logo-container"></div>
 
     <div class="header">
-        <h1><span>EV</span><i>olution</i></h1>
+        <h1><span>EV</span>olution</h1>
     </div>
 
     <div class="card aqua-style">
-        <h2><span>EV</span>o<i>lution</i> <b>Pa</b>ck</h2>
+        <h2><span class="glow-part">EV</span>o<i>lution</i> <span class="glow-part">Pa</span>ck</h2>
         <p>Глобальная переработка визуальных ассетов. Повышение детализации текстур до стандарта High-Res.</p>
         <a href="https://drive.google.com/file/d/1Qw3G5LnlaEteiOD51bF1Oy1uh2A63R9O/view?usp=drive_link" target="_blank" class="btn btn-aqua">Download Pack</a>
     </div>
@@ -207,9 +202,7 @@
     </div>
 
     <div class="footer">
-        UNAUTHORIZED ACCESS IS PROHIBITED // 
-        <div class="glitch-wrapper">M45T0D0NM4N</div>
-        _SYSTEM_V.4.0
+        UNAUTHORIZED ACCESS IS PROHIBITED // M45T0D0NM4N // _SYSTEM_V.4.0
     </div>
 
 </body>
