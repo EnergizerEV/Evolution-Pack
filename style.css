@@ -239,7 +239,7 @@ body.red-mode .aqua-style:hover { box-shadow: 0 0 50px rgba(255, 0, 0, 0.2); }
 .night-style:hover { border-left: 5px solid var(--blood-red); box-shadow: 0 0 50px rgba(255, 0, 0, 0.2); background: rgba(25, 10, 10, 0.95); }
 .night-style:hover .night-glow { color: var(--blood-red); text-shadow: 0 0 20px var(--blood-red); font-weight: bold; }
 
-.type-output { font-size: 0.85rem; color: #8da0a9; line-height: 1.6; min-height: 2.5em; }
+.type-output { font-size: 0.85rem; color: #8da0a9; line-height: 1.6; min-height: 2.5em; white-space: pre-wrap; }
 
 .btn {
     display: inline-block; padding: 12px 28px; text-decoration: none; font-weight: bold; font-size: 0.75rem; 
