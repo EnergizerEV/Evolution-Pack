@@ -316,3 +316,8 @@ body.red-mode .aqua-style:hover { box-shadow: 0 0 50px rgba(255, 0, 0, 0.2); }
     color: #222;
     z-index: 10001;
 }
+body.red-mode .vignette {
+    /* Делаем градиент очень резким: прозрачный центр и мгновенная чернота */
+    background: radial-gradient(circle at 50% 50%, transparent 10%, rgba(0,0,0,0.95) 40%) !important;
+    opacity: 1 !important;
+}
