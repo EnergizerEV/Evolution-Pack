@@ -32,21 +32,24 @@ document.addEventListener('mousemove', (e) => {
     mouse.x = e.clientX; 
     mouse.y = e.clientY;
     
-    // Двигаем курсор-картинку
+    // Позиция курсора
     cursor.style.left = `${e.clientX}px`;
     cursor.style.top = `${e.clientY}px`;
 
-    // ПЕРЕДАЕМ КООРДИНАТЫ ДЛЯ "ФОНАРИКА" (виньетки)
+    // ПЕРЕДАЕМ КООРДИНАТЫ ДЛЯ CSS (Фонарик)
     const xPct = (e.clientX / window.innerWidth) * 100;
     const yPct = (e.clientY / window.innerHeight) * 100;
     document.documentElement.style.setProperty('--mouse-x', `${xPct}%`);
     document.documentElement.style.setProperty('--mouse-y', `${yPct}%`);
     
-    // Параллакс для слоев
+    const centerX = window.innerWidth / 2;
+    const centerY = window.innerHeight / 2;
+    
+    // Параллакс и 3D-повороты
     document.querySelectorAll('.parallax-layer').forEach(layer => {
         const str = layer.getAttribute('data-strength');
-        const transX = (e.clientX - window.innerWidth / 2) / str;
-        const transY = (e.clientY - window.innerHeight / 2) / str;
+        const transX = (e.clientX - centerX) / str;
+        const transY = (e.clientY - centerY) / str;
 
         if (layer.classList.contains('card')) {
             const isHovered = layer.matches(':hover');
@@ -61,54 +64,6 @@ document.addEventListener('mousemove', (e) => {
                 layer.style.transform = `translate3d(${transX}px, ${transY}px, 0) scale(1) rotateX(0deg) rotateY(0deg)`;
             }
         } else {
-            layer.style.transform = `translate3d(${transX}px, ${transY}px, 0)`;
-        }
-    });
-});
-    
-    // Обновляем позицию курсора
-    cursor.style.left = `${e.clientX}px`;
-    cursor.style.top = `${e.clientY}px`;
-    
-    // Обновляем виньетку фона
-    const xPct = (e.clientX / window.innerWidth) * 100;
-    const yPct = (e.clientY / window.innerHeight) * 100;
-    vignette.style.background = `radial-gradient(circle at ${xPct}% ${yPct}%, transparent 10%, rgba(0,0,0,0.95) 70%)`;
-    
-    const centerX = window.innerWidth / 2;
-    const centerY = window.innerHeight / 2;
-    
-    // --- ВОССТАНОВЛЕННАЯ ЛОГИКА ПОВОРОТОВ КАРТОЧЕК ---
-    document.querySelectorAll('.parallax-layer').forEach(layer => {
-        const str = layer.getAttribute('data-strength');
-        
-        // Базовый параллакс для всех слоев (логотип, заголовок)
-        const transX = (e.clientX - centerX) / str;
-        const transY = (e.clientY - centerY) / str;
-        
-        // Специфическая логика для карточек
-        if (layer.classList.contains('card')) {
-            const isHovered = layer.matches(':hover');
-            
-            if (isHovered) {
-                const rect = layer.getBoundingClientRect();
-                // Находим центр конкретной карточки
-                const cardCenterX = rect.left + rect.width / 2;
-                const cardCenterY = rect.top + rect.height / 2;
-                
-                // Рассчитываем угол поворота в зависимости от удаления от центра карточки
-                // Разделитель (25) определяет силу наклона
-                const rotateY = (e.clientX - cardCenterX) / 25; 
-                const rotateX = (cardCenterY - e.clientY) / 25; // Инвертируем X для естественности
-                
-                // Применяем поворот и легкое увеличение
-                layer.style.transform = `translate3d(${transX}px, ${transY}px, 0) scale(1.03) rotateX(${rotateX}deg) rotateY(${rotateY}deg)`;
-            } else {
-                // Если не наведена, оставляем только базовый параллакс
-                layer.style.transform = `translate3d(${transX}px, ${transY}px, 0) scale(1) rotateX(0deg) rotateY(0deg)`;
-            }
-        } else {
-            // Для лого и заголовка - только базовый параллакс
             layer.style.transform = `translate3d(${transX}px, ${transY}px, 0)`;
         }
     });
@@ -142,14 +97,14 @@ inputEl.addEventListener('keypress', (e) => {
         const cmd = inputEl.value.toLowerCase().trim();
         if (cmd === 'red') {
             document.documentElement.style.setProperty('--current-accent', 'var(--blood-red)');
-            document.body.classList.add('red-mode'); // ВКЛЮЧАЕТ ФОНАРИК
+            document.body.classList.add('red-mode');
             logoMain.style.backgroundImage = "url('Project_Night_Icon.png')";
             logoErr.style.backgroundImage = "url('Project_Night_Icon_ERR.png')";
             modeText.innerText = "NIGHT_PROTOCOL";
         } 
         else if (cmd === 'aqua') {
             document.documentElement.style.setProperty('--current-accent', 'var(--aqua)');
-            document.body.classList.remove('red-mode'); // ВЫКЛЮЧАЕТ ФОНАРИК
+            document.body.classList.remove('red-mode');
             logoMain.style.backgroundImage = "url('EV_Dark_2k.png')";
             logoErr.style.backgroundImage = "url('EV_Dark_2k_ERR.png')";
             modeText.innerText = "AQUA_CORE";
@@ -162,6 +117,7 @@ inputEl.addEventListener('keypress', (e) => {
 function startTyping() {
     document.querySelectorAll('.type-output').forEach(el => {
         const text = el.getAttribute('data-text');
+        if(!text) return;
         let i = 0; el.innerText = '';
         const type = setInterval(() => {
             el.innerText += text[i]; i++;
@@ -180,6 +136,7 @@ window.addEventListener('load', () => {
         document.getElementById('main-content').style.opacity = '1';
     }, 3000);
     setInterval(() => { 
-        document.getElementById('cpu-val').innerText = Math.floor(Math.random()*15)+5; 
+        const cpu = document.getElementById('cpu-val');
+        if(cpu) cpu.innerText = Math.floor(Math.random()*15)+5; 
     }, 2000);
 });
