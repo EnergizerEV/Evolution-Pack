@@ -248,29 +248,28 @@ body.red-mode .aqua-style:hover { box-shadow: 0 0 50px rgba(255, 0, 0, 0.2); }
 .footer { 
     position: fixed;
     bottom: 20px; 
-    right: 20px;  /* Смещаем в правый угол */
+    right: 20px;  /* В правый нижний угол */
     margin: 0; 
     font-size: 0.65rem; 
     color: #333; 
     text-align: right; 
     z-index: 10; 
     letter-spacing: 2px;
-    line-height: 1.5;
 }
 .scramble-text { display: inline-block; font-family: 'Source Code Pro', monospace; color: #444; transition: 0.3s; }
 .scramble-text:hover { color: var(--current-accent); }
 
 #sys-status { 
     position: fixed; 
-    bottom: 20px; /* Почти в самый низ */
-    left: 20px;   /* В угол */
+    bottom: 20px; /* Расстояние от нижнего края экрана */
+    left: 20px;   /* Расстояние от левого края экрана */
     font-family: 'Source Code Pro', monospace; 
     font-size: 10px; 
     color: var(--current-accent); 
-    opacity: 0.6; 
+    opacity: 0.5; 
     z-index: 1001; 
-    line-height: 1.5; /* Чтобы строки не слипались */
     text-align: left;
+    margin: 0; /* Убираем лишние отступы */
 }
 
 #loading-screen { 
@@ -306,6 +305,12 @@ body.red-mode .aqua-style:hover { box-shadow: 0 0 50px rgba(255, 0, 0, 0.2); }
     transform: scale(1);
 }
 
-#sys-status, .footer, .demo-footer-text {
-    transform: none !important; 
+.demo-footer-text {
+    position: fixed;
+    bottom: 15px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 0.6rem;
+    color: #222;
+    z-index: 10;
 }
