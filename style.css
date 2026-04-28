@@ -2,7 +2,21 @@
     --aqua: #00ffd8;
     --blood-red: #ff0000;
     --bg-color: #06080a;
+    --bg-glow: rgba(0, 255, 216, 0.05); /* Цвет свечения фона */
     --current-accent: var(--aqua);
+}
+
+/* Изменяем фон, чтобы он мог менять цвет динамически */
+body { 
+    color: #e0e6ed; 
+    font-family: 'Orbitron', sans-serif; 
+    display: flex; 
+    flex-direction: column; 
+    align-items: center; 
+    justify-content: center; 
+    perspective: 1000px;
+    background: radial-gradient(circle at center, var(--bg-glow) 0%, var(--bg-color) 100%);
+    transition: background 0.8s ease; /* Плавный переход фона */
 }
 
 html, body {
