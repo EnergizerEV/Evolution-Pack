@@ -2,11 +2,11 @@
     --aqua: #00ffd8;
     --blood-red: #ff0000;
     --bg-color: #06080a;
-    --bg-glow: rgba(0, 255, 216, 0.05); /* Цвет свечения фона */
+    --bg-glow: rgba(0, 255, 216, 0.1); /* Центр фона */
+    --vignette-color: rgba(0, 0, 0, 0.9); /* Края фона */
     --current-accent: var(--aqua);
 }
 
-/* Изменяем фон, чтобы он мог менять цвет динамически */
 body { 
     color: #e0e6ed; 
     font-family: 'Orbitron', sans-serif; 
@@ -15,8 +15,20 @@ body {
     align-items: center; 
     justify-content: center; 
     perspective: 1000px;
+    /* Главный градиент теперь зависит от переменных */
     background: radial-gradient(circle at center, var(--bg-glow) 0%, var(--bg-color) 100%);
-    transition: background 0.8s ease; /* Плавный переход фона */
+    transition: all 0.8s ease;
+    background-attachment: fixed;
+}
+
+/* Обновляем слои темноты, чтобы они пропускали новый цвет */
+body::before {
+    content: "";
+    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+    /* Вместо чистого черного используем переменную */
+    background: radial-gradient(circle at center, transparent 40%, var(--vignette-color) 100%);
+    pointer-events: none; z-index: 1002;
+    transition: background 0.8s ease;
 }
 
 html, body {
