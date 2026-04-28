@@ -12,13 +12,21 @@ window.addEventListener('resize', resize); resize();
 function drawGrid() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     const size = 50;
-    ctx.strokeStyle = getComputedStyle(document.documentElement).getPropertyValue('--current-accent').trim();
+    
+    // Берем цвет сетки из CSS переменных
+    const accent = getComputedStyle(document.documentElement).getPropertyValue('--current-accent').trim();
+    
+    ctx.strokeStyle = accent;
     ctx.lineWidth = 0.5;
+    
     for (let x = 0; x < canvas.width; x += size) {
         for (let y = 0; y < canvas.height; y += size) {
             const dist = Math.hypot(x - mouse.x, y - mouse.y);
             const offset = Math.max(0, 10 - dist / 30);
-            ctx.globalAlpha = offset > 0 ? 0.6 : 0.15;
+            
+            // В режиме RED сетка становится чуть более "кровавой"
+            ctx.globalAlpha = offset > 0 ? 0.5 : 0.12;
+            
             ctx.strokeRect(x - offset/2, y - offset/2, size + offset, size + offset);
         }
     }
@@ -96,17 +104,26 @@ inputEl.addEventListener('keypress', (e) => {
     if (e.key === 'Enter') {
         const cmd = inputEl.value.toLowerCase().trim();
         if (cmd === 'red') {
-            document.documentElement.style.setProperty('--current-accent', 'var(--blood-red)');
+            document.documentElement.style.setProperty('--current-accent', '#ff0000');
+            // Добавляем глубокий красный фон для всей страницы
+            document.body.style.backgroundColor = "#0a0000"; 
             document.body.classList.add('red-mode');
+            
             logoMain.style.backgroundImage = "url('Project_Night_Icon.png')";
             logoErr.style.backgroundImage = "url('Project_Night_Icon_ERR.png')";
+            logoMain.style.filter = "drop-shadow(0 0 20px rgba(255, 0, 0, 0.5))";
+            
             modeText.innerText = "NIGHT_PROTOCOL";
         } 
         else if (cmd === 'aqua') {
-            document.documentElement.style.setProperty('--current-accent', 'var(--aqua)');
+            document.documentElement.style.setProperty('--current-accent', '#00ffd8');
+            document.body.style.backgroundColor = "#06080a";
             document.body.classList.remove('red-mode');
+            
             logoMain.style.backgroundImage = "url('EV_Dark_2k.png')";
             logoErr.style.backgroundImage = "url('EV_Dark_2k_ERR.png')";
+            logoMain.style.filter = "drop-shadow(0 0 15px var(--current-accent))";
+            
             modeText.innerText = "AQUA_CORE";
         }
         if (cmd === 'clear') consoleEl.classList.remove('active');
