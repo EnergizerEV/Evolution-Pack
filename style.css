@@ -124,13 +124,39 @@ body {
 .header h1 span { color: var(--current-accent); transition: color 0.4s; }
 
 .card {
-    background: rgba(10, 15, 20, 0.92); border: 1px solid #1a262b; padding: 40px; 
-    width: 100%; max-width: 600px; margin-bottom: 30px; position: relative; z-index: 20;
-    transition: 0.5s cubic-bezier(0.165, 0.84, 0.44, 1);
-    backdrop-filter: blur(2px); transform-style: preserve-3d;
+    background: rgba(10, 15, 20, 0.92); 
+    border: 1px solid #1a262b; 
+    padding: 40px; 
+    width: 100%; 
+    max-width: 600px; 
+    margin-bottom: 30px; 
+    position: relative; 
+    z-index: 20;
+    backdrop-filter: blur(2px);
+    
+    /* --- КРИТИЧЕСКИЕ ИЗМЕНЕНИЯ ДЛЯ ПОВОРОТОВ --- */
+    /* Плавность теперь обрабатывается JavaScript для слежения, */
+    /* но CSS задает базовую скорость возврата в исходное состояние. */
+    transition: transform 0.5s cubic-bezier(0.165, 0.84, 0.44, 1), border 0.4s, box-shadow 0.4s, background 0.4s;
+    
+    /* Включаем 3D-пространство внутри карточки */
+    transform-style: preserve-3d;
 }
-.card h2 { margin-top: 0; color: #fff; transition: 0.4s; font-weight: normal; font-size: 1.4rem; }
-.glow-part, .night-glow { transition: 0.4s; color: #fff; }
+
+/* При наведении карточка немного увеличивается */
+.card:hover {
+    transform: scale(1.03);
+}
+
+.card h2 { 
+    margin-top: 0; 
+    color: #fff; 
+    transition: 0.4s; 
+    font-weight: normal; 
+    font-size: 1.4rem; 
+    /* Добавляем легкий эффект "всплытия" текста */
+    transform: translateZ(30px);
+}
 
 .aqua-style:hover { border-left: 5px solid var(--current-accent); box-shadow: 0 0 50px rgba(0, 255, 216, 0.15); background: rgba(10, 25, 25, 0.95); }
 body.red-mode .aqua-style:hover { box-shadow: 0 0 50px rgba(255, 0, 0, 0.2); }
