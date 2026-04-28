@@ -6,8 +6,8 @@
     --bg-color: #06080a;
     --current-accent: var(--aqua);
     --grid-color: var(--aqua-dim);       /* Динамический цвет сетки */
-    --cursor-normal: url('Cursor1-F1-32x32x32.png'); 
-    --cursor-pressed: url('Cursor2-F1-32x32x32.png');
+    --cursor-normal: url('Cursor1-AQ1.png'); 
+    --cursor-pressed: url('Cursor1-AQ2.png');
 }
 
 html, body {
