@@ -287,3 +287,37 @@ body.red-mode .aqua-style:hover { box-shadow: 0 0 50px rgba(255, 0, 0, 0.2); }
 #sys-status, .footer, .demo-footer-text {
     transform: none !important; 
 }
+/* --- ФИКСАЦИЯ ЦВЕТОВ ПАНЕЛЕЙ (ИГНОРИРОВАНИЕ КОМАНД) --- */
+
+/* Первая карточка - всегда бирюзовая */
+.card.aqua-style {
+    border-color: #00ffd8 !important;
+    box-shadow: 0 0 15px rgba(0, 255, 216, 0.2) !important;
+}
+.card.aqua-style .glow-part {
+    color: #00ffd8 !important;
+    text-shadow: 0 0 10px rgba(0, 255, 216, 0.8) !important;
+}
+.card.aqua-style .btn {
+    border-color: #00ffd8 !important;
+    color: #00ffd8 !important;
+}
+
+/* Вторая карточка - всегда красная */
+.card.night-style {
+    border-color: #ff0000 !important;
+    box-shadow: 0 0 15px rgba(255, 0, 0, 0.2) !important;
+}
+.card.night-style .night-glow {
+    color: #ff0000 !important;
+    text-shadow: 0 0 10px rgba(255, 0, 0, 0.8) !important;
+}
+.card.night-style .btn {
+    border-color: #ff0000 !important;
+    color: #ff0000 !important;
+}
+
+/* Общий сброс: убираем влияние глобальной переменной на карточки */
+.card.aqua-style, .card.night-style {
+    --current-accent: none !important; 
+}
