@@ -63,10 +63,16 @@ body.red-mode::after {
 }
 
 body.red-mode .vignette {
-    /* Тот самый идеальный эффект фонаря */
-    background: radial-gradient(circle at 50% 50%, transparent 10%, rgba(0,0,0,0.96) 35%) !important;
+    /* Используем переменные --cursor-x и --cursor-y для позиции центра */
+    background: radial-gradient(
+        circle at var(--cursor-x, 50%) var(--cursor-y, 50%), 
+        transparent 10%, 
+        rgba(0, 0, 0, 0.96) 35%
+    ) !important;
     opacity: 1 !important;
     z-index: 10002;
+    /* Убираем плавный переход для позиции, чтобы свет не «отставал» от мышки */
+    transition: opacity 2.5s cubic-bezier(0.15, 0.85, 0.35, 1), background 0s !important;
 }
 
 .social-sidebar {
