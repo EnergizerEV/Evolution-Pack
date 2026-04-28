@@ -27,19 +27,57 @@ function drawGrid() {
 drawGrid();
 
 document.addEventListener('mousemove', (e) => {
+    // Не применяем эффекты на телефонах
     if (window.innerWidth <= 768) return;
-    mouse.x = e.clientX; mouse.y = e.clientY;
+    
+    mouse.x = e.clientX; 
+    mouse.y = e.clientY;
+    
+    // Обновляем позицию курсора
     cursor.style.left = `${e.clientX}px`;
     cursor.style.top = `${e.clientY}px`;
+    
+    // Обновляем виньетку фона
     const xPct = (e.clientX / window.innerWidth) * 100;
     const yPct = (e.clientY / window.innerHeight) * 100;
     vignette.style.background = `radial-gradient(circle at ${xPct}% ${yPct}%, transparent 10%, rgba(0,0,0,0.95) 70%)`;
     
+    const centerX = window.innerWidth / 2;
+    const centerY = window.innerHeight / 2;
+    
+    // --- ВОССТАНОВЛЕННАЯ ЛОГИКА ПОВОРОТОВ КАРТОЧЕК ---
     document.querySelectorAll('.parallax-layer').forEach(layer => {
         const str = layer.getAttribute('data-strength');
-        const transX = (e.clientX - window.innerWidth / 2) / str;
-        const transY = (e.clientY - window.innerHeight / 2) / str;
-        layer.style.transform = `translate3d(${transX}px, ${transY}px, 0)`;
+        
+        // Базовый параллакс для всех слоев (логотип, заголовок)
+        const transX = (e.clientX - centerX) / str;
+        const transY = (e.clientY - centerY) / str;
+        
+        // Специфическая логика для карточек
+        if (layer.classList.contains('card')) {
+            const isHovered = layer.matches(':hover');
+            
+            if (isHovered) {
+                const rect = layer.getBoundingClientRect();
+                // Находим центр конкретной карточки
+                const cardCenterX = rect.left + rect.width / 2;
+                const cardCenterY = rect.top + rect.height / 2;
+                
+                // Рассчитываем угол поворота в зависимости от удаления от центра карточки
+                // Разделитель (25) определяет силу наклона
+                const rotateY = (e.clientX - cardCenterX) / 25; 
+                const rotateX = (cardCenterY - e.clientY) / 25; // Инвертируем X для естественности
+                
+                // Применяем поворот и легкое увеличение
+                layer.style.transform = `translate3d(${transX}px, ${transY}px, 0) scale(1.03) rotateX(${rotateX}deg) rotateY(${rotateY}deg)`;
+            } else {
+                // Если не наведена, оставляем только базовый параллакс
+                layer.style.transform = `translate3d(${transX}px, ${transY}px, 0) scale(1) rotateX(0deg) rotateY(0deg)`;
+            }
+        } else {
+            // Для лого и заголовка - только базовый параллакс
+            layer.style.transform = `translate3d(${transX}px, ${transY}px, 0)`;
+        }
     });
 });
 
