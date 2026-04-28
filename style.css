@@ -1,8 +1,11 @@
 :root {
     --aqua: #00ffd8;
+    --aqua-dim: rgba(0, 255, 216, 0.15); /* Цвет сетки аква */
     --blood-red: #ff0000;
+    --blood-dim: rgba(139, 0, 0, 0.2);   /* Глубокий красный для сетки */
     --bg-color: #06080a;
     --current-accent: var(--aqua);
+    --grid-color: var(--aqua-dim);       /* Динамический цвет сетки */
 }
 
 html, body {
@@ -44,9 +47,15 @@ body::after {
 }
 
 /* Состояние "Фонарика" для режима RED */
+/* Обновляем виньетку для режима RED */
 body.red-mode .vignette {
-    /* Включаем динамическое управление через JS (переменные) */
-    background: radial-gradient(circle at var(--mouse-x, 50%) var(--mouse-y, 50%), transparent 10%, rgba(15, 0, 0, 0.95) 70%);
+    /* Теперь здесь не просто красный, а глубокий градиент с темно-красным оттенком */
+    background: radial-gradient(
+        circle at var(--mouse-x, 50%) var(--mouse-y, 50%), 
+        transparent 10%, 
+        rgba(20, 0, 0, 0.9) 50%, 
+        rgba(5, 0, 0, 0.98) 90%
+    );
 }
 
 .social-sidebar {
@@ -92,15 +101,16 @@ body.red-mode .vignette {
     100% { width: 160px; height: 160px; opacity: 0; border-width: 1px; }
 }
 
-#grid-canvas { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1; opacity: 0.15; pointer-events: none; }
-
-#term-console {
-    position: fixed; top: -160px; left: 50%; transform: translateX(-50%);
-    width: 80%; max-width: 600px; background: rgba(0, 5, 5, 0.98);
-    border: 1px solid var(--current-accent); padding: 20px;
-    z-index: 10005; font-family: 'Source Code Pro', monospace;
-    transition: top 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-    box-shadow: 0 0 40px rgba(0, 0, 0, 0.5);
+/* Чтобы сетка тоже меняла цвет, мы будем использовать переменную --grid-color */
+#grid-canvas { 
+    position: fixed; 
+    top: 0; 
+    left: 0; 
+    width: 100%; 
+    height: 100%; 
+    z-index: -1; 
+    opacity: 0.2; /* Немного поднял яркость для сочности */
+    pointer-events: none; 
 }
 #term-console.active { top: 30px; }
 #term-input {
