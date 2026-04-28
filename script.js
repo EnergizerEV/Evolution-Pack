@@ -35,10 +35,13 @@ function drawGrid() {
 drawGrid();
 
 document.addEventListener('mousemove', (e) => {
+    // Обновляем координаты для сетки
+    mouse.x = e.clientX;
+    mouse.y = e.clientY;
+
     // Передаем координаты мыши в CSS переменные
     document.documentElement.style.setProperty('--cursor-x', e.clientX + 'px');
     document.documentElement.style.setProperty('--cursor-y', e.clientY + 'px');
-}
     
     // Позиция курсора
     cursor.style.left = `${e.clientX}px`;
@@ -106,9 +109,9 @@ inputEl.addEventListener('keypress', (e) => {
     if (e.key === 'Enter') {
         const cmd = inputEl.value.toLowerCase().trim();
         if (cmd === 'red') {
-    document.documentElement.style.setProperty('--current-accent', '#ff0000');
-    document.body.style.backgroundColor = "#0a0000"; // Это свойство теперь будет меняться ПЛАВНО
-    document.body.classList.add('red-mode');
+            document.documentElement.style.setProperty('--current-accent', '#ff0000');
+            document.body.style.backgroundColor = "#0a0000"; // Это свойство теперь будет меняться ПЛАВНО
+            document.body.classList.add('red-mode');
             
             logoMain.style.backgroundImage = "url('Project_Night_Icon.png')";
             logoErr.style.backgroundImage = "url('Project_Night_Icon_ERR.png')";
@@ -117,9 +120,9 @@ inputEl.addEventListener('keypress', (e) => {
             modeText.innerText = "NIGHT_PROTOCOL";
         } 
         else if (cmd === 'aqua') {
-    document.documentElement.style.setProperty('--current-accent', '#00ffd8');
-    document.body.style.backgroundColor = "#06080a"; // И это тоже
-    document.body.classList.remove('red-mode');
+            document.documentElement.style.setProperty('--current-accent', '#00ffd8');
+            document.body.style.backgroundColor = "#06080a"; // И это тоже
+            document.body.classList.remove('red-mode');
             
             logoMain.style.backgroundImage = "url('EV_Dark_2k.png')";
             logoErr.style.backgroundImage = "url('EV_Dark_2k_ERR.png')";
