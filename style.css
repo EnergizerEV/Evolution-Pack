@@ -29,10 +29,24 @@ body::after {
     pointer-events: none; z-index: 9997;
 }
 
+/* Основная статичная виньетка (всегда на фоне) */
 .vignette { 
-    position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
-    background: radial-gradient(circle at 50% 50%, transparent 10%, rgba(0,0,0,0.95) 70%); 
-    pointer-events: none; z-index: 1000; 
+    position: fixed; 
+    top: 0; 
+    left: 0; 
+    width: 100%; 
+    height: 100%; 
+    /* По умолчанию она статична и темна по краям */
+    background: radial-gradient(circle at 50% 50%, transparent 20%, rgba(0,0,0,0.95) 80%); 
+    pointer-events: none; 
+    z-index: 1000; 
+    transition: opacity 1s ease;
+}
+
+/* Состояние "Фонарика" для режима RED */
+body.red-mode .vignette {
+    /* Включаем динамическое управление через JS (переменные) */
+    background: radial-gradient(circle at var(--mouse-x, 50%) var(--mouse-y, 50%), transparent 10%, rgba(15, 0, 0, 0.95) 70%);
 }
 
 .social-sidebar {
