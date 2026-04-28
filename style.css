@@ -32,29 +32,20 @@ body::after {
     pointer-events: none; z-index: 9997;
 }
 
-/* Основная статичная виньетка (всегда на фоне) */
+/* Виньетка: в обычном режиме мягкая, в RED - жесткий черный фонарик */
 .vignette { 
-    position: fixed; 
-    top: 0; 
-    left: 0; 
-    width: 100%; 
-    height: 100%; 
-    /* По умолчанию она статична и темна по краям */
-    background: radial-gradient(circle at 50% 50%, transparent 20%, rgba(0,0,0,0.95) 80%); 
-    pointer-events: none; 
-    z-index: 1000; 
-    transition: opacity 1s ease;
+    position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
+    background: radial-gradient(circle at 50% 50%, transparent 20%, rgba(0,0,0,0.8) 80%); 
+    pointer-events: none; z-index: 1000; 
+    transition: background 0.3s ease;
 }
 
-/* Состояние "Фонарика" для режима RED */
-/* Обновляем виньетку для режима RED */
 body.red-mode .vignette {
-    /* Теперь здесь не просто красный, а глубокий градиент с темно-красным оттенком */
     background: radial-gradient(
         circle at var(--mouse-x, 50%) var(--mouse-y, 50%), 
-        transparent 10%, 
-        rgba(20, 0, 0, 0.9) 50%, 
-        rgba(5, 0, 0, 0.98) 90%
+        transparent 8%, 
+        rgba(0, 0, 0, 0.96) 38%, 
+        rgba(0, 0, 0, 1) 100%
     );
 }
 
