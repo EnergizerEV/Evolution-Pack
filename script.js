@@ -87,6 +87,7 @@ inputEl.addEventListener('keypress', (e) => {
         const cmd = inputEl.value.toLowerCase().trim();
         if (cmd === 'red') {
             document.documentElement.style.setProperty('--current-accent', 'var(--blood-red)');
+            document.documentElement.style.setProperty('--bg-glow', 'rgba(139, 0, 0, 0.15)'); // Темно-красное свечение
             document.body.classList.add('red-mode');
             logoMain.style.backgroundImage = "url('Project_Night_Icon.png')";
             logoErr.style.backgroundImage = "url('Project_Night_Icon_ERR.png')";
@@ -94,6 +95,7 @@ inputEl.addEventListener('keypress', (e) => {
         } 
         else if (cmd === 'aqua') {
             document.documentElement.style.setProperty('--current-accent', 'var(--aqua)');
+            document.documentElement.style.setProperty('--bg-glow', 'rgba(0, 255, 216, 0.05)'); // Бирюзовое свечение
             document.body.classList.remove('red-mode');
             logoMain.style.backgroundImage = "url('EV_Dark_2k.png')";
             logoErr.style.backgroundImage = "url('EV_Dark_2k_ERR.png')";
