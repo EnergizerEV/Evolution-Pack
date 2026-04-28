@@ -245,11 +245,33 @@ body.red-mode .aqua-style:hover { box-shadow: 0 0 50px rgba(255, 0, 0, 0.2); }
 .card:hover .btn { border-color: inherit; color: inherit; }
 .btn:hover { background: #fff !important; color: #000 !important; }
 
-.footer { margin-top: 20px; font-size: 0.65rem; color: #333; text-align: center; z-index: 10; letter-spacing: 2px; }
+.footer { 
+    position: fixed;
+    bottom: 20px; 
+    right: 20px;  /* Смещаем в правый угол */
+    margin: 0; 
+    font-size: 0.65rem; 
+    color: #333; 
+    text-align: right; 
+    z-index: 10; 
+    letter-spacing: 2px;
+    line-height: 1.5;
+}
 .scramble-text { display: inline-block; font-family: 'Source Code Pro', monospace; color: #444; transition: 0.3s; }
 .scramble-text:hover { color: var(--current-accent); }
 
-#sys-status { position: fixed; bottom: 25px; left: 25px; font-family: 'Source Code Pro', monospace; font-size: 10px; color: var(--current-accent); opacity: 0.5; z-index: 1001; }
+#sys-status { 
+    position: fixed; 
+    bottom: 20px; /* Почти в самый низ */
+    left: 20px;   /* В угол */
+    font-family: 'Source Code Pro', monospace; 
+    font-size: 10px; 
+    color: var(--current-accent); 
+    opacity: 0.6; 
+    z-index: 1001; 
+    line-height: 1.5; /* Чтобы строки не слипались */
+    text-align: left;
+}
 
 #loading-screen { 
     position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #000; 
