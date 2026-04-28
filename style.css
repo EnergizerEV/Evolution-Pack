@@ -103,7 +103,43 @@ body.red-mode .vignette {
     opacity: 0.2; /* Немного поднял яркость для сочности */
     pointer-events: none; 
 }
-#term-console.active { top: 30px; }
+/* --- ВОССТАНОВЛЕНИЕ КОНСОЛИ --- */
+#term-console {
+    position: fixed; 
+    top: -180px; /* Прячем за верхний край экрана */
+    left: 50%; 
+    transform: translateX(-50%);
+    width: 80%; 
+    max-width: 600px; 
+    background: rgba(0, 5, 5, 0.98);
+    border: 1px solid var(--current-accent); 
+    padding: 20px;
+    z-index: 10005; /* Чтобы была поверх виньетки и контента */
+    font-family: 'Source Code Pro', monospace;
+    transition: top 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+}
+
+/* Когда консоль активна (нажата тильда) */
+#term-console.active { 
+    top: 30px; 
+}
+
+#term-prefix {
+    font-weight: bold;
+    margin-right: 10px;
+}
+
+#term-input {
+    background: transparent; 
+    border: none; 
+    color: #fff; 
+    width: 70%;
+    outline: none; 
+    font-family: inherit; 
+    font-size: 16px; 
+    caret-color: var(--current-accent);
+}
 #term-input {
     background: transparent; border: none; color: #fff; width: 80%;
     outline: none; font-family: inherit; font-size: 16px; caret-color: var(--current-accent);
