@@ -35,10 +35,10 @@ function drawGrid() {
 drawGrid();
 
 document.addEventListener('mousemove', (e) => {
-    if (window.innerWidth <= 768) return;
-    
-    mouse.x = e.clientX; 
-    mouse.y = e.clientY;
+    // Передаем координаты мыши в CSS переменные
+    document.documentElement.style.setProperty('--cursor-x', e.clientX + 'px');
+    document.documentElement.style.setProperty('--cursor-y', e.clientY + 'px');
+}
     
     // Позиция курсора
     cursor.style.left = `${e.clientX}px`;
