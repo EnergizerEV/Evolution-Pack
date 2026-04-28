@@ -95,8 +95,10 @@ const modeText = document.getElementById('mode-text');
 window.addEventListener('keydown', (e) => {
     if (e.code === 'Backquote') {
         e.preventDefault();
-        consoleEl.classList.toggle('active');
-        if (consoleEl.classList.contains('active')) inputEl.focus();
+        consoleEl.classList.toggle('active'); // Добавляет/убирает класс active
+        if (consoleEl.classList.contains('active')) {
+            inputEl.focus(); // Сразу ставит курсор в поле ввода
+        }
     }
 });
 
