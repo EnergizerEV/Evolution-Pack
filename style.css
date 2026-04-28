@@ -46,15 +46,14 @@ body::after {
     transition: opacity 1s ease;
 }
 
-/* Состояние "Фонарика" для режима RED */
-/* Обновляем виньетку для режима RED */
+/* ЭФФЕКТ ЧЕРНОГО ФОНАРИКА */
 body.red-mode .vignette {
-    /* Теперь здесь не просто красный, а глубокий градиент с темно-красным оттенком */
+    /* Фон остается красным, но эта маска — абсолютно черная */
     background: radial-gradient(
         circle at var(--mouse-x, 50%) var(--mouse-y, 50%), 
-        transparent 10%, 
-        rgba(20, 0, 0, 0.9) 50%, 
-        rgba(5, 0, 0, 0.98) 90%
+        transparent 8%, 
+        rgba(0, 0, 0, 0.96) 35%, 
+        rgba(0, 0, 0, 1) 100%
     );
 }
 
@@ -112,7 +111,20 @@ body.red-mode .vignette {
     opacity: 0.2; /* Немного поднял яркость для сочности */
     pointer-events: none; 
 }
-#term-console.active { top: 30px; }
+#term-console {
+    position: fixed; 
+    top: -180px; 
+    left: 50%; 
+    transform: translateX(-50%);
+    width: 80%; 
+    max-width: 600px; 
+    background: rgba(0, 0, 0, 0.95); 
+    border: 1px solid var(--current-accent); 
+    padding: 20px;
+    z-index: 10005; /* Выше виньетки */
+    transition: top 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+#term-console.active { top: 40px; }
 #term-input {
     background: transparent; border: none; color: #fff; width: 80%;
     outline: none; font-family: inherit; font-size: 16px; caret-color: var(--current-accent);
