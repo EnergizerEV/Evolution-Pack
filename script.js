@@ -34,37 +34,21 @@ document.addEventListener('mousemove', (e) => {
     const xPct = (e.clientX / window.innerWidth) * 100;
     const yPct = (e.clientY / window.innerHeight) * 100;
     vignette.style.background = `radial-gradient(circle at ${xPct}% ${yPct}%, transparent 10%, rgba(0,0,0,0.95) 70%)`;
-    const centerX = window.innerWidth / 2;
-    const centerY = window.innerHeight / 2;
+    
     document.querySelectorAll('.parallax-layer').forEach(layer => {
         const str = layer.getAttribute('data-strength');
-        const isHovered = layer.classList.contains('card') && layer.matches(':hover');
-        const transX = (e.clientX - centerX) / str;
-        const transY = (e.clientY - centerY) / str;
-        let scale = 1, rotateX = 0, rotateY = 0;
-        if (isHovered) {
-            scale = 1.03;
-            const rect = layer.getBoundingClientRect();
-            const cardCenterX = rect.left + rect.width / 2;
-            const cardCenterY = rect.top + rect.height / 2;
-            rotateY = (e.clientX - cardCenterX) / 25; 
-            rotateX = (cardCenterY - e.clientY) / 25;
-        }
-        layer.style.transform = `translate3d(${transX}px, ${transY}px, 0) scale(${scale}) rotateX(${rotateX}deg) rotateY(${rotateY}deg)`;
+        const transX = (e.clientX - window.innerWidth/2) / str;
+        const transY = (e.clientY - window.innerHeight/2) / str;
+        layer.style.transform = `translate3d(${transX}px, ${transY}px, 0)`;
     });
 });
 
 document.addEventListener('mousedown', (e) => {
     cursor.classList.add('pressed');
-    const clickX = e.clientX;
-    const clickY = e.clientY;
-    const xPos = clickX;
-    const yPos = clickY + (window.innerWidth <= 768 ? window.scrollY : 0);
-
     const ripple = document.createElement('div');
     ripple.className = 'click-ripple';
-    ripple.style.left = xPos + 'px';
-    ripple.style.top = yPos + 'px';
+    ripple.style.left = e.clientX + 'px';
+    ripple.style.top = (e.clientY + window.scrollY) + 'px';
     document.body.appendChild(ripple);
     setTimeout(() => ripple.remove(), 600);
 });
@@ -87,8 +71,8 @@ inputEl.addEventListener('keypress', (e) => {
         const cmd = inputEl.value.toLowerCase().trim();
         if (cmd === 'red') {
             document.documentElement.style.setProperty('--current-accent', 'var(--blood-red)');
-            document.documentElement.style.setProperty('--bg-glow', 'rgba(100, 0, 0, 0.3)'); // Сильное красное свечение в центре
-            document.documentElement.style.setProperty('--vignette-color', 'rgba(20, 0, 0, 0.9)'); // Темно-красные края
+            document.documentElement.style.setProperty('--bg-glow', 'rgba(150, 0, 0, 0.25)');
+            document.documentElement.style.setProperty('--vignette-color', 'rgba(30, 0, 0, 0.95)');
             document.body.classList.add('red-mode');
             logoMain.style.backgroundImage = "url('Project_Night_Icon.png')";
             logoErr.style.backgroundImage = "url('Project_Night_Icon_ERR.png')";
@@ -96,7 +80,7 @@ inputEl.addEventListener('keypress', (e) => {
         } 
         else if (cmd === 'aqua') {
             document.documentElement.style.setProperty('--current-accent', 'var(--aqua)');
-            document.documentElement.style.setProperty('--bg-glow', 'rgba(0, 255, 216, 0.1)');
+            document.documentElement.style.setProperty('--bg-glow', 'rgba(0, 255, 216, 0.08)');
             document.documentElement.style.setProperty('--vignette-color', 'rgba(0, 0, 0, 0.9)');
             document.body.classList.remove('red-mode');
             logoMain.style.backgroundImage = "url('EV_Dark_2k.png')";
@@ -108,26 +92,13 @@ inputEl.addEventListener('keypress', (e) => {
     }
 });
 
-const nick = document.getElementById('nickname');
-const original = nick.innerText;
-nick.onmouseover = () => {
-    let i = 0;
-    const iter = setInterval(() => {
-        nick.innerText = original.split("").map((l, idx) => idx < i ? original[idx] : "X_#$@&"[Math.floor(Math.random()*6)]).join("");
-        if (i >= original.length) clearInterval(iter);
-        i += 1/3;
-    }, 30);
-};
-
 function startTyping() {
     document.querySelectorAll('.type-output').forEach(el => {
         const text = el.getAttribute('data-text');
-        let charIdx = 0;
-        el.innerText = '';
+        let i = 0; el.innerText = '';
         const type = setInterval(() => {
-            el.innerText += text[charIdx];
-            charIdx++;
-            if (charIdx >= text.length) clearInterval(type);
+            el.innerText += text[i]; i++;
+            if (i >= text.length) clearInterval(type);
         }, 30);
     });
 }
@@ -142,7 +113,6 @@ window.addEventListener('load', () => {
         document.getElementById('main-content').style.opacity = '1';
     }, 3000);
     setInterval(() => { 
-        const cpu = document.getElementById('cpu-val');
-        if(cpu) cpu.innerText = Math.floor(Math.random()*15)+5; 
+        document.getElementById('cpu-val').innerText = Math.floor(Math.random()*15)+5; 
     }, 2000);
 });
