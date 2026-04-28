@@ -27,11 +27,44 @@ function drawGrid() {
 drawGrid();
 
 document.addEventListener('mousemove', (e) => {
-    // Не применяем эффекты на телефонах
     if (window.innerWidth <= 768) return;
     
     mouse.x = e.clientX; 
     mouse.y = e.clientY;
+    
+    // Двигаем курсор-картинку
+    cursor.style.left = `${e.clientX}px`;
+    cursor.style.top = `${e.clientY}px`;
+
+    // ПЕРЕДАЕМ КООРДИНАТЫ ДЛЯ "ФОНАРИКА" (виньетки)
+    const xPct = (e.clientX / window.innerWidth) * 100;
+    const yPct = (e.clientY / window.innerHeight) * 100;
+    document.documentElement.style.setProperty('--mouse-x', `${xPct}%`);
+    document.documentElement.style.setProperty('--mouse-y', `${yPct}%`);
+    
+    // Параллакс для слоев
+    document.querySelectorAll('.parallax-layer').forEach(layer => {
+        const str = layer.getAttribute('data-strength');
+        const transX = (e.clientX - window.innerWidth / 2) / str;
+        const transY = (e.clientY - window.innerHeight / 2) / str;
+
+        if (layer.classList.contains('card')) {
+            const isHovered = layer.matches(':hover');
+            if (isHovered) {
+                const rect = layer.getBoundingClientRect();
+                const cardCenterX = rect.left + rect.width / 2;
+                const cardCenterY = rect.top + rect.height / 2;
+                const rotateY = (e.clientX - cardCenterX) / 25; 
+                const rotateX = (cardCenterY - e.clientY) / 25;
+                layer.style.transform = `translate3d(${transX}px, ${transY}px, 0) scale(1.03) rotateX(${rotateX}deg) rotateY(${rotateY}deg)`;
+            } else {
+                layer.style.transform = `translate3d(${transX}px, ${transY}px, 0) scale(1) rotateX(0deg) rotateY(0deg)`;
+            }
+        } else {
+            layer.style.transform = `translate3d(${transX}px, ${transY}px, 0)`;
+        }
+    });
+});
     
     // Обновляем позицию курсора
     cursor.style.left = `${e.clientX}px`;
@@ -109,14 +142,14 @@ inputEl.addEventListener('keypress', (e) => {
         const cmd = inputEl.value.toLowerCase().trim();
         if (cmd === 'red') {
             document.documentElement.style.setProperty('--current-accent', 'var(--blood-red)');
-            document.body.classList.add('red-mode');
+            document.body.classList.add('red-mode'); // ВКЛЮЧАЕТ ФОНАРИК
             logoMain.style.backgroundImage = "url('Project_Night_Icon.png')";
             logoErr.style.backgroundImage = "url('Project_Night_Icon_ERR.png')";
             modeText.innerText = "NIGHT_PROTOCOL";
         } 
         else if (cmd === 'aqua') {
             document.documentElement.style.setProperty('--current-accent', 'var(--aqua)');
-            document.body.classList.remove('red-mode');
+            document.body.classList.remove('red-mode'); // ВЫКЛЮЧАЕТ ФОНАРИК
             logoMain.style.backgroundImage = "url('EV_Dark_2k.png')";
             logoErr.style.backgroundImage = "url('EV_Dark_2k_ERR.png')";
             modeText.innerText = "AQUA_CORE";
