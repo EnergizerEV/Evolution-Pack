@@ -248,28 +248,30 @@ body.red-mode .aqua-style:hover { box-shadow: 0 0 50px rgba(255, 0, 0, 0.2); }
 .footer { 
     position: fixed;
     bottom: 20px; 
-    right: 20px;  /* В правый нижний угол */
+    right: 20px;  
     margin: 0; 
     font-size: 0.65rem; 
     color: #333; 
     text-align: right; 
-    z-index: 10; 
+    z-index: 10001; 
     letter-spacing: 2px;
+    transform: none !important; /* ЗАПРЕТ СМЕЩЕНИЯ */
 }
 .scramble-text { display: inline-block; font-family: 'Source Code Pro', monospace; color: #444; transition: 0.3s; }
 .scramble-text:hover { color: var(--current-accent); }
 
 #sys-status { 
     position: fixed; 
-    bottom: 20px; /* Расстояние от нижнего края экрана */
-    left: 20px;   /* Расстояние от левого края экрана */
+    bottom: 20px; 
+    left: 20px;   
     font-family: 'Source Code Pro', monospace; 
     font-size: 10px; 
     color: var(--current-accent); 
     opacity: 0.5; 
-    z-index: 1001; 
+    z-index: 10001; /* Поднимаем выше всего */
     text-align: left;
-    margin: 0; /* Убираем лишние отступы */
+    margin: 0;
+    transform: none !important; /* ЗАПРЕТ СМЕЩЕНИЯ */
 }
 
 #loading-screen { 
@@ -309,8 +311,8 @@ body.red-mode .aqua-style:hover { box-shadow: 0 0 50px rgba(255, 0, 0, 0.2); }
     position: fixed;
     bottom: 15px;
     left: 50%;
-    transform: translateX(-50%);
+    transform: translateX(-50%) !important; /* Сохраняем центровку, но убираем зум */
     font-size: 0.6rem;
     color: #222;
-    z-index: 10;
+    z-index: 10001;
 }
