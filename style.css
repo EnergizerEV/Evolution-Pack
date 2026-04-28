@@ -2,33 +2,9 @@
     --aqua: #00ffd8;
     --blood-red: #ff0000;
     --bg-color: #06080a;
-    --bg-glow: rgba(0, 255, 216, 0.1); /* Центр фона */
-    --vignette-color: rgba(0, 0, 0, 0.9); /* Края фона */
+    --bg-glow: rgba(0, 255, 216, 0.08);
+    --vignette-color: rgba(0, 0, 0, 0.9);
     --current-accent: var(--aqua);
-}
-
-body { 
-    color: #e0e6ed; 
-    font-family: 'Orbitron', sans-serif; 
-    display: flex; 
-    flex-direction: column; 
-    align-items: center; 
-    justify-content: center; 
-    perspective: 1000px;
-    /* Главный градиент теперь зависит от переменных */
-    background: radial-gradient(circle at center, var(--bg-glow) 0%, var(--bg-color) 100%);
-    transition: all 0.8s ease;
-    background-attachment: fixed;
-}
-
-/* Обновляем слои темноты, чтобы они пропускали новый цвет */
-body::before {
-    content: "";
-    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-    /* Вместо чистого черного используем переменную */
-    background: radial-gradient(circle at center, transparent 40%, var(--vignette-color) 100%);
-    pointer-events: none; z-index: 1002;
-    transition: background 0.8s ease;
 }
 
 html, body {
@@ -36,17 +12,29 @@ html, body {
     height: 100%;
     margin: 0;
     padding: 0;
-    background-color: var(--bg-color);
 }
 
 * { cursor: none !important; }
 
-/* --- СЛОИ ТЕМНОТЫ --- */
+body { 
+    background-color: var(--bg-color);
+    background: radial-gradient(circle at center, var(--bg-glow) 0%, var(--bg-color) 100%);
+    color: #e0e6ed; 
+    font-family: 'Orbitron', sans-serif; 
+    display: flex; 
+    flex-direction: column; 
+    align-items: center; 
+    justify-content: center; 
+    perspective: 1000px;
+    transition: background 0.8s ease;
+}
+
 body::before {
     content: "";
     position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-    background: radial-gradient(circle at center, transparent 60%, #000 100%);
+    background: radial-gradient(circle at center, transparent 40%, var(--vignette-color) 100%);
     pointer-events: none; z-index: 1002;
+    transition: background 0.8s ease;
 }
 
 body::after {
@@ -123,12 +111,6 @@ body::after {
     outline: none; font-family: inherit; font-size: 16px; caret-color: var(--current-accent);
 }
 
-body { 
-    color: #e0e6ed; font-family: 'Orbitron', sans-serif; 
-    display: flex; flex-direction: column; align-items: center; 
-    justify-content: center; perspective: 1000px;
-}
-
 #main-content { 
     opacity: 0; transition: opacity 2s ease; 
     display: flex; flex-direction: column; align-items: center; width: 100%; z-index: 1001; 
@@ -168,14 +150,7 @@ body.red-mode .aqua-style:hover { box-shadow: 0 0 50px rgba(255, 0, 0, 0.2); }
 .night-style:hover { border-left: 5px solid var(--blood-red); box-shadow: 0 0 50px rgba(255, 0, 0, 0.2); background: rgba(25, 10, 10, 0.95); }
 .night-style:hover .night-glow { color: var(--blood-red); text-shadow: 0 0 20px var(--blood-red); font-weight: bold; }
 
-.type-output { 
-    font-size: 0.85rem; 
-    color: #8da0a9; 
-    line-height: 1.6; 
-    min-height: 2.5em; 
-    white-space: normal; 
-    word-wrap: break-word; 
-}
+.type-output { font-size: 0.85rem; color: #8da0a9; line-height: 1.6; min-height: 2.5em; }
 
 .btn {
     display: inline-block; padding: 12px 28px; text-decoration: none; font-weight: bold; font-size: 0.75rem; 
@@ -185,60 +160,32 @@ body.red-mode .aqua-style:hover { box-shadow: 0 0 50px rgba(255, 0, 0, 0.2); }
 .aqua-style:hover .btn { border-color: var(--current-accent); color: var(--current-accent); }
 .night-style:hover .btn { border-color: var(--blood-red); color: var(--blood-red); }
 
-.btn:hover { background: #fff !important; color: #000 !important; animation: btn-flicker 1.5s ease-in-out; box-shadow: 0 0 25px rgba(255, 255, 255, 0.5); }
-
-@keyframes btn-flicker {
-    0% { opacity: 0.2; } 15% { opacity: 1; } 30% { opacity: 0.4; } 45% { opacity: 1; } 60% { opacity: 0.7; } 75% { opacity: 0.9; } 90% { opacity: 0.8; } 100% { opacity: 1; }
-}
+.btn:hover { background: #fff !important; color: #000 !important; box-shadow: 0 0 25px rgba(255, 255, 255, 0.5); }
 
 .footer { margin-top: 20px; font-size: 0.65rem; color: #333; text-align: center; z-index: 10; letter-spacing: 2px; }
 .scramble-text { display: inline-block; font-family: 'Source Code Pro', monospace; color: #444; transition: 0.3s; }
 .scramble-text:hover { color: var(--current-accent); }
 
-.demo-footer-text {
-    margin-top: 10px;
-    font-size: 9px;
-    color: #222;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-    font-family: 'Source Code Pro', monospace;
-}
-
-#sys-status { position: fixed; bottom: 25px; left: 25px; font-family: 'Source Code Pro', monospace; font-size: 10px; color: var(--current-accent); opacity: 0.5; pointer-events: none; z-index: 1001; }
+#sys-status { position: fixed; bottom: 25px; left: 25px; font-family: 'Source Code Pro', monospace; font-size: 10px; color: var(--current-accent); opacity: 0.5; z-index: 1001; }
 
 #loading-screen { 
     position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #000; 
     z-index: 99999; display: flex; flex-direction: column; justify-content: center; align-items: center; 
     color: var(--aqua); font-family: 'Source Code Pro', monospace; transition: opacity 1s; 
 }
-.loading-text { letter-spacing: 4px; margin-bottom: 20px; text-shadow: 0 0 10px var(--aqua), 0 0 20px var(--aqua); animation: pulse-glow 2s infinite ease-in-out; }
-.progress-bar-container { width: 250px; height: 4px; background: rgba(0, 255, 216, 0.05); border: 1px solid rgba(0, 255, 216, 0.2); position: relative; overflow: hidden; box-shadow: 0 0 15px rgba(0, 255, 216, 0.1); }
-.progress-bar-fill { position: absolute; height: 100%; width: 0%; background: var(--aqua); box-shadow: 0 0 20px var(--aqua), 0 0 40px var(--aqua); animation: loadProgress 3.5s cubic-bezier(0.4, 0, 0.2, 1) forwards; }
+.loading-text { letter-spacing: 4px; margin-bottom: 20px; text-shadow: 0 0 10px var(--aqua); animation: pulse-glow 2s infinite ease-in-out; }
+.progress-bar-container { width: 250px; height: 4px; background: rgba(0, 255, 216, 0.05); border: 1px solid rgba(0, 255, 216, 0.2); overflow: hidden; }
+.progress-bar-fill { height: 100%; width: 0%; background: var(--aqua); box-shadow: 0 0 20px var(--aqua); animation: loadProgress 3.5s forwards; }
 
-@keyframes pulse-glow {
-    0%, 100% { opacity: 1; text-shadow: 0 0 10px var(--aqua), 0 0 20px var(--aqua); }
-    50% { opacity: 0.6; text-shadow: 0 0 5px var(--aqua); }
-}
+@keyframes pulse-glow { 0%, 100% { opacity: 1; } 50% { opacity: 0.6; } }
 @keyframes loadProgress { to { width: 100%; } }
 
 @media screen and (max-width: 768px) {
     * { cursor: auto !important; }
     #custom-cursor { display: none; }
     html, body { overflow-y: auto; overflow-x: hidden; height: auto; min-height: 100%; }
-    body { padding: 40px 0; justify-content: flex-start; }
-    #main-content { padding: 0 20px; width: calc(100% - 40px); }
-    .social-sidebar { position: static; transform: none; flex-direction: row; justify-content: center; margin-bottom: 20px; order: -1; }
-    .logo-wrapper { width: 100px; height: 100px; margin-bottom: 15px; }
-    .header h1 { font-size: 1.4rem; letter-spacing: 6px; }
-    .card { padding: 25px; width: 100%; margin-bottom: 20px; box-sizing: border-box; }
-    .card h2 { font-size: 1.1rem; }
-    .type-output { font-size: 0.75rem; }
-    .btn { padding: 10px 20px; font-size: 0.65rem; width: 100%; text-align: center; box-sizing: border-box; }
-    .card div[style*="flex"] { flex-direction: column; width: 100%; }
-    #sys-status { position: static; margin-top: 30px; text-align: center; opacity: 0.8; font-size: 8px; width: 100%; display: center; justify-content: center; gap: 15px; }
-    #sys-status br { display: none; }
-    #term-console { width: 90%; padding: 15px; }
-    #term-input { font-size: 14px; width: 70%; }
-    .vignette { background: radial-gradient(circle at 50% 40%, transparent 10%, rgba(0,0,0,0.9) 80%); }
-    body::before { background: radial-gradient(circle at center, transparent 70%, #000 120%); }
+    #main-content { padding: 40px 20px; width: calc(100% - 40px); }
+    .social-sidebar { position: static; transform: none; flex-direction: row; justify-content: center; margin-bottom: 20px; }
+    .card { padding: 25px; }
+    #sys-status { position: static; margin-top: 30px; text-align: center; }
 }
