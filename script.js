@@ -157,6 +157,7 @@ window.addEventListener('load', () => {
             
             // Активируем появление интерфейса с приближением
             mainContent.classList.add('visible'); 
+            document.querySelector('.vignette').classList.add('visible');
             
             // Запускаем печать текста (твоя старая функция)
             startTyping();
