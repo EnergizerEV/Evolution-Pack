@@ -1,11 +1,8 @@
 :root {
     --aqua: #00ffd8;
-    --aqua-dim: rgba(0, 255, 216, 0.15); /* Цвет сетки аква */
     --blood-red: #ff0000;
-    --blood-dim: rgba(139, 0, 0, 0.2);   /* Глубокий красный для сетки */
     --bg-color: #06080a;
     --current-accent: var(--aqua);
-    --grid-color: var(--aqua-dim);       /* Динамический цвет сетки */
 }
 
 html, body {
@@ -14,72 +11,26 @@ html, body {
     margin: 0;
     padding: 0;
     background-color: var(--bg-color);
+    transition: background-color 0.8s ease;
 }
 
 * { cursor: none !important; }
 
-body::before {
-    content: "";
-    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-    background: radial-gradient(circle at center, transparent 60%, #000 100%);
-    pointer-events: none; z-index: 1002;
-}
-
-body::after {
-    content: "";
-    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-    background: radial-gradient(circle, transparent 30%, rgba(0,0,0,0.4) 100%);
-    pointer-events: none; z-index: 9997;
-}
-
-/* Основная статичная виньетка (всегда на фоне) */
+/* Виньетка: в обычном режиме мягкая, в RED - жесткий черный фонарик */
 .vignette { 
-    position: fixed; 
-    top: 0; 
-    left: 0; 
-    width: 100%; 
-    height: 100%; 
-    /* По умолчанию она статична и темна по краям */
-    background: radial-gradient(circle at 50% 50%, transparent 20%, rgba(0,0,0,0.95) 80%); 
-    pointer-events: none; 
-    z-index: 1000; 
-    transition: opacity 1s ease;
+    position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
+    background: radial-gradient(circle at 50% 50%, transparent 20%, rgba(0,0,0,0.8) 80%); 
+    pointer-events: none; z-index: 1000; 
+    transition: background 0.3s ease;
 }
 
-/* ЭФФЕКТ ЧЕРНОГО ФОНАРИКА */
 body.red-mode .vignette {
-    /* Фон остается красным, но эта маска — абсолютно черная */
     background: radial-gradient(
         circle at var(--mouse-x, 50%) var(--mouse-y, 50%), 
         transparent 8%, 
-        rgba(0, 0, 0, 0.96) 35%, 
+        rgba(0, 0, 0, 0.96) 38%, 
         rgba(0, 0, 0, 1) 100%
     );
-}
-
-.social-sidebar {
-    position: fixed; left: 30px; top: 50%; transform: translateY(-50%);
-    display: flex; flex-direction: column; gap: 25px; z-index: 1005;
-}
-.social-link {
-    color: #444; font-size: 1.5rem; transition: 0.4s;
-    filter: drop-shadow(0 0 5px transparent);
-}
-.social-link:hover {
-    color: var(--current-accent);
-    filter: drop-shadow(0 0 10px var(--current-accent));
-    transform: scale(1.2);
-}
-
-.scan-line {
-    position: fixed; top: 0; left: 0; width: 100%; height: 100px;
-    background: linear-gradient(to bottom, transparent, rgba(0, 255, 216, 0.05), transparent);
-    opacity: 0.1; pointer-events: none; z-index: 1001;
-    animation: scanning 4s linear infinite;
-}
-@keyframes scanning {
-    0% { transform: translateY(-100px); }
-    100% { transform: translateY(100vh); }
 }
 
 #custom-cursor {
@@ -90,58 +41,24 @@ body.red-mode .vignette {
 }
 #custom-cursor.pressed { background-image: url('Cursor2-F1-32x32x32.png'); }
 
-.click-ripple {
-    position: absolute; border: 2px solid var(--current-accent);
-    border-radius: 50%; pointer-events: none; transform: translate(-50%, -50%);
-    z-index: 1003; animation: ripple-out 0.6s ease-out forwards;
-}
-@keyframes ripple-out {
-    0% { width: 0; height: 0; opacity: 0.8; }
-    100% { width: 160px; height: 160px; opacity: 0; border-width: 1px; }
-}
+#grid-canvas { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1; opacity: 0.15; pointer-events: none; }
 
-/* Чтобы сетка тоже меняла цвет, мы будем использовать переменную --grid-color */
-#grid-canvas { 
-    position: fixed; 
-    top: 0; 
-    left: 0; 
-    width: 100%; 
-    height: 100%; 
-    z-index: -1; 
-    opacity: 0.2; /* Немного поднял яркость для сочности */
-    pointer-events: none; 
-}
 #term-console {
-    position: fixed; 
-    top: -180px; 
-    left: 50%; 
-    transform: translateX(-50%);
-    width: 80%; 
-    max-width: 600px; 
-    background: rgba(0, 0, 0, 0.95); 
-    border: 1px solid var(--current-accent); 
-    padding: 20px;
-    z-index: 10005; /* Выше виньетки */
+    position: fixed; top: -180px; left: 50%; transform: translateX(-50%);
+    width: 80%; max-width: 600px; background: rgba(0, 5, 5, 0.98);
+    border: 1px solid var(--current-accent); padding: 20px;
+    z-index: 10005; font-family: 'Source Code Pro', monospace;
     transition: top 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
 }
-#term-console.active { top: 40px; }
+#term-console.active { top: 30px; }
 #term-input {
     background: transparent; border: none; color: #fff; width: 80%;
     outline: none; font-family: inherit; font-size: 16px; caret-color: var(--current-accent);
 }
 
-body { 
-    color: #e0e6ed; font-family: 'Orbitron', sans-serif; 
-    display: flex; flex-direction: column; align-items: center; 
-    justify-content: center; perspective: 1000px;
-}
+body { color: #e0e6ed; font-family: 'Orbitron', sans-serif; display: flex; flex-direction: column; align-items: center; justify-content: center; perspective: 1000px; }
 
-#main-content { 
-    opacity: 0; transition: opacity 2s ease; 
-    display: flex; flex-direction: column; align-items: center; width: 100%; z-index: 1001; 
-}
-
-.crt-scanlines { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.4) 50%); background-size: 100% 4px; pointer-events: none; z-index: 999; opacity: 0.3; }
+#main-content { opacity: 0; transition: opacity 2s ease; display: flex; flex-direction: column; align-items: center; width: 100%; z-index: 1001; }
 
 .parallax-layer { transition: transform 0.4s cubic-bezier(0.23, 1, 0.32, 1); will-change: transform; }
 
@@ -150,87 +67,35 @@ body {
 .logo-base { background-image: url('EV_Dark_2k.png'); filter: drop-shadow(0 0 15px var(--current-accent)); }
 .logo-glitch { background-image: url('EV_Dark_2k_ERR.png'); opacity: 0; animation: glitch-step 4s infinite step-end; }
 
-@keyframes glitch-step { 
-    0%, 90%, 100% { opacity: 0; transform: none; } 
-    92% { opacity: 1; transform: translate(6px, -3px); } 
-    94% { opacity: 1; transform: translate(-6px, 3px); } 
-}
-
-.header h1 { font-size: 2.2rem; letter-spacing: 12px; text-transform: uppercase; z-index: 10; margin: 10px 0; }
-.header h1 span { color: var(--current-accent); transition: color 0.4s; }
+@keyframes glitch-step { 0%, 90%, 100% { opacity: 0; transform: none; } 92% { opacity: 1; transform: translate(6px, -3px); } 94% { opacity: 1; transform: translate(-6px, 3px); } }
 
 .card {
-    background: rgba(10, 15, 20, 0.92); 
-    border: 1px solid #1a262b; 
-    padding: 40px; 
-    width: 100%; 
-    max-width: 600px; 
-    margin-bottom: 30px; 
-    position: relative; 
-    z-index: 20;
-    backdrop-filter: blur(2px);
-    
-    /* --- КРИТИЧЕСКИЕ ИЗМЕНЕНИЯ ДЛЯ ПОВОРОТОВ --- */
-    /* Плавность теперь обрабатывается JavaScript для слежения, */
-    /* но CSS задает базовую скорость возврата в исходное состояние. */
-    transition: transform 0.5s cubic-bezier(0.165, 0.84, 0.44, 1), border 0.4s, box-shadow 0.4s, background 0.4s;
-    
-    /* Включаем 3D-пространство внутри карточки */
+    background: rgba(10, 15, 20, 0.92); border: 1px solid #1a262b; padding: 40px; 
+    width: 100%; max-width: 600px; margin-bottom: 30px; position: relative; z-index: 20;
+    transition: transform 0.5s cubic-bezier(0.165, 0.84, 0.44, 1), border 0.4s, box-shadow 0.4s;
     transform-style: preserve-3d;
 }
+.card h2 { transform: translateZ(30px); color: #fff; }
 
-/* При наведении карточка немного увеличивается */
-.card:hover {
-    transform: scale(1.03);
-}
+.aqua-style:hover { border-left: 5px solid var(--current-accent); box-shadow: 0 0 50px rgba(0, 255, 216, 0.15); }
+.night-style:hover { border-left: 5px solid var(--blood-red); box-shadow: 0 0 50px rgba(255, 0, 0, 0.2); }
 
-.card h2 { 
-    margin-top: 0; 
-    color: #fff; 
-    transition: 0.4s; 
-    font-weight: normal; 
-    font-size: 1.4rem; 
-    /* Добавляем легкий эффект "всплытия" текста */
-    transform: translateZ(30px);
-}
-
-.aqua-style:hover { border-left: 5px solid var(--current-accent); box-shadow: 0 0 50px rgba(0, 255, 216, 0.15); background: rgba(10, 25, 25, 0.95); }
-body.red-mode .aqua-style:hover { box-shadow: 0 0 50px rgba(255, 0, 0, 0.2); }
-.aqua-style:hover .glow-part { color: var(--current-accent); text-shadow: 0 0 20px var(--current-accent); font-weight: bold; }
-
-.night-style:hover { border-left: 5px solid var(--blood-red); box-shadow: 0 0 50px rgba(255, 0, 0, 0.2); background: rgba(25, 10, 10, 0.95); }
-.night-style:hover .night-glow { color: var(--blood-red); text-shadow: 0 0 20px var(--blood-red); font-weight: bold; }
-
-.type-output { font-size: 0.85rem; color: #8da0a9; line-height: 1.6; min-height: 2.5em; }
-
-.btn {
-    display: inline-block; padding: 12px 28px; text-decoration: none; font-weight: bold; font-size: 0.75rem; 
-    text-transform: uppercase; border: 1px solid #1a262b; transition: 0.3s; margin-top: 10px; color: #555; position: relative; z-index: 30;
-}
+.btn { display: inline-block; padding: 12px 28px; text-decoration: none; border: 1px solid #1a262b; transition: 0.3s; margin-top: 10px; color: #555; text-transform: uppercase; font-size: 0.75rem; }
 .card:hover .btn { border-color: inherit; color: inherit; }
 .btn:hover { background: #fff !important; color: #000 !important; }
 
-.footer { margin-top: 20px; font-size: 0.65rem; color: #333; text-align: center; z-index: 10; letter-spacing: 2px; }
-.scramble-text { display: inline-block; font-family: 'Source Code Pro', monospace; color: #444; transition: 0.3s; }
-.scramble-text:hover { color: var(--current-accent); }
-
 #sys-status { position: fixed; bottom: 25px; left: 25px; font-family: 'Source Code Pro', monospace; font-size: 10px; color: var(--current-accent); opacity: 0.5; z-index: 1001; }
 
-#loading-screen { 
-    position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #000; 
-    z-index: 99999; display: flex; flex-direction: column; justify-content: center; align-items: center; 
-    color: var(--aqua); font-family: 'Source Code Pro', monospace; transition: opacity 1s; 
-}
-.loading-text { letter-spacing: 4px; margin-bottom: 20px; text-shadow: 0 0 10px var(--aqua); }
-.progress-bar-container { width: 250px; height: 4px; background: rgba(0, 255, 216, 0.05); border: 1px solid rgba(0, 255, 216, 0.2); }
+#loading-screen { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #000; z-index: 99999; display: flex; flex-direction: column; justify-content: center; align-items: center; color: var(--aqua); transition: opacity 1s; }
+.progress-bar-container { width: 250px; height: 4px; background: rgba(0, 255, 216, 0.05); border: 1px solid rgba(0, 255, 216, 0.2); margin-top: 20px; }
 .progress-bar-fill { height: 100%; width: 0%; background: var(--aqua); animation: loadProgress 3.5s forwards; }
-
 @keyframes loadProgress { to { width: 100%; } }
 
-@media screen and (max-width: 768px) {
-    * { cursor: auto !important; }
-    #custom-cursor { display: none; }
-    html, body { overflow-y: auto; height: auto; min-height: 100%; }
-    #main-content { padding: 40px 20px; width: calc(100% - 40px); }
-    .social-sidebar { position: static; transform: none; flex-direction: row; justify-content: center; margin-bottom: 20px; }
-}
+.social-sidebar { position: fixed; left: 30px; top: 50%; transform: translateY(-50%); display: flex; flex-direction: column; gap: 25px; z-index: 1005; }
+.social-link { color: #444; font-size: 1.5rem; transition: 0.4s; }
+.social-link:hover { color: var(--current-accent); transform: scale(1.2); }
+
+.click-ripple { position: absolute; border: 2px solid var(--current-accent); border-radius: 50%; pointer-events: none; transform: translate(-50%, -50%); z-index: 1003; animation: ripple-out 0.6s ease-out forwards; }
+@keyframes ripple-out { 0% { width: 0; height: 0; opacity: 0.8; } 100% { width: 160px; height: 160px; opacity: 0; } }
+
+@media screen and (max-width: 768px) { * { cursor: auto !important; } #custom-cursor { display: none; } #main-content { padding: 40px 20px; } }
