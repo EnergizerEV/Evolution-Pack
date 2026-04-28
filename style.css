@@ -287,37 +287,42 @@ body.red-mode .aqua-style:hover { box-shadow: 0 0 50px rgba(255, 0, 0, 0.2); }
 #sys-status, .footer, .demo-footer-text {
     transform: none !important; 
 }
-/* --- ФИКСАЦИЯ ЦВЕТОВ ПАНЕЛЕЙ (ИГНОРИРОВАНИЕ КОМАНД) --- */
+/* ФИКСАЦИЯ ОРИГИНАЛЬНОГО ВИДА ПАНЕЛЕЙ */
 
-/* Первая карточка - всегда бирюзовая */
+/* Первая карточка (EVolution Pack) - всегда AQUA */
 .card.aqua-style {
-    border-color: #00ffd8 !important;
-    box-shadow: 0 0 15px rgba(0, 255, 216, 0.2) !important;
+    border: 1px solid rgba(0, 255, 216, 0.3) !important;
+    background: rgba(0, 0, 0, 0.4) !important;
 }
-.card.aqua-style .glow-part {
+
+.card.aqua-style h2 span.glow-part {
     color: #00ffd8 !important;
-    text-shadow: 0 0 10px rgba(0, 255, 216, 0.8) !important;
+    text-shadow: 0 0 10px rgba(0, 255, 216, 0.5) !important;
 }
+
 .card.aqua-style .btn {
-    border-color: #00ffd8 !important;
+    border: 1px solid rgba(0, 255, 216, 0.5) !important;
     color: #00ffd8 !important;
+    background: transparent !important;
 }
 
-/* Вторая карточка - всегда красная */
+/* Вторая карточка (Project Night) - всегда RED */
 .card.night-style {
-    border-color: #ff0000 !important;
-    box-shadow: 0 0 15px rgba(255, 0, 0, 0.2) !important;
-}
-.card.night-style .night-glow {
-    color: #ff0000 !important;
-    text-shadow: 0 0 10px rgba(255, 0, 0, 0.8) !important;
-}
-.card.night-style .btn {
-    border-color: #ff0000 !important;
-    color: #ff0000 !important;
+    border: 1px solid rgba(255, 0, 0, 0.3) !important;
+    background: rgba(0, 0, 0, 0.4) !important;
 }
 
-/* Общий сброс: убираем влияние глобальной переменной на карточки */
-.card.aqua-style, .card.night-style {
-    --current-accent: none !important; 
+.card.night-style h2 span.night-glow {
+    color: #ff0000 !important;
+    text-shadow: 0 0 10px rgba(255, 0, 0, 0.5) !important;
 }
+
+.card.night-style .btn {
+    border: 1px solid rgba(255, 0, 0, 0.5) !important;
+    color: #ff0000 !important;
+    background: transparent !important;
+}
+
+/* Фиксация декоративной полоски слева (если она есть) */
+.card.aqua-style::before { background: #00ffd8 !important; }
+.card.night-style::before { background: #ff0000 !important; }
