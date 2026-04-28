@@ -146,13 +146,25 @@ function startTyping() {
 
 window.addEventListener('load', () => {
     setTimeout(() => {
-        document.getElementById('loading-screen').style.opacity = '0';
+        const loadingScreen = document.getElementById('loading-screen');
+        const mainContent = document.getElementById('main-content');
+        
+        // Плавное исчезновение экрана загрузки
+        loadingScreen.style.opacity = '0';
+        
         setTimeout(() => {
-            document.getElementById('loading-screen').style.display = 'none';
+            loadingScreen.style.display = 'none';
+            
+            // Активируем появление интерфейса с приближением
+            mainContent.classList.add('visible'); 
+            
+            // Запускаем печать текста (твоя старая функция)
             startTyping();
         }, 1000);
-        document.getElementById('main-content').style.opacity = '1';
-    }, 3000);
+        
+    }, 3000); // Время загрузки (3 секунды)
+
+    // Обновление CPU (твоя старая функция)
     setInterval(() => { 
         const cpu = document.getElementById('cpu-val');
         if(cpu) cpu.innerText = Math.floor(Math.random()*15)+5; 
