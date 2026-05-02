@@ -12,10 +12,15 @@
     <link rel="stylesheet" href="style.css">
 </head>
 <body class="aqua-mode">
-
+<div class="lang-switcher">
+    <div onclick="setLanguage('ru')" id="lang-ru" class="lang-btn active">RU</div>
+    <div onclick="setLanguage('en')" id="lang-en" class="lang-btn">EN</div>
+    <div onclick="setLanguage('es')" id="lang-es" class="lang-btn">ES</div>
+</div>
     <canvas id="grid-canvas"></canvas>
     <div id="custom-cursor"></div>
     <div class="vignette" id="vignette"></div>
+    
 
     <div class="social-sidebar">
         <a href="https://www.youtube.com/@energizerSAS4" target="_blank" class="social-link" title="YouTube"><i class="fab fa-youtube"></i></a>
@@ -34,36 +39,71 @@
     </div>
 
 <div id="main-content">
-        <div class="crt-scanlines"></div>
-        <div class="scan-line"></div>
+    <div class="crt-scanlines"></div>
+    <div class="scan-line"></div>
+    
+    <!-- zoom-wrapper — это главный контейнер (mainWrapper в JS) -->
+    <div class="zoom-wrapper">
         
-        <div class="zoom-wrapper">
-            
-            <div class="logo-wrapper parallax-layer" data-strength="60">
-                <div id="logo-main" class="glitch-logo logo-base"></div>
-                <div id="logo-err" class="glitch-logo logo-glitch"></div>
-            </div>
+        <!-- ЛОГОТИП -->
+        <div class="logo-wrapper parallax-layer" data-strength="60">
+            <div id="logo-main" class="glitch-logo logo-base"></div>
+            <div id="logo-err" class="glitch-logo logo-glitch"></div>
+        </div>
 
-            <div class="header parallax-layer" data-strength="90">
-                <h1><span>EV</span>olution</h1>
-            </div>
+        <!-- ЗАГОЛОВОК -->
+        <div class="header parallax-layer" data-strength="90">
+            <h1><span>EV</span>olution</h1>
+        </div>
 
-            <div class="card aqua-style parallax-layer" data-strength="150">
+        <!-- КАРТОЧКА №1: EVOLUTION PACK -->
+        <div class="card aqua-style parallax-layer" data-strength="150">
+            <div class="card-body">
                 <h2><span class="glow-part">EV</span>olution <span class="glow-part">Pa</span>ck</h2>
-                <p class="type-output" data-text="A classic texture pack that includes Dark-Aqua, Equipments & Skins."></p>
-                <div style="display:flex; gap:12px;">
-                    <a href="https://drive.google.com/file/d/1Qw3G5LnlaEteiOD51bF1Oy1uh2A63R9O/view" target="_blank" class="btn">PC</a>
-                    <a href="https://drive.google.com/file/d/19GXDO7E-SCvKzvF9ZIklORNZ1xmfN8dC/view" target="_blank" class="btn">Android</a>
+                <p class="type-output" data-text="Классический текстур пак, включая Dark-Aqua, снаряжение и скины."></p>
+                <div class="card-btns">
+                    <!-- Кнопки добавятся через JS или вручную здесь -->
                 </div>
             </div>
+        </div>
 
-            <div class="card night-style parallax-layer" data-strength="150">
-                <h2>PROJECT <span class="night-glow">NIGHT</span></h2>
-                <p class="type-output" data-text="Night theme, new interface, and much more!"></p>
-                <a href="https://drive.google.com/file/d/1nIO79tg17x5P7VQxxa_dwtIzr42Kk9fq/view" target="_blank" class="btn">Access Files</a>
-            </div>
+        <!-- КАРТОЧКА №2: PROJECT NIGHT -->
+        <div class="card night-style parallax-layer" data-strength="150">
+            <h2>PROJECT <span class="night-glow">NIGHT</span></h2>
+            <p class="type-output" data-text="Ночная тема, новый интерфейс и многое другое!"></p>
+        </div>
 
-</div> </div> <div id="sys-status">
+        <!-- КАРТОЧКА №3: MISC_DATA -->
+        <div class="card misc-style parallax-layer" data-strength="150">
+            <h2><span class="glow-part">MI</span>SC<span>_DATA</span></h2>
+            <p class="type-output" data-text="Additional modifications, music, and experimental files."></p>
+        </div>
+
+        <!-- КОНТЕЙНЕР ДЛЯ НИЖНИХ КАРТОЧЕК (ТЕПЕРЬ ВНУТРИ) -->
+        <div class="bottom-row-container">
+            
+            <div class="bottom-row-container">
+    <!-- SAMURAI -->
+    <div class="card samurai-frozen parallax-layer half-card" data-strength="150">
+        <div class="frozen-badge" id="frozen-tag-1">FROZEN</div>
+        <h3 id="samurai-title">SAMURAI_PACK</h3>
+        <p class="type-output" id="samurai-desc" data-text="[RESTRICTED]"></p>
+    </div>
+
+    <!-- MINIMALISM -->
+    <div class="card minimalism-frozen parallax-layer half-card" data-strength="150">
+        <div class="frozen-badge" id="frozen-tag-2">FROZEN</div>
+        <h3 id="minimalism-title">MINIMALISM_PACK</h3>
+        <p class="type-output" id="minimalism-desc" data-text="[ENCRYPTED]"></p>
+    </div>
+</div>
+
+        </div> <!-- /bottom-row-container -->
+
+    </div> <!-- /zoom-wrapper -->
+</div> <!-- /main-content -->
+
+    <div id="sys-status">
         CPU_LOAD: <span id="cpu-val">00</span>% 
         <span>SYSTEM: STABLE</span> 
         MODE: <span id="mode-text">AQUA_CORE</span>
@@ -73,8 +113,10 @@
         UNAUTHORIZED ACCESS // <div class="scramble-text" id="nickname">M45T0D0NM4N</div> // V.5.5
     </div>
 
-    <div class="demo-footer-text">Demo version</div>
+    <div class="demo-footer-text">By [EV] Energizer</div>
 
     <script src="script.js"></script>
+
+
 </body>
 </html>

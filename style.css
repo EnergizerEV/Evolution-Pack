@@ -7,6 +7,9 @@
     --current-accent: var(--aqua);
     --grid-color: var(--aqua-dim);
     
+    /* Добавлено для работы JS команды red */
+    --vignette-color: rgba(0, 50, 50, 0.4); 
+    
     /* КУРСОР: Базовые значения (Aqua) */
     --cursor-normal: url('Cursor1-AQ1.png'); 
     --cursor-pressed: url('Cursor1-AQ2.png');
@@ -21,6 +24,14 @@ html, body {
     transition: background-color 1s ease;
 }
 
+/* Либо, если твой курсор управляется через JS, 
+   добавь обработчик события в функцию aqua_guide */
+
+/* Добавлено для смены цвета подложки в Red Mode */
+body.red-mode {
+    background-color: #0a0000; 
+}
+
 * { cursor: none !important; }
 
 /* Слои затемнения для Aqua (в Red они отключаются ниже) */
@@ -33,9 +44,37 @@ body::before {
 
 body::after {
     content: "";
-    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-    background: radial-gradient(circle, transparent 30%, rgba(0,0,0,0.4) 100%);
-    pointer-events: none; z-index: 9997;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    /* Более мягкий градиент для Aqua Mode */
+    background: linear-gradient(
+        0deg,
+        rgba(0, 255, 216, 0) 0%,
+        rgba(0, 255, 216, 0.02) 20%,
+        rgba(0, 255, 216, 0.08) 50%,
+        rgba(0, 255, 216, 0.02) 80%,
+        rgba(0, 255, 216, 0) 100%
+    );
+    background-size: 100% 120px; /* Высота полосы */
+    background-repeat: no-repeat;
+    pointer-events: none;
+    z-index: 9999;
+    
+    /* Плавная анимация через весь экран */
+    animation: scanline-move 10s linear infinite;
+    opacity: 0.5; /* Снижена общая видимость для Aqua */
+    transition: opacity 1s ease;
+}
+@keyframes scanline-move {
+    0% {
+        background-position: 0 -120px;
+    }
+    100% {
+        background-position: 0 105vh;
+    }
 }
 
 .vignette { 
@@ -44,8 +83,8 @@ body::after {
     left: 0; 
     width: 100%; 
     height: 100%; 
-    /* Мягкая виньетка по умолчанию */
-    background: radial-gradient(circle at 50% 50%, transparent 20%, rgba(0,0,0,0.8) 80%); 
+    /* Мягкая виньетка по умолчанию - теперь использует переменную */
+    background: radial-gradient(circle at 50% 50%, transparent 20%, var(--vignette-color) 80%); 
     pointer-events: none; 
     z-index: 1000; 
     opacity: 0; 
@@ -59,7 +98,25 @@ body::after {
 /* --- ЭФФЕКТ ФОНАРИКА (RED MODE) --- */
 body.red-mode::before, 
 body.red-mode::after {
-    display: none !important; /* Убираем лишнее, чтобы светил только фонарь */
+    /* Меняем ТОЛЬКО градиент, чтобы не сбивать анимацию позиции */
+    background-image: linear-gradient(
+        0deg,
+        rgba(255, 0, 0, 0) 0%,
+        rgba(255, 0, 0, 0.03) 20%,
+        rgba(255, 0, 0, 0.12) 50%,
+        rgba(255, 0, 0, 0.03) 80%,
+        rgba(255, 0, 0, 0) 100%
+    );
+    opacity: 0.6;
+}
+
+@keyframes scanline-move {
+    0% {
+        background-position: 0 -120px; /* Старт за пределами экрана */
+    }
+    100% {
+        background-position: 0 110vh; /* Финиш за пределами экрана */
+    }
 }
 
 body.red-mode .vignette {
@@ -94,10 +151,6 @@ body.red-mode .vignette {
     background: linear-gradient(to bottom, transparent, rgba(0, 255, 216, 0.05), transparent);
     opacity: 0.1; pointer-events: none; z-index: 1001;
     animation: scanning 4s linear infinite;
-}
-@keyframes scanning {
-    0% { transform: translateY(-100px); }
-    100% { transform: translateY(100vh); }
 }
 
 /* --- КУРСОР --- */
@@ -315,4 +368,1163 @@ body.red-mode .aqua-style:hover { box-shadow: 0 0 50px rgba(255, 0, 0, 0.2); }
     #main-content { padding: 40px 20px; width: calc(100% - 40px); }
     .social-sidebar { position: static; transform: none; flex-direction: row; justify-content: center; margin-bottom: 20px; }
     #sys-status, .footer, .demo-footer-text { position: static !important; text-align: center; margin: 10px 0 !important; }
+}
+/* РАЗДЕЛ EVOLUTION */
+
+.evo-section {
+    display: none; /* По умолчанию скрыт */
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+    opacity: 0;
+    transform: scale(0.7); /* Начинает появление с чуть меньшего размера */
+    transition: opacity 0.5s ease, transform 0.6s cubic-bezier(0.165, 0.84, 0.44, 1);
+    z-index: 1001;
+}
+
+/* Маленькие панели */
+.sub-card {
+    max-width: 450px !important;
+    padding: 25px !important;
+    margin-bottom: 15px !important;
+    text-align: center;
+    cursor: pointer !important;
+    background: rgba(0, 255, 216, 0.03) !important;
+    border: 1px solid rgba(0, 255, 216, 0.2) !important;
+    transition: all 0.3s ease !important;
+}
+
+.sub-card:hover {
+    background: rgba(0, 255, 216, 0.1) !important;
+    border-color: var(--current-accent) !important;
+    box-shadow: 0 0 30px rgba(0, 255, 216, 0.15) !important;
+    transform: translateY(-5px) !important;
+}
+
+.sub-card h2 {
+    font-size: 1.1rem !important;
+    letter-spacing: 4px;
+    margin: 0 !important;
+}
+
+/* Скрываем кнопки в главной карточке при взаимодействии */
+.card.aqua-style .btn {
+    pointer-events: none;
+    opacity: 0.5;
+}
+
+/* Игнорирование фонарика в RED MODE */
+body.red-mode .evo-section, 
+body.red-mode .sub-card {
+    z-index: 10005 !important;
+    position: relative;
+}
+/* Стиль для кнопок-подсказок (PC / Android) */
+.tag-info {
+    background: transparent !important;
+    border: 1px solid rgba(255, 255, 255, 0.1) !important;
+    color: rgba(255, 255, 255, 0.3) !important; /* Делаем их тусклыми */
+    font-size: 0.6rem !important;
+    padding: 5px 12px !important;
+    letter-spacing: 1px !important;
+    pointer-events: none !important; /* Игнорируют мышь */
+    display: inline-block;
+    margin-right: 5px;
+    margin-top: 15px;
+    transition: none !important;
+}
+
+/* В режиме RED они тоже должны быть еле видны, чтобы не перебивать интерфейс */
+body.red-mode .tag-info {
+    border-color: rgba(255, 0, 0, 0.15) !important;
+    color: rgba(255, 0, 0, 0.2) !important;
+}
+
+/* Убираем эффект ховера для кнопок-тегов, чтобы они не белели */
+.tag-info:hover {
+    background: transparent !important;
+    color: rgba(255, 255, 255, 0.3) !important;
+}
+/* Специальные теги для меню скачивания */
+.sub-card .tag-info {
+    position: relative;
+    margin-top: 10px;
+    display: inline-block;
+    border-radius: 2px;
+    font-weight: bold;
+    text-transform: uppercase;
+}
+
+.theme-tag {
+    border-color: rgba(0, 255, 216, 0.4) !important;
+    color: var(--current-accent) !important;
+    background: rgba(0, 255, 216, 0.05) !important;
+}
+
+.skin-tag {
+    border-color: rgba(255, 255, 255, 0.4) !important;
+    color: #fff !important;
+    background: rgba(255, 255, 255, 0.05) !important;
+}
+
+/* Фикс для вложенных меню */
+.dl-menu .sub-card {
+    min-width: 350px;
+}
+
+/* Чтобы при наведении на под-карточку теги не пропадали */
+.sub-card:hover .tag-info {
+    opacity: 1 !important;
+}
+/* ПРЕМИАЛЬНЫЙ ГРАДИЕНТНЫЙ ТЕГ "Theme & Skins" */
+
+.tag-info.evolution-tag {
+    /* Градиент от аквамарина к насыщенному бирюзовому */
+    background: linear-gradient(90deg, rgba(127, 255, 212, 0.2) 0%, rgba(0, 206, 209, 0.2) 100%) !important;
+    
+    /* Тонкая, светящаяся рамка с градиентным оттенком */
+    border: 1px solid rgba(127, 255, 212, 0.4) !important;
+    
+    /* Цвет текста — чистая аква */
+    color: #e0ffff !important;
+    
+    /* Многослойное премиальное свечение текста */
+    text-shadow: 
+        0 0 5px rgba(127, 255, 212, 0.8),
+        0 0 10px rgba(0, 206, 209, 0.4) !important;
+    
+    /* Внешнее свечение самого блока (мягкий ореол) */
+    box-shadow: 0 0 15px rgba(0, 206, 209, 0.15), inset 0 0 5px rgba(127, 255, 212, 0.1) !important;
+    
+    padding: 4px 14px !important;
+    border-radius: 4px !important;
+    letter-spacing: 1.5px !important;
+    font-weight: 600 !important;
+    text-transform: uppercase;
+    font-size: 0.65rem !important;
+}
+
+/* Эффект при наведении на родительскую карточку (усиливаем сияние) */
+.sub-card:hover .evolution-tag {
+    background: linear-gradient(90deg, rgba(127, 255, 212, 0.3) 0%, rgba(0, 206, 209, 0.3) 100%) !important;
+    border-color: rgba(127, 255, 212, 0.7) !important;
+    box-shadow: 0 0 20px rgba(0, 206, 209, 0.3) !important;
+    transition: all 0.4s ease;
+}
+
+/* Адаптация под RED MODE (Красный неон) */
+body.red-mode .tag-info.evolution-tag {
+    background: linear-gradient(90deg, rgba(255, 0, 0, 0.2) 0%, rgba(139, 0, 0, 0.3) 100%) !important;
+    border-color: rgba(255, 69, 0, 0.5) !important;
+    color: #ffcccc !important;
+    text-shadow: 0 0 8px rgba(255, 0, 0, 0.8) !important;
+    box-shadow: 0 0 15px rgba(255, 0, 0, 0.2) !important;
+}
+/* ФИКС ДЛЯ ВСЕХ ТЕГОВ В RED MODE */
+
+/* Когда на body вешается класс .red-mode, меняем стили всех типов тегов */
+body.red-mode .tag-info {
+    transition: all 0.5s ease;
+}
+
+/* 1. Тег для Dark-Aqua (Theme only) -> Становится глубоким красным */
+body.red-mode .theme-tag {
+    border-color: rgba(255, 0, 0, 0.4) !important;
+    color: #ff4d4d !important;
+    background: rgba(139, 0, 0, 0.1) !important;
+    text-shadow: 0 0 8px rgba(255, 0, 0, 0.6) !important;
+}
+
+/* 2. Тег для Equipments & Skins (Skins only) -> Становится огненно-оранжевым/красным */
+body.red-mode .skin-tag {
+    border-color: rgba(255, 69, 0, 0.4) !important;
+    color: #ff8c00 !important;
+    background: rgba(255, 69, 0, 0.1) !important;
+    text-shadow: 0 0 8px rgba(255, 69, 0, 0.6) !important;
+}
+
+/* Общий эффект усиления свечения при наведении в красном режиме */
+body.red-mode .sub-card:hover .tag-info {
+    box-shadow: 0 0 15px rgba(255, 0, 0, 0.2) !important;
+    border-color: rgba(255, 0, 0, 0.8) !important;
+}
+
+
+/* Жесткая отмена системного курсора для ВСЕХ элементов */
+* {
+    cursor: none !important;
+}
+
+/* Дополнительная страховка для ссылок и кнопок, которые браузер очень хочет выделить */
+a, button, .btn, .card, .sub-card, .social-link, i, span {
+    cursor: none !important;
+}
+/* ЭФФЕКТ ПОЛОСОК (SCANLINES) ДЛЯ КНОПОК */
+
+.sub-card {
+    position: relative;
+    overflow: hidden; /* Чтобы полоски не вылезали за края */
+}
+
+/* Создаем слой с полосками через псевдоэлемент */
+.sub-card::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    /* Рисуем полоски 2px через повторяющийся градиент */
+    background: repeating-linear-gradient(
+        0deg,
+        transparent,
+        transparent 2px,
+        rgba(0, 255, 216, 0.03) 2px,
+        rgba(0, 255, 216, 0.03) 4px
+    );
+    pointer-events: none;
+    z-index: 1;
+}
+
+/* В красном режиме полоски становятся красными */
+body.red-mode .sub-card::before {
+    background: repeating-linear-gradient(
+        0deg,
+        transparent,
+        transparent 2px,
+        rgba(255, 0, 0, 0.05) 2px,
+        rgba(255, 0, 0, 0.05) 4px
+    );
+}
+
+@keyframes scanline-scroll {
+    from { background-position: 0 0; }
+    to { background-position: 0 4px; }
+}
+
+/* Чтобы текст был поверх полосок и лучше читался */
+.sub-card h2, .sub-card .tag-info {
+    position: relative;
+    z-index: 2;
+    text-shadow: 0 0 5px rgba(0, 0, 0, 0.5);
+}
+/* --- ПЕРЕКЛЮЧАТЕЛЬ ЯЗЫКОВ --- */
+.lang-switcher {
+    position: fixed;
+    top: 25px;
+    right: 25px;
+    display: flex;
+    gap: 10px;
+    z-index: 1000000; /* Поверх всего */
+}
+
+.lang-btn {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 12px;
+    color: rgba(255, 255, 255, 0.4);
+    padding: 5px 10px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    background: rgba(0, 0, 0, 0.8);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    letter-spacing: 1px;
+    cursor: none !important; 
+    pointer-events: all !important;
+    backdrop-filter: blur(5px);
+}
+
+/* Эффект при наведении */
+.lang-btn:hover {
+    color: var(--current-accent);
+    border-color: var(--current-accent);
+    background: rgba(0, 255, 216, 0.05);
+}
+
+/* Активное состояние (когда язык выбран) */
+.lang-btn.active {
+    color: #000 !important;
+    border-color: var(--current-accent) !important;
+    background: var(--current-accent) !important;
+    box-shadow: 0 0 15px var(--current-accent);
+    font-weight: bold;
+}
+
+/* --- АДАПТАЦИЯ ПОД RED MODE --- */
+body.red-mode .lang-btn:hover {
+    background: rgba(255, 0, 0, 0.1);
+    color: var(--blood-red);
+    border-color: var(--blood-red);
+}
+
+body.red-mode .lang-btn.active {
+    background: var(--blood-red) !important;
+    border-color: var(--blood-red) !important;
+    box-shadow: 0 0 15px var(--blood-red);
+    color: #fff !important;
+}
+#ui-level-2, #ui-level-3, #ui-level-4 {
+    display: none !important;
+}
+/* Контейнер для раскрытия */
+.expand-wrapper {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+/* Скрытое меню выбора платформ */
+.platform-drop {
+    display: flex;
+    gap: 10px;
+    width: 100%;
+    max-height: 0; /* Скрыто */
+    overflow: hidden;
+    opacity: 0;
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    justify-content: center;
+    margin-bottom: 0;
+}
+
+/* Когда активно — раздвигаем */
+.platform-drop.show {
+    max-height: 100px;
+    opacity: 1;
+    margin-bottom: 15px;
+    margin-top: -10px; /* Чтобы плотнее прилегало к верхней кнопке */
+}
+
+/* Маленькие кнопки ПК/Андроид */
+.mini-platform-btn {
+    flex: 1;
+    max-width: 150px;
+    padding: 12px;
+    background: rgba(0, 255, 242, 0.1);
+    border: 1px solid var(--aqua);
+    color: var(--aqua);
+    font-family: 'Orbitron', sans-serif;
+    font-size: 0.8rem;
+    text-align: center;
+    cursor: pointer;
+    transition: 0.3s;
+    text-transform: uppercase;
+}
+
+.mini-platform-btn:hover {
+    background: var(--aqua);
+    color: black;
+    box-shadow: 0 0 15px var(--aqua);
+}
+/* Контейнер для анимации */
+.platform-drawer {
+    display: flex;
+    gap: 15px;
+    width: 100%;
+    max-width: 450px;
+    justify-content: center;
+    overflow: hidden;
+    max-height: 0; /* Схлопнуто */
+    opacity: 0;
+    transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+    margin-bottom: 0;
+}
+
+/* Состояние при клике */
+.platform-drawer.open {
+    max-height: 100px; /* Раздвигается */
+    opacity: 1;
+    margin-bottom: 20px;
+    padding-top: 5px;
+}
+
+/* Маленькие кнопки выбора платформы */
+.mini-platform-btn {
+    flex: 1;
+    padding: 12px;
+    background: rgba(0, 255, 216, 0.05);
+    border: 1px solid var(--current-accent);
+    color: var(--current-accent);
+    text-align: center;
+    text-decoration: none;
+    font-family: 'Orbitron', sans-serif;
+    font-size: 0.7rem;
+    letter-spacing: 2px;
+    transition: 0.3s;
+}
+
+.mini-platform-btn:hover {
+    background: var(--current-accent);
+    color: #000;
+    box-shadow: 0 0 15px var(--current-accent);
+}
+/* Основной стиль карточки в спокойном состоянии (Темная Аква) */
+.misc-gold-card {
+    position: relative;
+    overflow: hidden;
+    /* ТЕМНЫЙ ФОН: Изменен на #050a0e для соответствия EVolution Pack и PROJECT NIGHT */
+    background: rgba(10, 15, 20, 0.92) !important; 
+    
+    /* ГРАНИЦЫ: Тонкие и едва заметные в покое, как на ваших изображениях */
+    border: 1px solid rgba(255, 255, 255, 0.1) !important;
+    border-left: 1px solid rgba(255, 255, 255, 0.1) !important; 
+    
+    transition: all 0.6s cubic-bezier(0.23, 1, 0.32, 1);
+    z-index: 1;
+}
+
+/* Слой хакерского дождя */
+.misc-gold-card::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: 0;
+    width: 100%;
+    height: 200%;
+    /* Золотой градиент для дождя */
+    background: linear-gradient(180deg, 
+        transparent 0%, 
+        rgba(255, 215, 0, 0.02) 20%, 
+        rgba(255, 215, 0, 0.15) 50%, 
+        rgba(255, 215, 0, 0.02) 80%, 
+        transparent 100%);
+    background-size: 15px 100%; /* Ширина полос */
+    opacity: 0;
+    pointer-events: none;
+    z-index: -1;
+    transition: opacity 0.8s ease;
+}
+
+/* Сетка сканирования */
+.misc-gold-card::after {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; width: 100%; height: 100%;
+    background-image: repeating-linear-gradient(
+        0deg,
+        rgba(255, 215, 0, 0.03) 0px,
+        rgba(255, 215, 0, 0.03) 1px,
+        transparent 1px,
+        transparent 3px
+    );
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.8s ease;
+}
+
+/* Плавная анимация "туда-обратно" */
+@keyframes goldRainSmooth {
+    0% { transform: translateY(-15%); }
+    100% { transform: translateY(15%); }
+}
+
+/* Состояние при наведении */
+.misc-gold-card:hover {
+    background: #0d0d05 !important; /* Почти черный с золотым отливом */
+    border-left: 5px solid #ffd700 !important;
+    border-color: rgba(255, 215, 0, 0.4) !important;
+    box-shadow: 0 0 40px rgba(255, 215, 0, 0.15) !important;
+}
+
+.misc-gold-card:hover::before {
+    opacity: 1;
+    /* Медленное движение туда-обратно без обрывов */
+    animation: goldRainSmooth 6s infinite ease-in-out alternate;
+}
+
+.misc-gold-card:hover::after {
+    opacity: 1;
+}
+
+/* Свечение заголовка */
+.misc-gold-card:hover h2 {
+    color: #ffd700 !important;
+    text-shadow: 0 0 15px rgba(255, 215, 0, 0.6) !important;
+}
+
+/* Текст описания */
+.misc-gold-card .type-output {
+    color: #557788; /* Тусклая аква */
+    transition: all 0.5s ease;
+}
+
+.misc-gold-card:hover .type-output {
+    color: #ffffff !important;
+    text-shadow: 0 0 10px rgba(255, 255, 255, 0.3);
+}
+/* Основная карточка Project Night с градиентом */
+.night-card {
+    /* Грязно-красный переходит в темно-бордовый */
+    background: linear-gradient(135deg, rgba(80, 0, 0, 0.3) 0%, rgba(30, 0, 0, 0.6) 100%) !important;
+    border: 1px solid #8b0000 !important; /* Грязно-красная рамка */
+    box-shadow: 0 0 15px rgba(139, 0, 0, 0.2) !important;
+    transition: all 0.3s ease;
+}
+
+.night-card:hover {
+    /* При наведении становится чуть ярче (бледно-красный отблеск) */
+    box-shadow: 0 0 25px rgba(255, 60, 60, 0.4) !important;
+    border-color: #ff4d4d !important;
+    transform: translateY(-2px);
+}
+
+/* Перекрашиваем стандартные тэги, если они внутри ночной карточки */
+.night-card .tag-info {
+    background: rgba(139, 0, 0, 0.2) !important;
+    color: #ff6666 !important; /* Бледно-красный текст */
+    border-color: #8b0000 !important;
+}
+
+/* Кнопка Назад в стиле Night */
+.btn-night {
+    border-color: #8b0000 !important;
+    color: #8b0000 !important;
+}
+
+.btn-night:hover {
+    background: #8b0000 !important;
+    color: #fff !important;
+    box-shadow: 0 0 15px rgba(139, 0, 0, 0.5);
+}
+/* Убираем аква-цвет при наведении для ночных карточек */
+.card.sub-card.night-card:hover {
+    /* Грязно-красный градиент чуть светлее при наведении */
+    background: linear-gradient(135deg, rgba(120, 0, 0, 0.4) 0%, rgba(50, 0, 0, 0.7) 100%) !important;
+    
+    
+    /* Бледно-красное свечение вместо аква */
+    box-shadow: 0 0 20px rgba(255, 60, 60, 0.4) !important;
+    
+    /* Цвет рамки при наведении — приглушенный красный */
+    border-color: #ff4d4d !important;
+
+    
+    /* Убираем аква-фильтры, если они были */
+    filter: none !important;
+}
+
+/* Фикс для текста заголовков внутри ночных карточек при наведении */
+.night-card:hover h2 {
+    color: #ff6666 !important; /* Бледно-красный текст */
+    text-shadow: 0 0 10px rgba(255, 0, 0, 0.5) !important;
+}
+/* Специальный контейнер для Night (Красный) */
+body.red-mode .night-drawer {
+    display: flex;
+    gap: 15px;
+    width: 100%;
+    max-width: 450px;
+    justify-content: center;
+    overflow: hidden;
+    max-height: 0;
+    opacity: 0;
+    pointer-events: none;
+    transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+    margin-bottom: 0;
+}
+
+/* Состояние при клике в Night меню */
+body.red-mode .night-drawer.open {
+    max-height: 100px;
+    opacity: 1;
+    pointer-events: auto;
+    margin-bottom: 20px;
+    padding-top: 5px;
+}
+
+/* Красные мини-кнопки для Night меню */
+.mini-night-btn {
+    flex: 1;
+    padding: 12px;
+    background: rgba(255, 0, 0, 0.05);
+    border: 1px solid #ff0000;
+    color: #ff0000;
+    text-align: center;
+    text-decoration: none;
+    font-family: 'Orbitron', sans-serif;
+    font-size: 0.7rem;
+    letter-spacing: 2px;
+    transition: 0.3s;
+}
+
+.mini-night-btn:hover {
+    background: #ff0000;
+    color: #000;
+    box-shadow: 0 0 15px #ff0000;
+}
+/* Контент внутри гайда */
+.guide-content {
+    text-align: left;
+    color: #e0f7f4;
+    font-size: 0.9rem;
+    line-height: 1.6;
+    padding: 10px;
+    max-height: 60vh; /* Ограничение высоты с прокруткой */
+    overflow-y: auto;
+}
+
+.guide-step {
+    margin-bottom: 20px;
+    border-bottom: 1px solid rgba(0, 255, 216, 0.1);
+    padding-bottom: 10px;
+}
+
+.guide-step h3 {
+    color: var(--current-accent);
+    margin-bottom: 10px;
+    text-transform: uppercase;
+    font-size: 1rem;
+}
+
+.guide-img {
+    width: 100%;
+    border-radius: 4px;
+    margin: 10px 0;
+    border: 1px solid var(--current-accent);
+    box-shadow: 0 0 10px rgba(0, 255, 216, 0.2);
+}
+
+/* Стилизация скроллбара для гайда */
+.guide-content::-webkit-scrollbar {
+    width: 4px;
+}
+.guide-content::-webkit-scrollbar-thumb {
+    background: var(--current-accent);
+    border-radius: 10px;
+}
+.guide-scroll-container {
+    width: 100%;
+    max-width: 550px;
+    max-height: 65vh;
+    overflow-y: auto;
+    padding-right: 10px;
+    margin-top: 15px;
+}
+
+/* Стили карточек */
+.guide-card {
+    /* Градиент: сверху ярко-бирюзовый (с прозрачностью), снизу глубокий темно-аква */
+    background: linear-gradient(180deg, rgba(0, 255, 216, 0.15) 0%, rgba(0, 20, 20, 0.95) 100%);
+    
+    /* Остальные стили оставляем без изменений */
+    border: 1px solid rgba(0, 255, 216, 0.25);
+    border-radius: 4px;
+    padding: 20px;
+    margin-bottom: 15px;
+    position: relative;
+    text-align: left;
+    box-shadow: inset 0 0 15px rgba(0, 255, 216, 0.05);
+}
+
+.guide-card.warning-card {
+    border-color: #ff9d00;
+    background: rgba(255, 157, 0, 0.05);
+}
+
+.step-num {
+    position: absolute;
+    top: -10px;
+    left: 20px;
+    background: var(--current-accent);
+    color: #000;
+    font-weight: bold;
+    font-size: 0.7rem;
+    padding: 2px 8px;
+    border-radius: 4px;
+}
+
+.guide-divider {
+    width: 100%;
+    text-align: center;
+    border-bottom: 1px solid rgba(0, 255, 216, 0.1);
+    line-height: 0.1em;
+    margin: 30px 0 20px;
+}
+
+.guide-divider span {
+    background: #000b0b;
+    padding: 0 15px;
+    color: var(--current-accent);
+    font-size: 0.8rem;
+    letter-spacing: 2px;
+}
+
+/* Чекбоксы */
+.confirm-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    margin-bottom: 15px;
+    font-size: 0.8rem;
+    color: #ccc;
+    cursor: pointer;
+}
+
+.confirm-item input {
+    cursor: pointer;
+    accent-color: var(--current-accent);
+    margin-top: 3px;
+}
+
+.btn-disabled {
+    opacity: 0.3;
+    cursor: not-allowed !important;
+    filter: grayscale(1);
+}
+
+.code-path {
+    background: rgba(0, 255, 216, 0.1); /* Прозрачный аква-фон */
+    padding: 10px;
+    border-radius: 4px;
+    font-family: monospace;
+    color: #fff; /* Белый текст на темном фоне читается лучше */
+    font-size: 0.85rem;
+    margin: 12px 0;
+    border-left: 3px solid var(--current-accent); /* Акцентная линия слева */
+}
+/* 1. КАСТОМНЫЙ СКРОЛЛБАР */
+.guide-scroll-container::-webkit-scrollbar {
+    width: 6px; /* Тонкая полоска */
+}
+
+.guide-scroll-container::-webkit-scrollbar-track {
+    background: rgba(0, 255, 216, 0.05); /* Едва заметный трек */
+    border-radius: 10px;
+}
+
+.guide-scroll-container::-webkit-scrollbar-thumb {
+    background: var(--current-accent); /* Цвет акцента (бирюзовый или красный) */
+    box-shadow: 0 0 10px var(--current-accent); /* Свечение полосы */
+    border-radius: 10px;
+}
+
+/* 2. КАСТОМНЫЕ ГАЛОЧКИ (Checkbox) */
+.confirm-item {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    margin-bottom: 20px;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+.confirm-item input[type="checkbox"] {
+    appearance: none; /* Прячем стандартный чекбокс */
+    width: 20px;
+    height: 20px;
+    border: 2px solid var(--current-accent);
+    border-radius: 4px;
+    position: relative;
+    cursor: pointer;
+    transition: 0.3s;
+    flex-shrink: 0;
+}
+
+.confirm-item input[type="checkbox"]:checked {
+    background: var(--current-accent);
+    box-shadow: 0 0 15px var(--current-accent);
+}
+
+.confirm-item input[type="checkbox"]:checked::after {
+    content: '✔';
+    position: absolute;
+    color: #000;
+    font-size: 14px;
+    left: 3px;
+    top: -1px;
+    font-weight: bold;
+}
+
+/* 3. КНОПКА "ОТКРЫТЬ АНДРОИД" */
+#unlock-android {
+    width: 100%;
+    background: #000; /* Чисто черный фон как в консоли */
+    border: 1px solid var(--current-accent);
+    color: var(--current-accent);
+    padding: 15px;
+    font-family: 'Courier New', monospace; /* Моноширинный шрифт */
+    font-size: 0.9rem;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    cursor: pointer;
+    text-align: left;
+    transition: all 0.3s ease;
+}
+
+/* Добавляем символ командной строки перед текстом */
+#unlock-android::before {
+    content: "> ";
+    font-weight: bold;
+}
+
+/* Эффект мигающего курсора в конце */
+#unlock-android::after {
+    content: "_";
+    animation: terminal-blink 1s infinite;
+}
+
+#unlock-android:not(:disabled):hover {
+    background: var(--current-accent);
+    color: #000;
+    box-shadow: 0 0 20px var(--current-accent);
+}
+
+#unlock-android:disabled {
+    opacity: 0.3;
+    border-color: #444;
+    color: #444;
+    cursor: not-allowed;
+    clip-path: none; /* Убираем скосы для выключенного состояния */
+}
+
+@keyframes terminal-blink {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0; }
+}
+/* Подсветка для видео-инструкции */
+.highlight-cyan {
+    border-left: 4px solid var(--current-accent) !important;
+    background: rgba(0, 255, 216, 0.05) !important;
+}
+
+/* Финальная карточка */
+.finish-card {
+    border: 1px solid var(--current-accent);
+    /* Инвертированный градиент для финала */
+    background: linear-gradient(180deg, rgba(0, 255, 216, 0.2) 0%, rgba(0, 10, 10, 1) 100%);
+    box-shadow: 0 0 20px rgba(0, 255, 216, 0.1);
+}
+
+/* Стилизация текста OR */
+.step-or-text {
+    font-family: 'Orbitron', sans-serif;
+    letter-spacing: 4px;
+    margin: 20px 0;
+}
+/* Новые карточки с градиентом для Найта */
+.night-theme .guide-card {
+    border: 1px solid rgba(255, 68, 68, 0.4);
+    border-left: 4px solid #ff4444;
+    /* Градиент: сверху светлее, основной тон темно-красный */
+    background: linear-gradient(180deg, rgba(150, 20, 20, 0.4) 0%, rgba(40, 5, 5, 0.8) 100%);
+    box-shadow: inset 0 1px 10px rgba(255, 68, 68, 0.1);
+    margin-bottom: 15px;
+    padding: 15px;
+    position: relative;
+    overflow: hidden;
+}
+
+/* Эффект свечения заголовков в карточках */
+.night-theme .guide-card h3 {
+    color: #ff8888; /* Бледно-красный для читаемости */
+    text-transform: uppercase;
+    font-size: 0.9rem;
+    letter-spacing: 1px;
+    margin-bottom: 8px;
+}
+
+.night-theme .step-num {
+    background: #ff4444;
+    color: #000;
+    font-weight: bold;
+}
+.guide-scroll-container {
+    width: 100%;
+    box-sizing: border-box; /* Чтобы padding не раздувал ширину */
+    padding: 15px 20px; /* Увеличиваем боковые отступы, чтобы тени не обрезались */
+    overflow-x: hidden; /* Запрещаем горизонтальный скролл */
+    overflow-y: auto;
+}
+
+.night-theme .guide-card {
+    width: calc(100% - 10px); /* Оставляем микро-зазор для свечения рамки */
+    margin-left: auto;
+    margin-right: auto;
+    box-sizing: border-box;
+}
+
+/* Если скроллбар все равно наезжает на контент */
+.night-theme.guide-scroll-container::-webkit-scrollbar-track {
+    margin-right: 2px;
+}
+.terminal-overlay {
+    position: absolute;
+    top: 0; left: 0; width: 100%; height: 100%;
+    background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.1) 50%), 
+                linear-gradient(90deg, rgba(255, 0, 0, 0.03), rgba(0, 255, 0, 0.01), rgba(0, 0, 255, 0.03));
+    background-size: 100% 3px, 3px 100%;
+    pointer-events: none;
+    z-index: 10;
+}
+
+/* Контейнер статьи */
+.article-scroll-container {
+    max-height: 60vh;
+    overflow-y: auto;
+    padding-right: 15px;
+    margin: 20px 0;
+    scrollbar-width: thin;
+    scrollbar-color: var(--current-accent) #1a1a1a;
+}
+
+.article-content {
+    text-align: left;
+    color: #ccc;
+    font-family: 'Courier New', Courier, monospace;
+}
+
+.article-text {
+    line-height: 1.6;
+    margin-bottom: 20px;
+    font-size: 0.95rem;
+    border-left: 2px solid var(--current-accent);
+    padding-left: 15px;
+}
+
+.article-image-box {
+    margin: 25px 0;
+    border: 1px solid #444;
+    padding: 5px;
+    background: #000;
+}
+
+.article-img {
+    width: 100%;
+    display: block;
+    filter: sepia(0.3) contrast(1.2) brightness(0.8);
+}
+
+.img-caption {
+    font-size: 0.7rem;
+    color: var(--current-accent);
+    padding: 8px 0;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.article-divider {
+    text-align: center;
+    border-bottom: 1px solid #333;
+    line-height: 0.1em;
+    margin: 30px 0;
+}
+
+.article-divider span {
+    background: #111;
+    padding: 0 10px;
+    font-size: 0.7rem;
+    color: #666;
+}
+
+
+/* Контейнер, который держит две карточки в одной строке */
+.bottom-row-container {
+    display: flex !important;
+    flex-direction: row !important;
+    justify-content: space-between;
+    gap: 15px;
+    width: 100%;
+    max-width: 660px;
+    margin: 10px auto 0 auto;
+    align-items: stretch;
+}
+
+.half-card {
+    position: relative;
+    overflow: hidden !important;
+    background: rgba(10, 15, 20, 0.92) !important;
+    
+    /* Убираем transition для transform, чтобы не мешать JS */
+    transition: border-color 0.4s ease, box-shadow 0.4s ease !important;
+    
+    transform-style: preserve-3d;
+    will-change: transform; /* Подсказываем браузеру оптимизировать анимацию */
+}
+
+/* Слой для картинки */
+.half-card::before {
+    content: "";
+    position: absolute;
+    /* Делаем слой чуть больше, чтобы блюр не давал белых краев */
+    top: -15%; 
+    left: -15%; 
+    right: -15%; 
+    bottom: -15%;
+    
+    opacity: 0;
+    z-index: -1; /* Картинка строго под текстом */
+    
+    background-size: cover !important;
+    background-position: center !important;
+    background-repeat: no-repeat !important;
+    
+    filter: blur(5px); /* Твой блюр */
+    /* УБРАЛИ scale и translateZ отсюда, чтобы не конфликтовать с HTML-враппером */
+    transition: opacity 0.6s ease-in-out !important; 
+    pointer-events: none;
+}
+
+/* При наведении — только проявляем прозрачность */
+.samurai-frozen:hover::before {
+    opacity: 0.2;
+    background-image: url('Samurai_pack_icon.jpg') !important;
+}
+
+.minimalism-frozen:hover::before {
+    opacity: 0.2;
+    background-image: url('Minimalism_Pack_icon.jpg') !important;
+}
+
+/* Эффекты свечения (совпадают по таймингу с зумом) */
+.samurai-frozen:hover {
+    border-color: rgba(255, 215, 0, 0.5) !important;
+    box-shadow: inset 0 0 50px rgba(255, 0, 0, 0.6) !important;
+}
+
+.minimalism-frozen:hover {
+    border-color: rgba(0, 255, 216, 0.5) !important;
+    box-shadow: inset 0 0 50px rgba(0, 255, 216, 0.5) !important;
+}
+
+/* Тег FROZEN - НЕ ТРОГАЕМ */
+.frozen-badge {
+    position: absolute;
+    top: 8px; 
+    right: 8px;
+    display: flex;
+    gap: 4px;
+    pointer-events: none;
+    z-index: 10;
+    font-size: 0.55rem; 
+    padding: 1px 5px; 
+    border: 1px solid rgba(0, 255, 255, 0.4); 
+    color: #00f2ff; 
+    border-radius: 3px; 
+    text-transform: uppercase; 
+    font-weight: bold; 
+    background: rgba(0, 0, 0, 0.4);
+    letter-spacing: 0.5px;
+    backdrop-filter: blur(2px);
+    transition: all 0.3s ease;
+}
+/* --- ANDROID & MOBILE OPTIMIZATION --- */
+@media screen and (max-width: 768px) {
+    /* 1. Возвращаем системный курсор, так как на сенсоре JS-курсор бесполезен */
+    * { cursor: auto !important; }
+    #custom-cursor { display: none !important; }
+
+    /* 2. Разрешаем скролл, если контент не влезает */
+    html, body { 
+        overflow-y: auto !important; 
+        height: auto !important; 
+        touch-action: manipulation; 
+    }
+/* Убираем виньетку и фонарик в Red Mode везде */
+    .red-mode .flashlight-overlay, 
+    .red-mode #flashlight, 
+    .red-mode #vignette, 
+    .red-mode::after, 
+    .red-mode::before,
+    [class*="vignette"], 
+    [id*="vignette"] {
+        display: none !important;
+        background: none !important;
+        box-shadow: none !important;
+        mask-image: none !important;
+        -webkit-mask-image: none !important;
+    }
+    /* 3. Масштабируем контент */
+    .zoom-wrapper { 
+        transform: scale(1) !important; /* Убираем отдаление для мобилок */
+        padding: 20px 10px;
+        width: 100%;
+        box-sizing: border-box;
+    }
+
+    #main-content {
+        padding-top: 60px; /* Место под переключатель языков */
+    }
+
+    /* 4. Адаптация карточек */
+    .card {
+        padding: 20px !important;
+        max-width: 95% !important;
+        margin-left: auto;
+        margin-right: auto;
+    }
+
+    .header h1 {
+        font-size: 1.5rem !important;
+        letter-spacing: 5px !important;
+    }
+
+    /* 5. Удобство нажатий (Tap Targets) */
+    .btn, .sub-card, .mini-platform-btn {
+        min-height: 44px; /* Минимальный размер для пальца */
+        margin-bottom: 15px;
+    }
+
+    /* 6. Фикс видео-плеера */
+    .video-container {
+        pointer-events: all !important; /* Чтобы видео можно было запустить тапом */
+    }
+
+    /* 7. Скрываем ненужные элементы */
+    .social-sidebar {
+        position: relative !important;
+        flex-direction: row !important;
+        top: 0 !important;
+        transform: none !important;
+        margin-top: 20px;
+        justify-content: center;
+    }
+
+    /* 8. Отключаем параллакс (он сильно лагает на мобильных процессорах) */
+    .parallax-layer {
+        transform: none !important;
+        transition: none !important;
+    }
+}
+@media screen and (max-width: 768px) {
+    /* 1. Контейнер для кнопок стилей и соцсетей */
+    #main-content {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+
+    /* 2. Позиционируем значки соцсетей под кнопками режимов */
+    .social-sidebar {
+        position: relative !important; /* Убираем фиксирование, привязываем к потоку */
+        inset: auto !important; /* Сбрасываем top/left/right/bottom */
+        transform: none !important;
+        
+        display: flex !important;
+        flex-direction: row !important; /* Горизонтальный ряд */
+        justify-content: center !important;
+        gap: 25px !important;
+        
+        margin-top: 30px !important; /* Отступ СВЕРХУ от кнопок стилей */
+        margin-bottom: 20px !important; /* Отступ СНИЗУ до следующего текста */
+        width: 100% !important;
+        z-index: 10;
+    }
+
+    /* Стиль самих иконок, чтобы по ним было легче попадать */
+    .social-sidebar a {
+        font-size: 24px !important;
+        opacity: 0.8;
+    }
+
+    /* 3. Убираем "фонарик" в Red Mode (дублируем для надежности) */
+    .red-mode .flashlight-overlay,
+    .red-mode #flashlight,
+    .red-mode::after {
+        display: none !important;
+        background: none !important;
+        box-shadow: none !important;
+    }
+
+    /* 4. Смещение контента, чтобы не лез на переключатель языков */
+    .zoom-wrapper {
+        padding-top: 80px !important; 
+    }
 }
