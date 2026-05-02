@@ -524,6 +524,8 @@ attachUIEffects();
     }
 })();
 
+
+
 function startTyping() {
     // Жёстко чистим старые интервалы перед запуском новых
     typingIntervals.forEach(interval => clearInterval(interval));
@@ -552,7 +554,7 @@ function updateStaticStrings() {
     const cards = document.querySelectorAll('.card');
     
     // 1. ПЕРВАЯ КАРТОЧКА (EVolution)
-    if (cards[1]) {
+    if (cards[0]) {
         const d1 = cards[0].querySelector('.type-output');
         if (d1) d1.setAttribute('data-text', translations[currentLang].desc_evo);
         
@@ -563,51 +565,63 @@ function updateStaticStrings() {
     }
 
     // 2. ВТОРАЯ КАРТОЧКА (Project Night)
+    if (cards[1]) {
+        const d2 = cards[1].querySelector('.type-output');
+        if (d2) d2.setAttribute('data-text', translations[currentLang].desc_night);
+
+        cards[1].onclick = () => {
+            // 1. Управляем классами темы
+            document.body.classList.remove('aqua-mode');
+            document.body.classList.add('red-mode');
+            
+            // 2. Переключаем эмбиент на Project_Night_Embient.wav
+            if (typeof switchAmbient === 'function') {
+                switchAmbient(true); 
+            }
+
+            // 3. Визуальные настройки (CSS переменные и логотип)
+            document.documentElement.style.setProperty('--current-accent', '#ff0000');
+            const logoImg = document.querySelector('.logo-img');
+            if (logoImg) logoImg.src = 'img/night_logo.png';
+
+            // 4. Переход в меню
+            showMenu('night_main');
+        };
+    }
+
+    // 3. ТРЕТЬЯ КАРТОЧКА (Misc)
     if (cards[2]) {
-    const d2 = cards[2].querySelector('.type-output');
-    if (d2) d2.setAttribute('data-text', translations[currentLang].desc_night);
+        const card = cards[2];
+        const h2 = card.querySelector('h2');
+        const d3 = card.querySelector('.type-output');
 
-    cards[2].onclick = () => {
-    // 1. Управляем классами темы
-    document.body.classList.remove('aqua-mode');
-    document.body.classList.add('red-mode');
-    
-    // 2. Переключаем эмбиент на Project_Night_Embient.wav
-    if (typeof switchAmbient === 'function') {
-        switchAmbient(true); 
+        // Названия для локализации
+        const miscTitles = {
+            ru: "Разное & Паки",
+            en: "Misc & Packs",
+            es: "Varios & Packs"
+        };
+
+        // 1. Меняем название
+        if (h2) {
+            h2.innerText = miscTitles[currentLang] || miscTitles.en;
+            h2.classList.add('glow-part');
+        }
+
+        // 2. Устанавливаем описание
+        if (d3) d3.setAttribute('data-text', translations[currentLang].desc_misc);
+
+        // 3. Добавляем класс для золотого стиля
+        card.classList.remove('misc-style');
+        card.classList.add('misc-gold-card');
+
+        // 4. Переход в меню при клике на саму карточку
+        card.onclick = () => {
+            showMenu('misc_main');
+        };
     }
 
-    // 3. Визуальные настройки (CSS переменные и логотип)
-    document.documentElement.style.setProperty('--current-accent', '#ff0000');
-    const logoImg = document.querySelector('.logo-img');
-    if (logoImg) logoImg.src = 'img/night_logo.png';
-
-    // 4. Переход в меню
-    showMenu('night_main');
-};
-}
-
-// 3. ТРЕТЬЯ КАРТОЧКА (Misc)
-    if (cards[3]) {
-    const card = cards[2];
-    const h2 = card.querySelector('h2');
-    const d3 = card.querySelector('.type-output');
-
-    
-
-    // Названия для локализации
-    const miscTitles = {
-        ru: "Разное & Паки",
-        en: "Misc & Packs",
-        es: "Varios & Packs"
-    };
-
-    // 1. Меняем название
-    if (h2) {
-        h2.innerText = miscTitles[currentLang] || miscTitles.en;
-        h2.classList.add('glow-part');
-    }
-// 4. ЧЕТВЕРТАЯ КАРТОЧКА (Samurai Pack - Frozen)
+    // 4. ЧЕТВЕРТАЯ КАРТОЧКА (Samurai Pack - Frozen)
     if (cards[3]) {
         const cardSamurai = cards[3];
         const d4 = cardSamurai.querySelector('.type-output');
@@ -616,7 +630,7 @@ function updateStaticStrings() {
         if (sTitle) sTitle.textContent = translations[currentLang].card_samurai_title;
         if (d4) d4.setAttribute('data-text', translations[currentLang].card_samurai_desc);
         
-        cardSamurai.classList.add('samurai-frozen'); // Включаем стиль со свечением
+        cardSamurai.classList.add('samurai-frozen');
         cardSamurai.onclick = null;
     }
 
@@ -629,37 +643,23 @@ function updateStaticStrings() {
         if (mTitle) mTitle.textContent = translations[currentLang].card_minimalism_title;
         if (d5) d5.setAttribute('data-text', translations[currentLang].card_minimalism_desc);
         
-        cardMin.classList.add('minimalism-frozen'); // Включаем стиль со свечением[cite: 1]
+        cardMin.classList.add('minimalism-frozen');
         cardMin.onclick = null;
     }
-    // 2. Устанавливаем описание (не трогаем текст, берем из переводов)
-    if (d3) d3.setAttribute('data-text', translations[currentLang].desc_misc);
 
-    // 3. Добавляем класс для золотого стиля (параллакс и поворот не трогаем, они в основном коде)
-    // Убираем старый класс и добавляем новый с эффектом "дождя"
-    card.classList.remove('misc-style');
-    card.classList.add('misc-gold-card');
-
-    // 4. Переход в меню при клике на саму карточку
-    card.onclick = () => {
-        showMenu('misc_main');
-    };
-const frozenCards = [cards[3], cards[4]];
-    
+    const frozenCards = [cards[3], cards[4]];
     frozenCards.forEach(card => {
         if (card && typeof VanillaTilt !== 'undefined') {
             VanillaTilt.init(card, {
-                max: 15,          // Угол наклона
-                speed: 1000,      // СКОРОСТЬ ПЛАВНОСТИ (чем больше, тем плавнее)
+                max: 15,
+                speed: 1000,
                 perspective: 1000,
-                scale: 1.05,      // Тот самый плавный зум
-                transition: true, // Включает плавный возврат в центр
-                gyroscope: true   // Для мобилок
+                scale: 1.05,
+                transition: true,
+                gyroscope: true
             });
         }
     });
-    
-    }
 
     // Стандартный сброс анимации печати
     typingIntervals.forEach(clearInterval);
@@ -1626,22 +1626,7 @@ window.addEventListener('load', () => {
         const cpu = document.getElementById('cpu-val');
         if(cpu) cpu.innerText = Math.floor(Math.random()*15)+5; 
     }, 2000);
-const nightCard = document.querySelectorAll('.card')[1]; 
 
-if (nightCard) {
-    nightCard.style.cursor = 'pointer'; // Указатель пальца
-    nightCard.addEventListener('click', () => {
-        // ВКЛЮЧАЕМ RED MODE
-        document.documentElement.style.setProperty('--current-accent', '#ff0000');
-        document.documentElement.style.setProperty('--vignette-color', 'rgba(120, 0, 0, 0.4)');
-        document.body.classList.add('red-mode');
-        if (logoMain) logoMain.style.backgroundImage = "url('Project_Night_Icon.png')";
-        modeText.innerText = "NIGHT_PROTOCOL";
-
-        // Запускаем переход в новое меню
-        showMenu('night_main');
-    });
-}
 function refreshCursor() {
     const cursor = document.getElementById('custom-cursor'); // Замени на свой ID
     if (!cursor) return;
