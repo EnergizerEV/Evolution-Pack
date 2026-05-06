@@ -84,6 +84,19 @@ const translations = {
         night_about_title: "ИНФОРМАЦИЯ О ПРОЕКТЕ",
     night_article_p1: "Project Night — это глобальное визуальное переосмысление SAS4. Мы изменили каждый аспект интерфейса, чтобы погрузить вас в атмосферу темного техно-хоррора.",
     night_article_p2: "В этой версии исправлены критические баги отображения и добавлены эксклюзивные текстуры экипировки, доступные только в этом паке.",
+    patch_header: "ЛОГ_СИСТЕМЫ",
+        patch_next: "СЛЕД",
+        patch_prev: "ПРЕД",
+        patches_data: [
+            { 
+                version: "Evolution Pack v.2.3.1", 
+                text: "• Добавлен скин [Black] Titan Set — 'Infestor' (Infected).\n• Интегрирован стиль 'Dark-Aqua' для иконок магазинов и обложек миссий.\n• Добавлены тени для выдвижных панелей (Drawers).\n• Адаптирован интерфейс 'Global Event'.\n• Skin 'Purifier' — эксклюзивно для Premium Pack." 
+            },
+            { 
+                version: "Project Night v.0.5", 
+                text: "ПОСЛЕДНЯЯ ВЕРСИЯ. Первый публичный запуск протокола.\nТекущий статус: Инициализация.\nОписание функционала находится в стадии разработки.\nСистема готова к тестированию." 
+            }
+        ]
     },
     en: {
         evo_header: "EVOLUTION<span>_CORE</span>",
@@ -95,6 +108,7 @@ const translations = {
         card_samurai_desc: "[RESTRICTED]",
         card_minimalism_title: "MINIMALISM_PACK",
         card_minimalism_desc: "[ENCRYPTED]",
+        
         // PC
         guide_title:          "INSTALLATION GUIDE",
         pc_visual_guide:      "Visual Guide (PC)",
@@ -162,7 +176,20 @@ const translations = {
         desc_night: "Night theme, new interface, and much more!",
         btn_access: "ACCESS FILES",
         desc_misc: "Additional modifications, music, sounds, etc.",
-        btn_misc: "ACCESS MISC"
+        btn_misc: "ACCESS MISC",
+        patch_header: "SYSTEM_LOG",
+        patch_next: "NEXT",
+        patch_prev: "PREV",
+        patches_data: [
+            { 
+                version: "Evolution Pack v.2.3.1", 
+                text: "• Added [Black] Titan Set — 'Infestor' (Infected) skin.\n• 'Dark-Aqua' style integrated for shop icons and mission covers.\n• Added dynamic shadows for UI drawers.\n• 'Global Event' interface adapted to Dark-Aqua style.\n• 'Purifier' skin — Premium Pack exclusive." 
+            },
+            { 
+                version: "Project Night v.0.5", 
+                text: "LATEST VERSION. First public protocol launch.\nCurrent status: Initialization.\nFeature description is under development.\nSystem ready for testing." 
+            }
+        ]
     },
     es: {
         guide_title:          "GUÍA DE INSTALACIÓN",
@@ -222,7 +249,21 @@ const translations = {
         desc_night: "¡Tema nocturno, nueva interfaz и mucho más!",
         btn_access: "ACCEDER",
         desc_misc: "Modificaciones adicionales, música, sonidos, etc.",
-        btn_misc: "ACCEDER"
+        btn_misc: "ACCEDER",
+        patch_header: "LOG_SISTEMA",
+        patch_next: "SIG",
+        patch_prev: "ANT",
+        patches_data: [
+            { 
+                version: "Evolution Pack v.2.3.1", 
+                text: "• Añadido skin [Black] Titan Set — 'Infestor' (Infected).\n• Estilo 'Dark-Aqua' integrado en iconos de tienda y portadas de misiones.\n• Sombras dinámicas añadidas para paneles desplegables.\n• Interfaz 'Global Event' adaptada al estilo Dark-Aqua.\n• Skin 'Purifier' — exclusivo de Premium Pack." 
+            },
+            { 
+                version: "Project Night v.0.5", 
+                text: "ÚLTIMA VERSIÓN. Primer lanzamiento público del protocolo.\nEstado actual: Inicialización.\nLa descripción de las funciones está en desarrollo.\nSistema listo para pruebas." 
+            }
+        ]
+    
     }
 };
 
@@ -374,7 +415,7 @@ function attachUIEffects() {
     // Слушаем клики на всем mainContent
     mainContent.addEventListener('click', (e) => {
         // Проверяем, является ли цель клика (или его родитель) кнопкой/карточкой
-        const target = e.target.closest('.btn, .download-link, .tab-header, .card, .mini-night-btn, .mini-dl-card, .mini-platform-btn, #unlock-android');
+        const target = e.target.closest('.btn, .download-link, .tab-header, .card, .mini-night-btn, .mini-dl-card, .mini-platform-btn, #unlock-android, #patch-notes-trigger');
         
         if (target) {
             playSFX('click');
@@ -670,6 +711,7 @@ function updateStaticStrings() {
 
 function setLanguage(lang) {
     currentLang = lang;
+    const data = translations[lang];
 
     // Обновляем визуальное состояние кнопок переключения
     document.querySelectorAll('.lang-btn').forEach(btn => btn.classList.remove('active'));
@@ -693,6 +735,7 @@ function setLanguage(lang) {
     }
 
     localStorage.setItem('selectedLang', lang);
+updatePatchUI(); 
 }
 
 window.addEventListener('keydown', (e) => {
@@ -742,8 +785,22 @@ inputEl.addEventListener('keypress', (e) => {
 
         if (cmd === 'clear') consoleEl.classList.remove('active');
         inputEl.value = '';
+
+        
     }
 });
+
+const nicknameTrigger = document.getElementById('nickname');
+
+if (nicknameTrigger) {
+    nicknameTrigger.addEventListener('click', () => {
+        consoleEl.classList.toggle('active');
+        if (consoleEl.classList.contains('active')) {
+            inputEl.focus();
+        }
+        if (typeof playSFX === 'function') playSFX('click');
+    });
+}
 
 const evoCard = document.querySelector('.card.aqua-style');
 if (evoCard) {
@@ -940,14 +997,11 @@ function showMenu(type, prevEl = mainWrapper) {
             };
 
         } else if (type === 'misc_main') {
-    // === МЕНЮ MISC С ЛОКАЛИЗАЦИЕЙ ===
     const lang = translations[currentLang];
-    
-    // Дополнительные строки локализации для этого меню
     const localStrings = {
-        ru: { title: "СИСТЕМА_ДАННЫХ_MISC", sfx_btn: "SFX-Pack", inst_btn: "ИНСТРУКЦИЯ ПО УСТАНОВКЕ" },
-        en: { title: "MISC_DATA_SYSTEM", sfx_btn: "SFX-Pack", inst_btn: "INSTALLATION GUIDE" },
-        es: { title: "SISTEMA_DE_DATOS_MISC", sfx_btn: "SFX-Pack", inst_btn: "GUÍA DE INSTALACIÓN" }
+        ru: { title: "СИСТЕМА_ДАННЫХ_MISC", sfx_btn: "SFX-Pack", inst_btn: "ИНСТРУКЦИЯ ПО УСТАНОВКЕ", ny_btn: "NEW YEAR PACK", steam_btn: "STEAM CUSTOMIZE" },
+        en: { title: "MISC_DATA_SYSTEM", sfx_btn: "SFX-Pack", inst_btn: "INSTALLATION GUIDE", ny_btn: "NEW YEAR PACK", steam_btn: "STEAM CUSTOMIZE" },
+        es: { title: "SISTEMA_DE_DATOS_MISC", sfx_btn: "SFX-Pack", inst_btn: "GUÍA DE INSTALACIÓN", ny_btn: "NEW YEAR PACK", steam_btn: "STEAM CUSTOMIZE" }
     };
     const s = localStrings[currentLang] || localStrings.en;
 
@@ -955,20 +1009,46 @@ function showMenu(type, prevEl = mainWrapper) {
         <div class="header"><h1>${s.title}</h1></div>
         <div class="expand-container" style="width:100%; display:flex; flex-direction:column; align-items:center; gap: 15px;">
             
-            <!-- Кнопка Инструкция -->
-            <div class="card sub-card aqua-glow" id="misc-guide-trigger" style="cursor: pointer; width: 100%; padding: 20px 15px; position: relative; text-align: center;">
+            <div class="card sub-card aqua-glow" id="misc-guide-trigger" style="cursor: pointer; width: 100%; padding: 20px 15px; text-align: center;">
                 <h2 style="margin: 0 0 15px 0;">${s.inst_btn}</h2>
-                <div style="display: flex; justify-content: center;">
-                    <div class="tag-info evolution-tag">DOCS</div>
-                </div>
+                <div class="tag-info evolution-tag" style="margin: 0 auto;">DOCS</div>
             </div>
 
-            <!-- Кнопка SFX-Pack -->
+            <div style="width: 100%; display: flex; flex-direction: column; align-items: center;">
+    <div class="card sub-card aqua-glow" id="ny-pack-trigger" style="cursor: pointer; width: 100%; padding: 20px 15px; position: relative; text-align: center;">
+        <div class="platform-tags" style="position: absolute; top: 8px; right: 8px; display: flex; gap: 4px; pointer-events: none;">
+            <span style="font-size: 0.55rem; padding: 1px 4px; border: 1px solid rgba(0, 255, 216, 0.5); color: #00ffd8; border-radius: 3px; text-transform: uppercase; font-weight: bold; background: rgba(0,0,0,0.3);">PC</span>
+            <span style="font-size: 0.55rem; padding: 1px 4px; border: 1px solid rgba(255, 157, 0, 0.5); color: #ff9d00; border-radius: 3px; text-transform: uppercase; font-weight: bold; background: rgba(0,0,0,0.3);">Android</span>
+        </div>
+        <h2 style="margin: 0 0 15px 0;">${s.ny_btn}</h2>
+        
+        <div id="season-tag-main" class="tag-info tag-season">
+    <i class="fas fa-snowflake"></i> 
+    <span>SEASON</span>
+</div>
+    </div>
+    
+    <div id="ny-platforms" style="display: flex; width: 100%; justify-content: center; gap: 10px; overflow: hidden; max-height: 0; transition: all 0.4s ease; opacity: 0;">
+        <div class="mini-platform-btn" style="width: 120px; margin-top: 10px;" onclick="window.open('https://drive.google.com/file/d/1zQdaMpYY8EtXITAhSXVN8l6YgH5hyvAl/view?usp=drive_link')">PC</div>
+        <div class="mini-platform-btn" style="width: 120px; margin-top: 10px;" onclick="window.open('https://drive.google.com/file/d/1OgIYHkroQPnPtbmTgjNoKWWb-WdF0kuo/view?usp=drive_link')">ANDROID</div>
+    </div>
+</div>
+
             <div class="card sub-card aqua-glow" id="sfx-menu-trigger" style="cursor: pointer; width: 100%; padding: 20px 15px; position: relative; text-align: center;">
-                <h2 style="margin: 0 0 15px 0;">${s.sfx_btn}</h2>
-                <div style="display: flex; justify-content: center;">
-                    <div class="tag-info skin-tag" style="background: var(--current-accent); color: #000;">WIP</div>
+                <div class="platform-tags" style="position: absolute; top: 8px; right: 8px; display: flex; gap: 4px; pointer-events: none;">
+                    <span style="font-size: 0.55rem; padding: 1px 4px; border: 1px solid rgba(0, 255, 216, 0.5); color: #00ffd8; border-radius: 3px; text-transform: uppercase; font-weight: bold; background: rgba(0,0,0,0.3);">PC</span>
+                    <span style="font-size: 0.55rem; padding: 1px 4px; border: 1px solid rgba(255, 157, 0, 0.5); color: #ff9d00; border-radius: 3px; text-transform: uppercase; font-weight: bold; background: rgba(0,0,0,0.3);">Android</span>
                 </div>
+                <h2 style="margin: 0 0 15px 0;">${s.sfx_btn}</h2>
+                <div class="tag-info tag-sounds" style="margin: 0 auto;">SOUNDS</div>
+            </div>
+
+            <div class="card sub-card aqua-glow" id="steam-cust-trigger" style="cursor: pointer; width: 100%; padding: 20px 15px; position: relative; text-align: center;">
+                <div class="platform-tags" style="position: absolute; top: 8px; right: 8px; pointer-events: none;">
+                    <span style="font-size: 0.55rem; padding: 1px 4px; border: 1px solid rgba(0, 255, 216, 0.5); color: #00ffd8; border-radius: 3px; text-transform: uppercase; font-weight: bold; background: rgba(0,0,0,0.3);">PC</span>
+                </div>
+                <h2 style="margin: 0 0 15px 0;">${s.steam_btn}</h2>
+                <div class="tag-info evolution-tag" style="background: #5c7eaf; margin: 0 auto;">STEAM</div>
             </div>
 
         </div>
@@ -977,9 +1057,25 @@ function showMenu(type, prevEl = mainWrapper) {
         </div>
     `;
 
+    // Логика Drawer (раскрытия)
+    section.querySelector('#ny-pack-trigger').onclick = function() {
+        const drawer = section.querySelector('#ny-platforms');
+        if (drawer.style.maxHeight === '0px' || !drawer.style.maxHeight) {
+            drawer.style.maxHeight = '100px';
+            drawer.style.opacity = '1';
+            drawer.style.marginBottom = '10px';
+        } else {
+            drawer.style.maxHeight = '0px';
+            drawer.style.opacity = '0';
+            drawer.style.marginBottom = '0px';
+        }
+        if (typeof playSFX === 'function') playSFX('click');
+    };
+
     section.querySelector('#misc-guide-trigger').onclick = () => showMenu('aqua_guide', section);
     section.querySelector('#sfx-menu-trigger').onclick = () => showMenu('sfx_download', section);
-    
+    section.querySelector('#steam-cust-trigger').onclick = () => window.open('https://drive.google.com/file/d/1VxQS4WRV639ZodFzEG46Q3mzNrfX3DdM/view?usp=drive_link', '_blank');
+
     section.querySelector('#back-to-main-from-misc').onclick = (e) => {
         e.preventDefault();
         animateOut(section, () => {
@@ -1610,13 +1706,23 @@ function animateIn(el) {
 window.addEventListener('load', () => {
     const savedLang = localStorage.getItem('selectedLang') || 'en';
     setLanguage(savedLang);
+
     setTimeout(() => {
         const loader = document.getElementById('loading-screen');
+        const widget = document.getElementById('patch-widget'); // Находим наш виджет
+
         if (loader) {
             loader.style.opacity = '0';
             setTimeout(() => {
                 loader.style.display = 'none';
+                
+                // Основной контент становится видимым
                 mainContent.classList.add('visible'); 
+
+                // СИНХРОНИЗАЦИЯ ПАТЧ-НОУТА
+                // Добавляем класс loaded, чтобы сработала CSS анимация приближения
+                if (widget) widget.classList.add('loaded');
+
                 if (vignette) vignette.classList.add('visible');
                 startTyping();
             }, 1000);
@@ -1626,6 +1732,8 @@ window.addEventListener('load', () => {
         const cpu = document.getElementById('cpu-val');
         if(cpu) cpu.innerText = Math.floor(Math.random()*15)+5; 
     }, 2000);
+
+    
 
 function refreshCursor() {
     const cursor = document.getElementById('custom-cursor'); // Замени на свой ID
@@ -1689,25 +1797,198 @@ if (isMobile && typeof VanillaTilt !== 'undefined') {
         if (card.vanillaTilt) card.vanillaTilt.destroy();
     });
 }
-// Анимация для "Data Flow" в статус-баре
-function startDataAnimation() {
-    const counterEl = document.getElementById('visitor-count');
-    if (!counterEl) return;
 
-    // Начальное число (например, примерное кол-во твоих подписчиков или просто база)
-    let currentFlow = 1042; 
-
-    setInterval(() => {
-        // Рандомно меняем число, чтобы создать эффект реального трафика
-        let change = Math.floor(Math.random() * 3) - 1; 
-        currentFlow += change;
-        if (currentFlow < 1000) currentFlow = 1000;
-        
-        counterEl.innerText = currentFlow.toString().padStart(4, '0');
-    }, 2500);
-}
-
-// Запуск при загрузке
-window.addEventListener('load', startDataAnimation);
 
 });
+
+function initSessionID() {
+    const sessionEl = document.getElementById('visitor-count');
+    if (!sessionEl) return;
+
+    // Генерируем случайный ID (например, EV-XXXX)
+    const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+    let result = 'EV-';
+    for (let i = 0; i < 4; i++) {
+        result += characters.charAt(Math.floor(Math.random() * characters.length));
+    }
+
+    // Эффект "подбора" или мгновенного появления
+    sessionEl.innerText = result;
+
+    // Опционально: раз в 30 секунд "обновляем" сессию (имитация ре-валидации)
+    setInterval(() => {
+        sessionEl.style.opacity = '0.3';
+        setTimeout(() => {
+            sessionEl.style.opacity = '1';
+        }, 100);
+    }, 30000);
+}
+
+// Запускаем
+initSessionID();
+
+let currentPatchIndex = 0;
+
+function updatePatchUI() {
+    const langData = translations[currentLang];
+    const patch = langData.patches_data[currentPatchIndex];
+    
+    const imgEl = document.getElementById('patch-img');
+    const textEl = document.getElementById('patch-text');
+    const verEl = document.getElementById('patch-version');
+    const dotsContainer = document.getElementById('patch-dots');
+
+    // Разные картинки для разных патчей
+    const patchImages = [
+        "patch_evo.jpg",   // Картинка для Evolution
+        "patch_night.jpg"  // Картинка для Project Night
+    ];
+
+    if (imgEl && patchImages[currentPatchIndex]) {
+        imgEl.src = patchImages[currentPatchIndex];
+    }
+
+    if (verEl) verEl.innerText = patch.version;
+    if (textEl) textEl.innerText = patch.text;
+
+    // Обновляем перевод кнопок и заголовка
+    if (document.getElementById('patch-header-title')) 
+        document.getElementById('patch-header-title').innerText = langData.patch_header;
+    if (document.getElementById('btn-patch-prev')) 
+        document.getElementById('btn-patch-prev').innerText = langData.patch_prev;
+    if (document.getElementById('btn-patch-next')) 
+        document.getElementById('btn-patch-next').innerText = langData.patch_next;
+
+    // Точки пагинации
+    if (dotsContainer) {
+        dotsContainer.innerHTML = '';
+        langData.patches_data.forEach((_, i) => {
+            const dot = document.createElement('div');
+            dot.className = `p-dot ${i === currentPatchIndex ? 'active' : ''}`;
+            dotsContainer.appendChild(dot);
+        });
+    }
+}
+
+function nextPatch() {
+    const total = translations[currentLang].patches_data.length;
+    currentPatchIndex = (currentPatchIndex + 1) % total;
+    animatePatchTransition();
+}
+
+function prevPatch() {
+    const total = translations[currentLang].patches_data.length;
+    currentPatchIndex = (currentPatchIndex - 1 + total) % total;
+    animatePatchTransition();
+}
+
+
+// Обнови инициализацию в DOMContentLoaded
+wwindow.addEventListener('DOMContentLoaded', () => {
+    const widget = document.getElementById('patch-widget');
+    const trigger = document.getElementById('patch-notes-trigger');
+    
+    // Проверяем статус в памяти браузера
+    const isClosed = localStorage.getItem('patchWidgetClosed') === 'true';
+
+    if (isClosed) {
+        // Если был закрыт: скрываем виджет и ПРИНУДИТЕЛЬНО показываем кнопку
+        if (widget) {
+            widget.classList.add('hidden');
+            widget.style.display = 'block'; // Убеждаемся, что сам блок не в display: none
+        }
+        if (trigger) {
+            trigger.style.display = 'block';
+            trigger.classList.add('active'); // Чтобы она сразу вылезла из-за края
+        }
+    } else {
+        // Если открыт: показываем виджет и скрываем кнопку
+        if (widget) {
+            widget.classList.remove('hidden');
+            widget.style.display = 'block';
+        }
+        if (trigger) {
+            trigger.style.display = 'none';
+            trigger.classList.remove('active');
+        }
+    }
+
+    // Обновляем текст и картинки внутри патча
+    if (typeof updatePatchUI === 'function') updatePatchUI();
+});
+
+// Эти функции должны быть глобальными
+function closePatchWidget() {
+    const widget = document.getElementById('patch-widget');
+    const trigger = document.getElementById('patch-notes-trigger');
+    
+    if (widget && trigger) {
+        widget.classList.add('hidden');
+        localStorage.setItem('patchWidgetClosed', 'true');
+
+        // Появление кнопки почти сразу
+        setTimeout(() => {
+            trigger.style.display = 'block';
+            
+            requestAnimationFrame(() => {
+                trigger.classList.add('active');
+                // Активируем двойную волну
+                trigger.classList.add('trigger-ripple');
+                
+                if (typeof playSFX === 'function') playSFX('hover');
+            });
+
+            // Очищаем класс через 2 секунды (хватит на обе волны по 1.2с)
+            setTimeout(() => {
+                trigger.classList.remove('trigger-ripple');
+            }, 2000);
+            
+        }, 400); 
+    }
+}
+
+function openPatchWidget() {
+    const widget = document.getElementById('patch-widget');
+    const trigger = document.getElementById('patch-notes-trigger');
+    
+    if (widget && trigger) {
+        // Убираем кнопку мгновенно
+        trigger.classList.remove('active');
+        
+        setTimeout(() => {
+            trigger.style.display = 'none';
+            widget.classList.remove('hidden');
+            localStorage.setItem('patchWidgetClosed', 'false');
+            
+            if (typeof playSFX === 'function') playSFX('click');
+        }, 200); // Быстрый возврат окна
+    }
+}
+// Новая функция для плавного перехода
+function animatePatchTransition() {
+    const body = document.querySelector('.patch-body');
+    const widget = document.getElementById('patch-widget');
+
+    if (body) {
+        // 1. Скрываем контент и чуть сдвигаем его
+        body.style.opacity = '0';
+        body.style.transform = 'scale(0.98)';
+
+        setTimeout(() => {
+            // 2. Обновляем данные, пока контент невидим
+            updatePatchUI();
+
+            // 3. Проявляем обратно и добавляем эффект мерцания
+            body.style.opacity = '1';
+            body.style.transform = 'scale(1)';
+            widget.classList.add('patch-change-anim');
+
+            // Убираем класс анимации через 400мс, чтобы его можно было вызвать снова
+            setTimeout(() => {
+                widget.classList.remove('patch-change-anim');
+            }, 400);
+        }, 300); // Время совпадает с transition в CSS
+    } else {
+        updatePatchUI();
+    }
+}

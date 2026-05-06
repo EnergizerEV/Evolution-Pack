@@ -5,6 +5,14 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Evolution | Terminal</title>
     
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-4HCTM7RPBW"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-4HCTM7RPBW');
+    </script>
+
     <link rel="icon" type="image/png" href="EV_Dark_2k.png">
     
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Source+Code+Pro:wght@400&display=swap" rel="stylesheet">
@@ -12,6 +20,7 @@
     <link rel="stylesheet" href="style.css">
 </head>
 <body class="aqua-mode">
+    <div class="ambient-breathing"></div>
 <div class="lang-switcher">
     <div onclick="setLanguage('ru')" id="lang-ru" class="lang-btn active">RU</div>
     <div onclick="setLanguage('en')" id="lang-en" class="lang-btn">EN</div>
@@ -21,15 +30,6 @@
     <div id="custom-cursor"></div>
     <div class="vignette" id="vignette"></div>
     
-    <head>
-    <!-- Google tag (gtag.js) -->
-    <script async src="https://www.googletagmanager.com/gtag/js?id=G-4HCTM7RPBW"></script>
-    <script>
-      window.dataLayer = window.dataLayer || [];
-      function gtag(){dataLayer.push(arguments);}
-      gtag('js', new Date());
-      gtag('config', 'G-4HCTM7RPBW');
-    </script>
 
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -116,18 +116,15 @@
     </div> <!-- /zoom-wrapper -->
 </div> <!-- /main-content -->
 
-    <div id="sys-status">
-        CPU_LOAD: <span id="cpu-val">00</span>% 
-        <span>SYSTEM: STABLE</span> 
-        MODE: <span id="mode-text">AQUA_CORE</span>
-        <span class="terminal-stats" style="margin-left: 15px; color: var(--current-accent); text-shadow: 0 0 5px var(--current-accent); opacity: 0.8;">
-            DATA_FLOW: <span id="visitor-count">0000</span>
-        </span>
-    </div>
 
-    <div class="footer">
-        UNAUTHORIZED ACCESS // <div class="scramble-text" id="nickname">M45T0D0NM4N</div> // V.5.5
-    </div>
+    <div id="sys-status">
+    CPU_LOAD: <span id="cpu-val">00</span>% 
+    <span>SYSTEM: STABLE</span> 
+    MODE: <span id="mode-text">AQUA_CORE</span>
+    <span class="terminal-stats" style="margin-left: 15px; color: var(--current-accent); text-shadow: 0 0 5px var(--current-accent); opacity: 0.8;">
+        SESS_ID: <span id="visitor-count">--------</span>
+    </span>
+</div>
 
     <div class="footer">
         UNAUTHORIZED ACCESS // <div class="scramble-text" id="nickname">M45T0D0NM4N</div> // V.5.5
@@ -135,8 +132,39 @@
 
     <div class="demo-footer-text">By [EV] Energizer</div>
 
+    <div class="patch-widget" id="patch-widget">
+    <div class="patch-header">
+        <span class="patch-title"><i class="fas fa-terminal"></i> <span id="patch-header-title">SYSTEM_LOG</span></span>
+        <div style="display: flex; align-items: center; gap: 15px;">
+            <span id="patch-version" class="patch-ver">V.5.5</span>
+            <i class="fas fa-times close-patch" onclick="closePatchWidget()"></i>
+        </div>
+    </div>
+    
+    <div class="patch-body">
+        <div class="patch-img-container">
+            <img id="patch-img" src="patch_evo.jpg" alt="patch">
+        </div>
+        <div class="patch-content">
+            <p id="patch-text">Загрузка данных...</p>
+        </div>
+    </div>
+
+    <div class="patch-footer">
+        <button type="button" onclick="prevPatch()" class="p-nav">
+            <i class="fas fa-angle-left"></i> <span id="btn-patch-prev">PREV</span>
+        </button>
+        <div id="patch-dots" class="p-dots"></div>
+        <button type="button" onclick="nextPatch()" class="p-nav">
+            <span id="btn-patch-next">NEXT</span> <i class="fas fa-angle-right"></i>
+        </button>
+    </div>
+</div>
+
+    <div id="patch-notes-trigger" onclick="openPatchWidget()">
+        PATCH_NOTES
+    </div>
+
     <script src="script.js"></script>
-
-
 </body>
 </html>

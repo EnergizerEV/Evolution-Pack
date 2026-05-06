@@ -8,7 +8,7 @@
     --grid-color: var(--aqua-dim);
     
     /* Добавлено для работы JS команды red */
-    --vignette-color: rgba(0, 50, 50, 0.4); 
+    --vignette-color: rgba(0, 20, 25, 0.9); 
     
     /* КУРСОР: Базовые значения (Aqua) */
     --cursor-normal: url('Cursor1-AQ1.png'); 
@@ -83,16 +83,33 @@ body::after {
     left: 0; 
     width: 100%; 
     height: 100%; 
-    /* Мягкая виньетка по умолчанию - теперь использует переменную */
-    background: radial-gradient(circle at 50% 50%, transparent 20%, var(--vignette-color) 80%); 
+    /* Увеличили 80% до 90% — теперь темнота сильнее "наползает" на экран */
+    background: radial-gradient(circle at 50% 50%, transparent 20%, var(--vignette-color) 90%); 
     pointer-events: none; 
     z-index: 1000; 
     opacity: 0; 
+    /* Переходы оставляем как были */
     transition: background 0.8s ease, opacity 2.5s cubic-bezier(0.15, 0.85, 0.35, 1);
+    
+    /* Добавляем "темное дыхание" */
+    animation: dark-aqua-breathe 10s infinite ease-in-out;
+}
+
+@keyframes dark-aqua-breathe {
+    0%, 100% { 
+        opacity: 0.8; /* Глубокая тень */
+        filter: brightness(0.6); 
+    }
+    50% { 
+        opacity: 1; /* Пик проявления цвета по краям */
+        filter: brightness(0.9); 
+    }
 }
 
 .vignette.visible {
-    opacity: 1;
+    /* Теперь анимация сама управляет прозрачностью, 
+       нам нужно просто разрешить элементу быть видимым */
+    display: block; 
 }
 
 /* --- ЭФФЕКТ ФОНАРИКА (RED MODE) --- */
@@ -120,16 +137,21 @@ body.red-mode::after {
 }
 
 body.red-mode .vignette {
-    /* Используем переменные --cursor-x и --cursor-y для позиции центра */
     background: radial-gradient(
         circle at var(--cursor-x, 50%) var(--cursor-y, 50%), 
         transparent 10%, 
         rgba(0, 0, 0, 0.96) 35%
     ) !important;
-    opacity: 1 !important;
     z-index: 10002;
-    /* Убираем плавный переход для позиции, чтобы свет не «отставал» от мышки */
     transition: opacity 2.5s cubic-bezier(0.15, 0.85, 0.35, 1), background 0s !important;
+    
+    /* В Red Mode делаем пульсацию чуть агрессивнее для атмосферы хоррора */
+    animation: red-vignette-pulse 4s infinite ease-in-out !important;
+}
+
+@keyframes red-vignette-pulse {
+    0%, 100% { opacity: 0.85; filter: brightness(0.8); }
+    50% { opacity: 1; filter: brightness(1.1); }
 }
 
 .social-sidebar {
@@ -1492,21 +1514,26 @@ body.red-mode .night-drawer.open {
     }
 
     /* 2. Позиционируем значки соцсетей под кнопками режимов */
-    .social-sidebar {
-        position: relative !important; /* Убираем фиксирование, привязываем к потоку */
-        inset: auto !important; /* Сбрасываем top/left/right/bottom */
-        transform: none !important;
-        
-        display: flex !important;
-        flex-direction: row !important; /* Горизонтальный ряд */
-        justify-content: center !important;
-        gap: 25px !important;
-        
-        margin-top: 30px !important; /* Отступ СВЕРХУ от кнопок стилей */
-        margin-bottom: 20px !important; /* Отступ СНИЗУ до следующего текста */
-        width: 100% !important;
-        z-index: 10;
-    }
+.social-sidebar {
+    position: relative !important;
+    inset: auto !important;
+    transform: none !important;
+    
+    display: flex !important;
+    flex-direction: row !important; /* Горизонтальный ряд */
+    
+    /* ИЗМЕНЕНИЯ ТУТ: */
+    justify-content: flex-start !important; /* Выравниваем по левому краю */
+    padding-left: 20px !important;           /* Небольшой отступ от левого края экрана */
+    padding-right: 80px !important;          /* Сдвигаем их ВЛЕВО, освобождая место СПРАВА */
+    gap: 20px !important;                    /* Чуть уменьшим расстояние между иконками для мобилки */
+    
+    margin-top: 30px !important;
+    margin-bottom: 20px !important;
+    width: 100% !important;
+    box-sizing: border-box !important;       /* Чтобы padding не распирал ширину */
+    z-index: 10;
+}
 
     /* Стиль самих иконок, чтобы по ним было легче попадать */
     .social-sidebar a {
@@ -1599,16 +1626,410 @@ body.red-mode .night-drawer.open {
     scrollbar-width: thin;
     scrollbar-color: color-mix(in srgb, var(--current-accent), transparent 80%) rgba(255, 255, 255, 0.03);
 }
-.terminal-stats {
-    margin-left: 15px;
-    color: var(--current-accent); /* Используем твой цвет из темы */
-    text-shadow: 0 0 5px var(--current-accent);
+/* Основной контейнер увеличен в 1.5 раза */
+.patch-widget {
+    position: absolute;
+    right: 40px;
+    top: 220px; 
+    width: 420px; /* Было 280px -> Стало 420px */
+    background: rgba(0, 0, 0, 0.85);
+    border: 1px solid var(--current-accent);
+    border-left: 4px solid var(--current-accent);
+    backdrop-filter: blur(8px);
+    z-index: 999; /* Чтобы кнопки точно кликались и ничто их не перекрывало */
     font-family: 'Source Code Pro', monospace;
-    text-transform: uppercase;
-    opacity: 0.8;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+    transition: opacity 0.4s ease, transform 0.4s ease;
 }
 
-#visitor-count {
-    font-weight: bold;
+/* Анимация скрытия */
+.patch-widget.hidden {
+    opacity: 0;
+    transform: translateX(50px);
+    pointer-events: none;
+}
+
+.patch-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 16px;
+    background: rgba(0, 255, 255, 0.05);
+    font-size: 12px;
     letter-spacing: 1px;
+    color: var(--current-accent);
+    border-bottom: 1px solid rgba(0, 255, 255, 0.2);
+}
+
+/* Кнопка закрытия */
+.close-patch {
+    cursor: pointer;
+    font-size: 14px;
+    transition: all 0.3s ease;
+    opacity: 0.6;
+}
+.close-patch:hover {
+    color: #ff4444;
+    opacity: 1;
+    text-shadow: 0 0 8px #ff4444;
+    transform: scale(1.2);
+}
+
+/* Прямоугольный контейнер для картинки */
+.patch-img-container {
+    width: 100%;
+    height: 200px; /* Пропорционально увеличено */
+    overflow: hidden;
+    border-bottom: 1px solid rgba(0, 255, 255, 0.1);
+}
+
+.patch-img-container img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    filter: brightness(0.9) contrast(1.1);
+    transition: transform 0.5s ease;
+}
+
+.patch-widget:hover .patch-img-container img {
+    transform: scale(1.02); /* Легкий зум картинки при наведении на виджет */
+}
+
+.patch-content p {
+    padding: 16px;
+    font-size: 13px;
+    line-height: 1.5;
+    color: #e0e0e0;
+    min-height: 70px;
+    border-bottom: 1px solid rgba(0, 255, 255, 0.1);
+    white-space: pre-line; /* Это позволит использовать \n для переноса строк в тексте */
+    text-align: left;
+    margin: 0;
+}
+
+.patch-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 16px;
+    background: rgba(0, 0, 0, 0.4);
+}
+
+/* Эффекты наведения для кнопок навигации */
+.p-nav {
+    background: transparent;
+    border: 1px solid var(--current-accent);
+    color: var(--current-accent);
+    cursor: pointer;
+    padding: 6px 14px;
+    font-family: 'Orbitron', sans-serif;
+    font-size: 11px;
+    font-weight: bold;
+    transition: all 0.2s ease;
+}
+
+.p-nav:hover {
+    background: var(--current-accent);
+    color: #000;
+    box-shadow: 0 0 12px var(--current-accent);
+    transform: translateY(-1px);
+}
+
+.p-nav:active {
+    transform: translateY(1px);
+}
+
+/* Точки */
+.p-dots {
+    display: flex;
+    gap: 8px;
+}
+
+.p-dot {
+    width: 6px;
+    height: 6px;
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 50%;
+    transition: all 0.3s ease;
+}
+
+.p-dot.active {
+    background: var(--current-accent);
+    box-shadow: 0 0 8px var(--current-accent);
+    transform: scale(1.2);
+}
+
+/* Адаптивность */
+@media (max-width: 1024px) {
+    .patch-widget {
+        display: none; /* Прячем на маленьких экранах, чтобы не ломать верстку */
+    }
+}
+/* Кнопка открытия (вертикальная) */
+#patch-notes-trigger {
+    position: fixed;
+    right: 0;
+    top: 50%;
+    transform: translateY(-50%) translateX(100%); /* Изначально спрятана за краем */
+    background: rgba(0, 5, 10, 0.9);
+    border: 1px solid var(--current-accent);
+    border-right: none;
+    color: var(--current-accent);
+    padding: 25px 10px;
+    cursor: pointer !important;
+    pointer-events: all !important;
+    font-family: 'Orbitron', sans-serif;
+    font-size: 11px;
+    letter-spacing: 2px;
+    writing-mode: vertical-rl;
+    text-orientation: mixed;
+    z-index: 10001;
+    display: none; 
+    transition: all 0.5s cubic-bezier(0.165, 0.84, 0.44, 1);
+    box-shadow: -2px 0 15px rgba(0, 0, 0, 0.5);
+}
+/* Класс для "вылезания" кнопки */
+#patch-notes-trigger.active {
+    display: block;
+    transform: translateY(-50%) translateX(0);
+}
+
+/* Виджет */
+.patch-widget {
+    position: fixed;
+    right: 40px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 420px;
+    background: rgba(5, 10, 15, 0.95);
+    border: 1px solid var(--current-accent);
+    border-left: 4px solid var(--current-accent);
+    backdrop-filter: blur(10px);
+    z-index: 10000;
+    pointer-events: all !important;
+    opacity: 0;
+    transform: translateY(-50%) scale(0.9); /* Начинаем с чуть уменьшенного размера */
+    transition: 
+        opacity 1.5s cubic-bezier(0.2, 0, 0.2, 1), 
+        transform 1.5s cubic-bezier(0.2, 0, 0.2, 1),
+        right 0.5s ease; /* Оставляем плавность для закрытия */
+    
+    pointer-events: none; /* Пока не загрузился — не кликабелен */
+}
+.patch-widget.loaded {
+    opacity: 1;
+    transform: translateY(-50%) scale(1);
+    pointer-events: all;
+}
+.patch-widget.loaded.hidden {
+    opacity: 0;
+    transform: translateY(-50%) translateX(100%) scale(1);
+    pointer-events: none;
+}
+
+.patch-widget.hidden {
+    opacity: 0;
+    transform: translateY(-50%) translateX(100%);
+    pointer-events: none;
+}
+/* Базовые стили для обеих волн */
+.trigger-ripple::before,
+.trigger-ripple::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    border: 2px solid var(--current-accent);
+    opacity: 0;
+    pointer-events: none;
+    z-index: -1;
+}
+
+/* Первая волна: запускается сразу */
+.trigger-ripple::before {
+    animation: trigger-wave-pulse 1.2s ease-out forwards;
+}
+
+/* Вторая волна: запускается с задержкой 0.3с */
+.trigger-ripple::after {
+    display: block !important;
+    animation: trigger-wave-pulse 1.2s ease-out 0.3s forwards;
+}
+
+@keyframes trigger-wave-pulse {
+    0% {
+        transform: scaleX(1) scaleY(1);
+        opacity: 0.8;
+    }
+    100% {
+        transform: scaleX(2.8) scaleY(1.4);
+        opacity: 0;
+    }
+}
+
+/* Ховер эффект кнопки */
+#patch-notes-trigger:hover {
+    background: var(--current-accent);
+    color: #000;
+    padding-right: 20px; /* Еще больше вылезает при наведении */
+    box-shadow: -5px 0 25px var(--current-accent);
+}
+#patch-img {
+    transition: opacity 0.3s ease-in-out;
+}
+/* Класс для плавного исчезновения контента */
+.patch-body, .patch-version-text {
+    transition: opacity 0.3s ease-in-out, transform 0.3s ease-in-out;
+}
+
+/* Эффект мерцания (Glitch) при смене данных */
+@keyframes patch-glitch {
+    0% { opacity: 1; filter: brightness(1); }
+    20% { opacity: 0.5; filter: brightness(2) contrast(2); }
+    40% { opacity: 0.8; filter: brightness(1.2); }
+    100% { opacity: 1; filter: brightness(1); }
+}
+
+.patch-change-anim {
+    animation: patch-glitch 0.4s ease-out;
+}
+/* Базовое состояние подменю: скрыто */
+.submenu-list {
+    width: 100%;
+    max-height: 0;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    transition: max-height 0.5s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.3s ease;
+    opacity: 0;
+    pointer-events: none;
+}
+
+/* Активное состояние: раскрыто */
+.submenu-list.active {
+    max-height: 300px; /* Достаточно места для вложенных карточек */
+    opacity: 1;
+    pointer-events: all;
+    margin-bottom: 10px;
+}
+
+/* Эффект при наведении на под-кнопки */
+.submenu-item {
+    transition: transform 0.2s ease, filter 0.2s ease !important;
+}
+
+.submenu-item:hover {
+    transform: scale(1.02);
+    filter: brightness(1.2);
+}
+/* 2. НОВЫЙ КОД ДЛЯ ТЕГА ЧЕРЕЗ ID (Заменяет твой старый кусок) */
+#season-tag-main {
+    background: rgba(255, 255, 255, 0.03) !important;
+    opacity: 1 !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 8px !important;
+    width: fit-content !important;
+    min-width: 115px !important;
+    padding: 6px 15px !important;
+    margin: 10px auto 0 auto !important;
+    border-radius: 4px;
+    font-weight: 900;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    font-size: 0.75rem;
+    
+    /* СБРОС СЕРОГО: наследуем цвет от анимации */
+    color: inherit !important; 
+    border: 1px solid currentColor !important;
+    
+    /* СВЕТЯШКИ: теперь они привязаны к текущему цвету анимации */
+    animation: garland-full-logic 6s infinite ease-in-out !important;
+    filter: drop-shadow(0 0 8px currentColor) !important;
+}
+
+/* Принудительная передача цвета иконке и тексту внутри ID */
+#season-tag-main i, 
+#season-tag-main span {
+    color: inherit !important;
+    text-shadow: 0 0 10px currentColor;
+}
+
+/* АНИМАЦИЯ (с синим цветом и улучшенным свечением) */
+@keyframes garland-full-logic {
+    0%, 100% { 
+        color: #ff3333; /* Красный */
+        box-shadow: 0 0 15px rgba(255, 0, 0, 0.6), inset 0 0 8px rgba(255, 0, 0, 0.3);
+    }
+    25% { 
+        color: #00ff66; /* Зеленый */
+        box-shadow: 0 0 15px rgba(0, 255, 100, 0.6), inset 0 0 8px rgba(0, 255, 100, 0.3);
+    }
+    50% { 
+        color: #0088ff; /* Синий */
+        box-shadow: 0 0 15px rgba(0, 136, 255, 0.6), inset 0 0 8px rgba(0, 136, 255, 0.3);
+    }
+    75% { 
+        color: #ffcc00; /* Золотой */
+        box-shadow: 0 0 15px rgba(255, 200, 0, 0.7), inset 0 0 8px rgba(255, 200, 0, 0.3);
+    }
+}
+/* --- ТЕГ SOUNDS (SFX) --- */
+.tag-sounds {
+    background: rgba(0, 255, 216, 0.1) !important;
+    border: 1px solid var(--current-accent) !important;
+    color: var(--current-accent) !important;
+    font-weight: 800;
+    letter-spacing: 1.5px;
+    position: relative;
+    overflow: hidden;
+    /* Тройное свечение для глубины */
+    box-shadow: 0 0 5px var(--current-accent), 
+                inset 0 0 8px rgba(0, 255, 216, 0.2);
+}
+
+/* Эффект "бегущего блика" (светяшка) — делаем его очень тонким и быстрым */
+.tag-sounds::after {
+    content: "";
+    position: absolute;
+    top: 0; left: -150%;
+    width: 30px; height: 100%;
+    background: linear-gradient(
+        90deg, 
+        transparent, 
+        rgba(255, 255, 255, 0.4), 
+        transparent
+    );
+    transform: skewX(-20deg);
+    animation: subtle-shine 4s infinite;
+}
+
+@keyframes subtle-shine {
+    0% { left: -150%; }
+    15% { left: 150%; }
+    100% { left: 150%; }
+}
+#nickname {
+    /* 1. УБИВАЕМ СТАНДАРТНЫЙ КУРСОР:
+       При наведении на ник, системный курсор (стрелка или рука) не появится.
+       Твой кастомный курсор продолжит летать сверху. */
+    cursor: none !important;
+
+    /* 2. РАЗРЕШАЕМ КЛИКИ:
+       Убеждаемся, что элемент все еще может принимать события мыши. */
+    pointer-events: all !important;
+
+    /* 3. КОСМЕТИКА:
+       Добавляем подсветку при наведении (hover), так как курсор не меняется. */
+    transition: color 0.3s ease, text-shadow 0.3s ease;
+}
+
+#nickname:hover {
+    /* Подсвечиваем цветом акцента и добавляем неон */
+    color: var(--current-accent) !important;
+    text-shadow: 0 0 10px var(--current-accent);
 }
