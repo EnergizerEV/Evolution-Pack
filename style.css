@@ -1599,3 +1599,16 @@ body.red-mode .night-drawer.open {
     scrollbar-width: thin;
     scrollbar-color: color-mix(in srgb, var(--current-accent), transparent 80%) rgba(255, 255, 255, 0.03);
 }
+.terminal-stats {
+    margin-left: 15px;
+    color: var(--current-accent); /* Используем твой цвет из темы */
+    text-shadow: 0 0 5px var(--current-accent);
+    font-family: 'Source Code Pro', monospace;
+    text-transform: uppercase;
+    opacity: 0.8;
+}
+
+#visitor-count {
+    font-weight: bold;
+    letter-spacing: 1px;
+}

@@ -1689,5 +1689,25 @@ if (isMobile && typeof VanillaTilt !== 'undefined') {
         if (card.vanillaTilt) card.vanillaTilt.destroy();
     });
 }
+// Анимация для "Data Flow" в статус-баре
+function startDataAnimation() {
+    const counterEl = document.getElementById('visitor-count');
+    if (!counterEl) return;
+
+    // Начальное число (например, примерное кол-во твоих подписчиков или просто база)
+    let currentFlow = 1042; 
+
+    setInterval(() => {
+        // Рандомно меняем число, чтобы создать эффект реального трафика
+        let change = Math.floor(Math.random() * 3) - 1; 
+        currentFlow += change;
+        if (currentFlow < 1000) currentFlow = 1000;
+        
+        counterEl.innerText = currentFlow.toString().padStart(4, '0');
+    }, 2500);
+}
+
+// Запуск при загрузке
+window.addEventListener('load', startDataAnimation);
 
 });
