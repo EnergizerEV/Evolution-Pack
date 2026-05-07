@@ -811,28 +811,30 @@ if (evoCard) {
 }
 
 function showMenu(type, prevEl = mainWrapper) {
-    // Добавляем текущее меню в историю браузера
-    // Чтобы при нажатии системной кнопки "Назад" мы не вылетели с сайта
+    // 1. История
     if (window.location.hash !== '#' + type) {
-        history.pushState({ menuId: type }, "", "#" + type);
+        const historyId = (type === 'main') ? 'evo_main' : type;
+        history.pushState({ menuId: type }, "", "#" + historyId);
     }
-    const isRefresh = !document.body.contains(prevEl) && prevEl !== mainWrapper;
 
+    // Проверка на F5 (если prevEl пустой или его нет в DOM)
+    const isRefresh = !prevEl || !document.body.contains(prevEl);
+
+    // 2. ФУНКЦИЯ ОТРИСОВКИ (начало)
     const render = () => {
-        if (prevEl !== mainWrapper && document.body.contains(prevEl)) prevEl.remove();
-        else mainWrapper.style.display = 'none';
+        // Удаляем старое или скрываем главное
+        if (prevEl && prevEl !== mainWrapper && document.body.contains(prevEl)) {
+            prevEl.remove();
+        } else if (mainWrapper) {
+            mainWrapper.style.display = 'none';
+        }
 
         const section = document.createElement('div');
-        
-        // === ДОБАВЛЕНО ДЛЯ СМЕНЫ ЯЗЫКА ===
-        // Устанавливаем атрибут, чтобы setLanguage могла считать текущий тип меню
         section.setAttribute('data-type', type);
-        // Также дублируем в dataset для надежности (совместимость с кодом выше)
         section.dataset.menuId = type; 
-        // ================================
-
         section.className = `evo-section active-center ${type === 'download' ? 'dl-menu' : ''}`;
 
+        
         if (type === 'main') {
             // === ГЛАВНОЕ МЕНЮ AQUA ===
             section.innerHTML = `
@@ -852,23 +854,19 @@ function showMenu(type, prevEl = mainWrapper) {
 
             section.querySelector('#go-download').onclick = () => showMenu('download', section);
             section.querySelector('#go-about-evo').onclick = () => showMenu('evo_about_article', section);
+            
+            // ИСПРАВЛЕНО: Теперь кнопка использует историю браузера
             section.querySelector('#back-to-start').onclick = (e) => {
                 e.preventDefault();
-                animateOut(section, () => {
-                    section.remove();
-                    mainWrapper.style.display = 'flex';
-                    animateIn(mainWrapper);
-                });
+                history.back(); 
             };
 
 
         } else if (type === 'evo_about_article') {
     const lang = translations[currentLang];
-    // Заголовок и подзаголовок
     const subHeaderTop = "Evolution Pack - Dark-Aqua / Equipments & Skins / SFX-Pack";
     const authorCredit = "By [EV] Energizer";
     
-    // Текстовые блоки с принудительным ограничением ширины (8-10 слов на строку)
     const articleContent = {
         ru: [
             "<b>EVolution Pack</b> — это глобальное визуальное переосмысление SAS4.",
@@ -902,11 +900,15 @@ function showMenu(type, prevEl = mainWrapper) {
     };
 
     const currentTextArray = articleContent[currentLang] || articleContent.en;
-
-    // Вспомогательная функция для подсветки букв
     const glowSpan = (text) => `<span style="color: var(--current-accent); text-shadow: 0 0 10px var(--current-accent);">${text}</span>`;
 
     section.innerHTML = `
+        <div class="mobile-back-top">
+            <a href="#" class="btn btn-mobile-back" onclick="event.preventDefault(); history.back();">
+                <i class="fas fa-chevron-left"></i> ${lang.btn_back}
+            </a>
+        </div>
+
         <div class="header" style="display: flex; flex-direction: column; align-items: center; gap: 10px; margin-bottom: 30px;">
             <img src="VK_AVATAR.png" style="width: 120px; height: 120px; border-radius: 50%; border: 3px solid var(--current-accent); box-shadow: 0 0 30px var(--current-accent); margin-bottom: 10px;" alt="Avatar">
             
@@ -940,66 +942,71 @@ function showMenu(type, prevEl = mainWrapper) {
                 </div>
             </div>
         </div>
-        
 
         <div class="back-btn-wrapper">
             <a href="#" class="btn" id="back-to-main-from-article">${lang.btn_back}</a>
         </div>
     `;
 
+    // ИСПРАВЛЕННАЯ ЛОГИКА КЛИКА
     section.querySelector('#back-to-main-from-article').onclick = (e) => {
         e.preventDefault();
-        showMenu('main', section);
+        history.back(); // Возвращаемся через историю браузера
     };
 
         } else if (type === 'download') {
-            // === МЕНЮ ВЫБОРА ФАЙЛОВ AQUA С КОМПАКТНЫМИ ТЕГАМИ ===
-            section.innerHTML = `
-                <div class="header"><h1>${translations[currentLang].select_file}</h1></div>
-                <div class="expand-container" style="width:100%; display:flex; flex-direction:column; align-items:center;">
-                    <!-- EVolution Pack: PC + Android -->
-                    <div class="card sub-card" id="main-pack-trigger" style="position: relative;">
-                        <div class="platform-tags" style="position: absolute; top: 8px; right: 8px; display: flex; gap: 4px; pointer-events: none;">
-                            <span style="font-size: 0.55rem; padding: 1px 4px; border: 1px solid rgba(0, 255, 216, 0.5); color: #00ffd8; border-radius: 3px; text-transform: uppercase; font-weight: bold; background: rgba(0,0,0,0.3);">PC</span>
-                            <span style="font-size: 0.55rem; padding: 1px 4px; border: 1px solid rgba(255, 157, 0, 0.5); color: #ff9d00; border-radius: 3px; text-transform: uppercase; font-weight: bold; background: rgba(0,0,0,0.3);">Android</span>
-                        </div>
-                        <h2>EVolution Pack</h2>
-                        <div class="tag-info evolution-tag">${translations[currentLang].tag_theme_skins}</div>
-                    </div>
-                    <div class="platform-drawer" id="platforms">
-                        <div class="mini-platform-btn" onclick="window.open('https://drive.google.com/file/d/1Qw3G5LnlaEteiOD51bF1Oy1uh2A63R9O/view?usp=drive_link')">PC</div>
-                        <div class="mini-platform-btn" onclick="window.open('https://drive.google.com/file/d/19GXDO7E-SCvKzvF9ZIklORNZ1xmfN8dC/view?usp=drive_link')">ANDROID</div>
-                    </div>
+    // === МЕНЮ ВЫБОРА ФАЙЛОВ AQUA С КОМПАКТНЫМИ ТЕГАМИ ===
+    section.innerHTML = `
+        <div class="mobile-back-top">
+            <a href="#" class="btn btn-mobile-back" onclick="event.preventDefault(); history.back();">
+                <i class="fas fa-chevron-left"></i> ${translations[currentLang].btn_back}
+            </a>
+        </div>
+
+        <div class="header"><h1>${translations[currentLang].select_file}</h1></div>
+        <div class="expand-container" style="width:100%; display:flex; flex-direction:column; align-items:center;">
+            <div class="card sub-card" id="main-pack-trigger" style="position: relative;">
+                <div class="platform-tags" style="position: absolute; top: 8px; right: 8px; display: flex; gap: 4px; pointer-events: none;">
+                    <span style="font-size: 0.55rem; padding: 1px 4px; border: 1px solid rgba(0, 255, 216, 0.5); color: #00ffd8; border-radius: 3px; text-transform: uppercase; font-weight: bold; background: rgba(0,0,0,0.3);">PC</span>
+                    <span style="font-size: 0.55rem; padding: 1px 4px; border: 1px solid rgba(255, 157, 0, 0.5); color: #ff9d00; border-radius: 3px; text-transform: uppercase; font-weight: bold; background: rgba(0,0,0,0.3);">Android</span>
                 </div>
+                <h2>EVolution Pack</h2>
+                <div class="tag-info evolution-tag">${translations[currentLang].tag_theme_skins}</div>
+            </div>
+            <div class="platform-drawer" id="platforms">
+                <div class="mini-platform-btn" onclick="window.open('https://drive.google.com/file/d/1Qw3G5LnlaEteiOD51bF1Oy1uh2A63R9O/view?usp=drive_link')">PC</div>
+                <div class="mini-platform-btn" onclick="window.open('https://drive.google.com/file/d/19GXDO7E-SCvKzvF9ZIklORNZ1xmfN8dC/view?usp=drive_link')">ANDROID</div>
+            </div>
+        </div>
 
-                <!-- Dark-Aqua: PC Only -->
-                <div class="card sub-card" onclick="window.open('https://drive.google.com/file/d/1cdFySQJEFkNO4x36GO-y4YcZvnWCIQxz/view?usp=drive_link')" style="position: relative;">
-                    <div class="platform-tags" style="position: absolute; top: 8px; right: 8px; pointer-events: none;">
-                        <span style="font-size: 0.55rem; padding: 1px 4px; border: 1px solid rgba(0, 255, 216, 0.5); color: #00ffd8; border-radius: 3px; text-transform: uppercase; font-weight: bold; background: rgba(0,0,0,0.3);">PC</span>
-                    </div>
-                    <h2>Dark-Aqua</h2>
-                    <div class="tag-info theme-tag">${translations[currentLang].tag_theme_only}</div>
-                </div>
+        <div class="card sub-card" onclick="window.open('https://drive.google.com/file/d/1cdFySQJEFkNO4x36GO-y4YcZvnWCIQxz/view?usp=drive_link')" style="position: relative;">
+            <div class="platform-tags" style="position: absolute; top: 8px; right: 8px; pointer-events: none;">
+                <span style="font-size: 0.55rem; padding: 1px 4px; border: 1px solid rgba(0, 255, 216, 0.5); color: #00ffd8; border-radius: 3px; text-transform: uppercase; font-weight: bold; background: rgba(0,0,0,0.3);">PC</span>
+            </div>
+            <h2>Dark-Aqua</h2>
+            <div class="tag-info theme-tag">${translations[currentLang].tag_theme_only}</div>
+        </div>
 
-                <!-- Equipments & Skins: PC Only -->
-                <div class="card sub-card" onclick="window.open('https://drive.google.com/file/d/1WdR-eB83XePCYBPATInek2FTfpAIkxJB/view?usp=drive_link')" style="position: relative;">
-                    <div class="platform-tags" style="position: absolute; top: 8px; right: 8px; pointer-events: none;">
-                        <span style="font-size: 0.55rem; padding: 1px 4px; border: 1px solid rgba(0, 255, 216, 0.5); color: #00ffd8; border-radius: 3px; text-transform: uppercase; font-weight: bold; background: rgba(0,0,0,0.3);">PC</span>
-                    </div>
-                    <h2>Equipments & Skins</h2>
-                    <div class="tag-info skin-tag">${translations[currentLang].tag_skins_only}</div>
-                </div>
+        <div class="card sub-card" onclick="window.open('https://drive.google.com/file/d/1WdR-eB83XePCYBPATInek2FTfpAIkxJB/view?usp=drive_link')" style="position: relative;">
+            <div class="platform-tags" style="position: absolute; top: 8px; right: 8px; pointer-events: none;">
+                <span style="font-size: 0.55rem; padding: 1px 4px; border: 1px solid rgba(0, 255, 216, 0.5); color: #00ffd8; border-radius: 3px; text-transform: uppercase; font-weight: bold; background: rgba(0,0,0,0.3);">PC</span>
+            </div>
+            <h2>Equipments & Skins</h2>
+            <div class="tag-info skin-tag">${translations[currentLang].tag_skins_only}</div>
+        </div>
 
-                <div class="back-btn-wrapper"><a href="#" class="btn" id="back-to-evo">${translations[currentLang].btn_back}</a></div>
-            `;
+        <div class="back-btn-wrapper"><a href="#" class="btn" id="back-to-evo">${translations[currentLang].btn_back}</a></div>
+    `;
 
-            section.querySelector('#main-pack-trigger').onclick = () => {
-                section.querySelector('#platforms').classList.toggle('open');
-            };
-            section.querySelector('#back-to-evo').onclick = (e) => {
-                e.preventDefault();
-                showMenu('main', section);
-            };
+    section.querySelector('#main-pack-trigger').onclick = () => {
+        section.querySelector('#platforms').classList.toggle('open');
+    };
+
+    // ИСПРАВЛЕНО: Кнопка назад теперь корректно откатывает историю
+    section.querySelector('#back-to-evo').onclick = (e) => {
+        e.preventDefault();
+        history.back();
+    };
 
         } else if (type === 'misc_main') {
     const lang = translations[currentLang];
@@ -1011,6 +1018,12 @@ function showMenu(type, prevEl = mainWrapper) {
     const s = localStrings[currentLang] || localStrings.en;
 
     section.innerHTML = `
+        <div class="mobile-back-top">
+            <a href="#" class="btn btn-mobile-back" onclick="event.preventDefault(); history.back();">
+                <i class="fas fa-chevron-left"></i> ${lang.btn_back}
+            </a>
+        </div>
+
         <div class="header"><h1>${s.title}</h1></div>
         <div class="expand-container" style="width:100%; display:flex; flex-direction:column; align-items:center; gap: 15px;">
             
@@ -1020,24 +1033,22 @@ function showMenu(type, prevEl = mainWrapper) {
             </div>
 
             <div style="width: 100%; display: flex; flex-direction: column; align-items: center;">
-    <div class="card sub-card aqua-glow" id="ny-pack-trigger" style="cursor: pointer; width: 100%; padding: 20px 15px; position: relative; text-align: center;">
-        <div class="platform-tags" style="position: absolute; top: 8px; right: 8px; display: flex; gap: 4px; pointer-events: none;">
-            <span style="font-size: 0.55rem; padding: 1px 4px; border: 1px solid rgba(0, 255, 216, 0.5); color: #00ffd8; border-radius: 3px; text-transform: uppercase; font-weight: bold; background: rgba(0,0,0,0.3);">PC</span>
-            <span style="font-size: 0.55rem; padding: 1px 4px; border: 1px solid rgba(255, 157, 0, 0.5); color: #ff9d00; border-radius: 3px; text-transform: uppercase; font-weight: bold; background: rgba(0,0,0,0.3);">Android</span>
-        </div>
-        <h2 style="margin: 0 0 15px 0;">${s.ny_btn}</h2>
-        
-        <div id="season-tag-main" class="tag-info tag-season">
-    <i class="fas fa-snowflake"></i> 
-    <span>SEASON</span>
-</div>
-    </div>
-    
-    <div id="ny-platforms" style="display: flex; width: 100%; justify-content: center; gap: 10px; overflow: hidden; max-height: 0; transition: all 0.4s ease; opacity: 0;">
-        <div class="mini-platform-btn" style="width: 120px; margin-top: 10px;" onclick="window.open('https://drive.google.com/file/d/1zQdaMpYY8EtXITAhSXVN8l6YgH5hyvAl/view?usp=drive_link')">PC</div>
-        <div class="mini-platform-btn" style="width: 120px; margin-top: 10px;" onclick="window.open('https://drive.google.com/file/d/1OgIYHkroQPnPtbmTgjNoKWWb-WdF0kuo/view?usp=drive_link')">ANDROID</div>
-    </div>
-</div>
+                <div class="card sub-card aqua-glow" id="ny-pack-trigger" style="cursor: pointer; width: 100%; padding: 20px 15px; position: relative; text-align: center;">
+                    <div class="platform-tags" style="position: absolute; top: 8px; right: 8px; display: flex; gap: 4px; pointer-events: none;">
+                        <span style="font-size: 0.55rem; padding: 1px 4px; border: 1px solid rgba(0, 255, 216, 0.5); color: #00ffd8; border-radius: 3px; text-transform: uppercase; font-weight: bold; background: rgba(0,0,0,0.3);">PC</span>
+                        <span style="font-size: 0.55rem; padding: 1px 4px; border: 1px solid rgba(255, 157, 0, 0.5); color: #ff9d00; border-radius: 3px; text-transform: uppercase; font-weight: bold; background: rgba(0,0,0,0.3);">Android</span>
+                    </div>
+                    <h2 style="margin: 0 0 15px 0;">${s.ny_btn}</h2>
+                    <div id="season-tag-main" class="tag-info tag-season">
+                        <i class="fas fa-snowflake"></i> <span>SEASON</span>
+                    </div>
+                </div>
+                
+                <div id="ny-platforms" style="display: flex; width: 100%; justify-content: center; gap: 10px; overflow: hidden; max-height: 0; transition: all 0.4s ease; opacity: 0;">
+                    <div class="mini-platform-btn" style="width: 120px; margin-top: 10px;" onclick="window.open('https://drive.google.com/file/d/1zQdaMpYY8EtXITAhSXVN8l6YgH5hyvAl/view?usp=drive_link')">PC</div>
+                    <div class="mini-platform-btn" style="width: 120px; margin-top: 10px;" onclick="window.open('https://drive.google.com/file/d/1OgIYHkroQPnPtbmTgjNoKWWb-WdF0kuo/view?usp=drive_link')">ANDROID</div>
+                </div>
+            </div>
 
             <div class="card sub-card aqua-glow" id="sfx-menu-trigger" style="cursor: pointer; width: 100%; padding: 20px 15px; position: relative; text-align: center;">
                 <div class="platform-tags" style="position: absolute; top: 8px; right: 8px; display: flex; gap: 4px; pointer-events: none;">
@@ -1062,7 +1073,6 @@ function showMenu(type, prevEl = mainWrapper) {
         </div>
     `;
 
-    // Логика Drawer (раскрытия)
     section.querySelector('#ny-pack-trigger').onclick = function() {
         const drawer = section.querySelector('#ny-platforms');
         if (drawer.style.maxHeight === '0px' || !drawer.style.maxHeight) {
@@ -1081,13 +1091,10 @@ function showMenu(type, prevEl = mainWrapper) {
     section.querySelector('#sfx-menu-trigger').onclick = () => showMenu('sfx_download', section);
     section.querySelector('#steam-cust-trigger').onclick = () => window.open('https://drive.google.com/file/d/1VxQS4WRV639ZodFzEG46Q3mzNrfX3DdM/view?usp=drive_link', '_blank');
 
+    // ИСПРАВЛЕНО: Кнопка назад через историю
     section.querySelector('#back-to-main-from-misc').onclick = (e) => {
         e.preventDefault();
-        animateOut(section, () => {
-            section.remove();
-            mainWrapper.style.display = 'flex';
-            animateIn(mainWrapper);
-        });
+        history.back();
     };
 
 } else if (type === 'sfx_download') {
@@ -1178,60 +1185,52 @@ function showMenu(type, prevEl = mainWrapper) {
     const s = sfxStrings[currentLang] || sfxStrings.en;
 
     section.innerHTML = `
+        <div class="mobile-back-top">
+            <a href="#" class="btn btn-mobile-back" onclick="event.preventDefault(); history.back();">
+                <i class="fas fa-chevron-left"></i> ${lang.btn_back}
+            </a>
+        </div>
+
         <div class="header"><h1>${s.header}</h1></div>
         
-        <div class="expand-container" style="width:100%; display:flex; flex-direction:column; gap: 15px; align-items: center;">
+        <div class="expand-container" style="width:100%; display:flex; flex-direction:column; align-items: center;">
             
-            <!-- Evolution Pack -->
-            <div class="sfx-block" id="block-evo">
-                <div class="card sub-card" id="trigger-evo" style="width: 100%; text-align: center; cursor: pointer;">
+            <div style="width:100%; display:flex; flex-direction:column; align-items:center; margin-bottom: 15px;">
+                <div class="card sub-card" id="trigger-evo" style="position: relative; width: 100%;">
+                    <div class="platform-tags" style="position: absolute; top: 8px; right: 8px; display: flex; gap: 4px; pointer-events: none;">
+                        <span style="font-size: 0.55rem; padding: 1px 4px; border: 1px solid rgba(0, 255, 216, 0.5); color: #00ffd8; border-radius: 3px; text-transform: uppercase; font-weight: bold; background: rgba(0,0,0,0.3);">PC</span>
+                        <span style="font-size: 0.55rem; padding: 1px 4px; border: 1px solid rgba(255, 157, 0, 0.5); color: #ff9d00; border-radius: 3px; text-transform: uppercase; font-weight: bold; background: rgba(0,0,0,0.3);">Android</span>
+                    </div>
                     <h2 style="margin:0;">${s.with_evo}</h2>
-                    <div style="display:flex; gap:5px; justify-content: center; margin-top:5px;">
-                        <span class="tag-info evolution-tag">PC</span>
-                        <span class="tag-info evolution-tag">ANDROID</span>
-                    </div>
+                    <div class="tag-info evolution-tag">STABLE</div>
                 </div>
-                <div class="sfx-drawer">
-                    <div class="drawer-inner">
-                        <!-- PC Кнопка -->
-                        <div class="card sub-card mini-dl-card" onclick="window.open('https://drive.google.com/file/d/1CFzc7VNsI62WJ-vqXmUrNQVsn-Hrx6V_/view?usp=drive_link')">
-                            <h3>${s.pc_dl}</h3>
-                        </div>
-                        <!-- Android Кнопка (Теперь рабочая) -->
-                        <div class="card sub-card mini-dl-card" onclick="window.open('https://drive.google.com/file/d/1g9T2t5I5dK16JnGZAZDSQmXWLMYsGdYj/view?usp=sharing')">
-                            <h3>${s.android_dl}</h3>
-                        </div>
-                    </div>
+                <div class="platform-drawer" id="drawer-evo">
+                    <div class="mini-platform-btn" onclick="window.open('https://drive.google.com/file/d/1CFzc7VNsI62WJ-vqXmUrNQVsn-Hrx6V_/view?usp=drive_link')">${s.pc_dl}</div>
+                    <div class="mini-platform-btn" onclick="window.open('https://drive.google.com/file/d/1g9T2t5I5dK16JnGZAZDSQmXWLMYsGdYj/view?usp=sharing')">${s.android_dl}</div>
                 </div>
             </div>
 
-            <!-- Project Night -->
-            <div class="sfx-block" id="block-night">
-                <div class="card sub-card" id="trigger-night" style="width: 100%; text-align: center; cursor: pointer;">
+            <div style="width:100%; display:flex; flex-direction:column; align-items:center; margin-bottom: 15px;">
+                <div class="card sub-card" id="trigger-night" style="position: relative; width: 100%;">
+                    <div class="platform-tags" style="position: absolute; top: 8px; right: 8px; display: flex; gap: 4px; pointer-events: none;">
+                        <span style="font-size: 0.55rem; padding: 1px 4px; border: 1px solid rgba(0, 255, 216, 0.5); color: #00ffd8; border-radius: 3px; text-transform: uppercase; font-weight: bold; background: rgba(0,0,0,0.3);">PC</span>
+                        <span style="font-size: 0.55rem; padding: 1px 4px; border: 1px solid rgba(255, 157, 0, 0.5); color: #ff9d00; border-radius: 3px; text-transform: uppercase; font-weight: bold; background: rgba(0,0,0,0.3);">Android</span>
+                    </div>
                     <h2 style="margin:0;">${s.with_night}</h2>
-                    <div style="display:flex; gap:5px; justify-content: center; margin-top:5px;">
-                        <span class="tag-info evolution-tag">PC</span>
-                        <span class="tag-info evolution-tag">ANDROID</span>
-                    </div>
+                    <div class="tag-info evolution-tag">STABLE</div>
                 </div>
-                <div class="sfx-drawer">
-                    <div class="drawer-inner">
-                        <div class="card sub-card mini-dl-card" onclick="window.open('https://drive.google.com/file/d/1vTHRdhPLM-Y8fun7mB4f1gSPzC56NjeU/view?usp=drive_link')">
-                            <h3>${s.pc_dl}</h3>
-                        </div>
-                        <div class="card sub-card mini-dl-card" onclick="window.open('https://drive.google.com/file/d/1SmxEvSj8OprV0UoTg_9yb9KdL5WcT6Pd/view?usp=drive_link')">
-                            <h3>${s.android_dl}</h3>
-                        </div>
-                    </div>
+                <div class="platform-drawer" id="drawer-night">
+                    <div class="mini-platform-btn" onclick="window.open('https://drive.google.com/file/d/1vTHRdhPLM-Y8fun7mB4f1gSPzC56NjeU/view?usp=drive_link')">${s.pc_dl}</div>
+                    <div class="mini-platform-btn" onclick="window.open('https://drive.google.com/file/d/1SmxEvSj8OprV0UoTg_9yb9KdL5WcT6Pd/view?usp=drive_link')">${s.android_dl}</div>
                 </div>
             </div>
 
-            <!-- Standalone -->
-            <div class="card sub-card aqua-glow" onclick="window.open('https://drive.google.com/file/d/1XBx4KyfAAUxS3thjF2i20IK37Qoa-3uY/view?usp=drive_link')" style="width: 100%; text-align: center; cursor: pointer;">
-                <h2 style="margin:0; color:#fff;">${s.standalone}</h2>
-                <div style="display:flex; justify-content: center; margin-top:5px;">
-                    <span class="tag-info evolution-tag">PC</span>
+            <div class="card sub-card aqua-glow" onclick="window.open('https://drive.google.com/file/d/1XBx4KyfAAUxS3thjF2i20IK37Qoa-3uY/view?usp=drive_link')" style="width: 100%; text-align: center; cursor: pointer; position: relative;">
+                <div class="platform-tags" style="position: absolute; top: 8px; right: 8px; pointer-events: none;">
+                    <span style="font-size: 0.55rem; padding: 1px 4px; border: 1px solid rgba(0, 255, 216, 0.5); color: #00ffd8; border-radius: 3px; text-transform: uppercase; font-weight: bold; background: rgba(0,0,0,0.3);">PC</span>
                 </div>
+                <h2 style="margin:0; color:#fff;">${s.standalone}</h2>
+                <div class="tag-info evolution-tag">PC ONLY</div>
             </div>
 
         </div>
@@ -1260,86 +1259,78 @@ function showMenu(type, prevEl = mainWrapper) {
         };
     };
 
-    setupAccordion('#trigger-evo', '#block-evo');
-    setupAccordion('#trigger-night', '#block-night');
+    section.querySelector('#trigger-evo').onclick = () => {
+        section.querySelector('#drawer-evo').classList.toggle('open');
+    };
+
+    section.querySelector('#trigger-night').onclick = () => {
+        section.querySelector('#drawer-night').classList.toggle('open');
+    };
 
     section.querySelector('#back-to-misc-from-sfx').onclick = (e) => {
         e.preventDefault();
-        showMenu('misc_main', section);
+        history.back(); 
     };
 
 
         } else if (type === 'night_main') {
-            // === МЕНЮ PROJECT NIGHT С КОМПАКТНЫМИ ТЕГАМИ ===
-            section.innerHTML = `
-                <div class="header"><h1>${translations[currentLang].night_header}</h1></div>
-                <div class="expand-container" style="width:100%; display:flex; flex-direction:column; align-items:center;">
-                    <div class="card sub-card night-card" id="night-download-trigger" style="position: relative;">
-                        <div class="platform-tags" style="position: absolute; top: 8px; right: 8px; display: flex; gap: 4px; pointer-events: none;">
-                            <span style="font-size: 0.55rem; padding: 1px 4px; border: 1px solid rgba(255, 0, 0, 0.5); color: #ff4444; border-radius: 3px; text-transform: uppercase; font-weight: bold; background: rgba(0,0,0,0.3);">PC</span>
-                            <span style="font-size: 0.55rem; padding: 1px 4px; border: 1px solid rgba(255, 157, 0, 0.5); color: #ff9d00; border-radius: 3px; text-transform: uppercase; font-weight: bold; background: rgba(0,0,0,0.3);">Android</span>
-                        </div>
-                        <h2>${translations[currentLang].btn_night_download}</h2>
-                        <div class="tag-info evolution-tag">STABLE</div>
+    // === ОБНОВЛЕННОЕ МЕНЮ PROJECT NIGHT С ВЫПАДАЮЩИМ СПИСКОМ (DRAWER) ===
+    section.innerHTML = `
+        <div class="mobile-back-top">
+            <a href="#" class="btn btn-mobile-back" onclick="event.preventDefault(); history.back();">
+                <i class="fas fa-chevron-left"></i> ${translations[currentLang].btn_back}
+            </a>
+        </div>
+
+        <div class="header"><h1>${translations[currentLang].night_header}</h1></div>
+        
+        <div class="expand-container" style="width:100%; display:flex; flex-direction:column; align-items:center;">
+            <div style="width:100%; display:flex; flex-direction:column; align-items:center; margin-bottom: 15px;">
+                <div class="card sub-card night-card" id="night-download-trigger" style="position: relative; width: 100%;">
+                    <div class="platform-tags" style="position: absolute; top: 8px; right: 8px; display: flex; gap: 4px; pointer-events: none;">
+                        <span style="font-size: 0.55rem; padding: 1px 4px; border: 1px solid rgba(255, 0, 0, 0.5); color: #ff4444; border-radius: 3px; text-transform: uppercase; font-weight: bold; background: rgba(0,0,0,0.3);">PC</span>
+                        <span style="font-size: 0.55rem; padding: 1px 4px; border: 1px solid rgba(255, 157, 0, 0.5); color: #ff9d00; border-radius: 3px; text-transform: uppercase; font-weight: bold; background: rgba(0,0,0,0.3);">Android</span>
                     </div>
-                    <div class="night-drawer" id="night-platforms">
-                        <a href="https://drive.google.com/file/d/1nIO79tg17x5P7VQxxa_dwtIzr42Kk9fq/view?usp=drive_link" target="_blank" class="mini-night-btn">PC</a>
-                        <a href="https://drive.google.com/file/d/1SmxEvSj8OprV0UoTg_9yb9KdL5WcT6Pd/view?usp=drive_link" target="_blank" class="mini-night-btn">ANDROID</a>
-                    </div>
+                    <h2>${translations[currentLang].btn_night_download}</h2>
+                    <div class="tag-info evolution-tag">STABLE</div>
                 </div>
-                <div class="card sub-card night-card" id="night-about-trigger">
-                    <h2>${translations[currentLang].btn_night_about}</h2>
-                    <div class="tag-info skin-tag">SYSTEM</div>
+                
+                <div class="platform-drawer" id="night-platforms">
+                    <div class="mini-platform-btn" onclick="window.open('https://drive.google.com/file/d/1nIO79tg17x5P7VQxxa_dwtIzr42Kk9fq/view?usp=drive_link')">PC</div>
+                    <div class="mini-platform-btn" onclick="window.open('https://drive.google.com/file/d/1SmxEvSj8OprV0UoTg_9yb9KdL5WcT6Pd/view?usp=drive_link')">ANDROID</div>
                 </div>
-                <div class="back-btn-wrapper">
-                    <a href="#" class="btn" id="back-to-start-night">${translations[currentLang].btn_back}</a>
-                </div>
-            `;
-            // === ПРИНУДИТЕЛЬНО ВКЛЮЧАЕМ RED AMBIENT ПРИ ВХОДЕ В МЕНЮ ===
+            </div>
+
+            <div class="card sub-card night-card" id="night-about-trigger" style="width: 100%;">
+                <h2>${translations[currentLang].btn_night_about}</h2>
+                <div class="tag-info skin-tag">SYSTEM</div>
+            </div>
+        </div>
+
+        <div class="back-btn-wrapper">
+            <a href="#" class="btn" id="back-to-start-night">${translations[currentLang].btn_back}</a>
+        </div>
+    `;
+
+    // Принудительно включаем звук Night
     if (typeof switchAmbient === 'function') {
-        switchAmbient(true); // true включает Project_Night_Embient.wav
+        switchAmbient(true); 
     }
             
-            section.querySelector('#night-download-trigger').onclick = () => {
-                section.querySelector('#night-platforms').classList.toggle('open');
-            };
-            section.querySelector('#night-about-trigger').onclick = () => {
-                showMenu('night_about_article', section);
-            };
-            section.querySelector('#back-to-start-night').onclick = (e) => {
-                e.preventDefault();
-                
-                // 1. Возвращаем визуальные настройки Aqua
-                document.documentElement.style.setProperty('--current-accent', '#00ffd8');
-                document.documentElement.style.setProperty('--vignette-color', 'rgba(0, 50, 50, 0.4)');
-                document.body.classList.remove('red-mode');
+    // Логика раскрытия списка Night
+    section.querySelector('#night-download-trigger').onclick = () => {
+        section.querySelector('#night-platforms').classList.toggle('open');
+    };
+    
+    section.querySelector('#night-about-trigger').onclick = () => {
+        showMenu('night_about_article', section);
+    };
 
-                // === ХИРУРГИЧЕСКАЯ ВСТАВКА: ПЕРЕКЛЮЧЕНИЕ ЗВУКА НА AQUA ===
-                if (typeof switchAmbient === 'function') {
-                    switchAmbient(false); 
-                }
-                // ======================================================
-
-                const modeText = document.getElementById('mode-text');
-                if (modeText) modeText.innerText = "AQUA_CORE";
-
-                const logoMain = document.getElementById('logo-main');
-                const logoGlitch = document.getElementById('logo-glitch');
-                if (logoMain) {
-                    if (logoMain.tagName === 'IMG') logoMain.src = "EV_Dark_2k.png";
-                    else logoMain.style.backgroundImage = "url('EV_Dark_2k.png')";
-                }
-                if (logoGlitch) {
-                    if (logoGlitch.tagName === 'IMG') logoGlitch.src = "EV_Dark_Glitch.png";
-                    else logoGlitch.style.backgroundImage = "url('EV_Dark_Glitch.png')";
-                }
-
-                animateOut(section, () => {
-                    section.remove();
-                    mainWrapper.style.display = 'flex';
-                    animateIn(mainWrapper);
-                });
-            };
+    // Кнопка назад через историю
+    section.querySelector('#back-to-start-night').onclick = (e) => {
+        e.preventDefault();
+        history.back(); 
+    };
 
         } else if (type === 'night_about_article') {
     // === СТАТЬЯ PROJECT NIGHT С ОПТИМИЗИРОВАННЫМ РАЗМЕРОМ КОНТЕНТА ===
@@ -1370,9 +1361,9 @@ function showMenu(type, prevEl = mainWrapper) {
         },
         es: {
             info: "Información sobre",
-            p1: "Project Night es una modificación global que transforma completamente la percepción visual del juego. El concepto principal del proyecto es una remodelación profunda de las ubicaciones existentes y su adaptación a condiciones de visibilidad limitada y nocturnidad.",
-            p2: "Además de los cambios en los mapas, la modificación incluye una revisión completa de la interfaz de usuario. El sistema de menús y los elementos del juego están diseñados al estilo de una terminal militar. Se integra un efecto de línea de escaneo dinámico en el menú principal, enfatizando la atmósfera de alta tecnología del proyecto.",
-            p3: "El diseño de la interfaz ha sido revisado casi por completo para coincidir con la estética de las operaciones nocturnas, proporcionando una inmersión máxima en una atmósfera de sigilo y alto riesgo.",
+            p1: "Project Night es una modificación global que transforma completamente la percepción visual del juego. El concepto principal del proyecto es una remodelación profunda de las ubicaciones existentes и sus adaptación a condiciones de visibilidad limitada и nocturnidad.",
+            p2: "Además de los cambios en los mapas, la modificación incluye una revisión completa de la interfaz de usuario. El sistema de menús и los elementos del juego están diseñados al estilo de una terminal militar. Se integra un efecto de línea de escaneo dinámico en el menú principal, enfatizando la atmósfera de alta tecnología del proyecto.",
+            p3: "El diseño de la interfaz ha sido revisado casi por completo para coincidir con la estética de las operaciones nocturnas, proporcionando una inmersión máxima en una atmósfera de sigilo и alto riesgo.",
             p4: "En la etapa actual de desarrollo, está disponible la primera misión, que requiere una concentración extrema en condiciones de oscuridad absoluta. Los siguientes escenarios и mapas se introducirán en actualizaciones programadas. El contenido adaptado para el modo Project Night se puede identificar por portadas temáticas específicas.",
             playNow: "¡Prueba Project Night ahora mismo!",
             platforms: "Disponible para sistemas PC and Android.",
@@ -1380,110 +1371,39 @@ function showMenu(type, prevEl = mainWrapper) {
         }
     };
 
-    // Выбор языка с фолбеком на английский
     const t = content[currentLang] || content['en'];
 
     section.innerHTML = `
         <div class="terminal-overlay"></div>
 
         <div class="mobile-back-top">
-            <a href="#" class="btn btn-mobile-back" onclick="event.preventDefault(); document.getElementById('back-to-night-main')?.click();">
-                <i class="fas fa-chevron-left"></i> BACK
+            <a href="#" class="btn btn-mobile-back" onclick="event.preventDefault(); history.back();">
+                <i class="fas fa-chevron-left"></i> ${lang.btn_back}
             </a>
         </div>
-        <div class="terminal-overlay"></div>
-        <div class="header">
-        
-        <!-- Заголовок: Текст + Логотип -->
-        <div class="header" style="
-            display: flex; 
-            flex-direction: column; 
-            align-items: center; 
-            justify-content: center; 
-            padding: 10px 0 0 0; 
-            gap: 0;
-            line-height: 1;
-        ">
+
+        <div class="header" style="display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 10px 0 0 0; gap: 0; line-height: 1;">
             <div style="display: flex; flex-direction: row; align-items: center; gap: 15px; margin-bottom: 0;">
-                <h1 style="
-                    color: #fff; 
-                    font-size: 2.2rem; 
-                    text-transform: uppercase; 
-                    letter-spacing: 1px; 
-                    margin: 0; 
-                    white-space: nowrap;
-                    text-shadow: 0 0 15px rgba(255,255,255,0.2);
-                ">
+                <h1 style="color: #fff; font-size: 2.2rem; text-transform: uppercase; letter-spacing: 1px; margin: 0; white-space: nowrap; text-shadow: 0 0 15px rgba(255,255,255,0.2);">
                     ${t.info}
                 </h1>
-                <img src="kiwi_splash_Night_PN.png" alt="Project Night" style="
-                    width: 300px; 
-                    height: auto; 
-                    filter: drop-shadow(0 0 20px rgba(255,0,0,0.7));
-                    display: block;
-                    margin: 0;
-                ">
+                <img src="kiwi_splash_Night_PN.png" alt="Project Night" style="width: 300px; height: auto; filter: drop-shadow(0 0 20px rgba(255,0,0,0.7)); display: block; margin: 0;">
             </div>
-
-            <!-- Подпись автора теперь максимально близко за счет сильного отрицательного margin и обнуления высоты строки -->
-            <div style="
-                font-size: 1.1rem; 
-                font-weight: 800; 
-                color: #fff; 
-                text-align: center; 
-                text-transform: uppercase; 
-                text-shadow: 0 0 10px #ff0000; 
-                letter-spacing: 3px;
-                margin-top: -15px; 
-                padding: 0;
-                line-height: 1;
-                position: relative;
-                z-index: 5;
-            ">
+            <div style="font-size: 1.1rem; font-weight: 800; color: #fff; text-align: center; text-transform: uppercase; text-shadow: 0 0 10px #ff0000; letter-spacing: 3px; margin-top: -15px; padding: 0; line-height: 1; position: relative; z-index: 5;">
                 By [EV] Energizer
             </div>
         </div>
         
         <div class="article-scroll-container" style="max-height: 60vh; overflow-y: auto; margin: 15px 0 5px 0; padding-right: 10px; position: relative;">
-            
-            <!-- Главный баннер (Компактный) -->
-            <div class="article-image-wrapper" style="
-                position: relative;
-                width: 100%;
-                max-width: 600px;
-                margin: 15px auto 25px auto;
-                min-height: 250px;
-                display: flex;
-                align-items: flex-end;
-                overflow: hidden;
-                border: 1px solid rgba(255, 0, 0, 0.2);
-            ">
-                <div class="image-bg" style="
-                    position: absolute;
-                    top: 0; left: 0; right: 0; bottom: 0;
-                    background: url('Project_night_Icon.png') no-repeat;
-                    background-size: cover;
-                    background-position: 50% 20%; 
-                    opacity: 0.5;
-                    -webkit-mask-image: radial-gradient(circle at center, black 40%, transparent 95%);
-                    mask-image: radial-gradient(circle at center, black 40%, transparent 95%);
-                    z-index: 1;
-                "></div>
+            <div class="article-image-wrapper" style="position: relative; width: 100%; max-width: 600px; margin: 15px auto 25px auto; min-height: 250px; display: flex; align-items: flex-end; overflow: hidden; border: 1px solid rgba(255, 0, 0, 0.2);">
+                <div class="image-bg" style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: url('Project_night_Icon.png') no-repeat; background-size: cover; background-position: 50% 20%; opacity: 0.5; -webkit-mask-image: radial-gradient(circle at center, black 40%, transparent 95%); mask-image: radial-gradient(circle at center, black 40%, transparent 95%); z-index: 1;"></div>
                 <div style="position: relative; z-index: 2; width: 100%; height: 60px; background: linear-gradient(to top, rgba(10,0,0,1), transparent);"></div>
             </div>
 
-            <!-- Контент ограничен по ширине для читабельности -->
             <div class="article-content" style="max-width: 700px; margin: 0 auto; padding: 0 20px; font-family: 'Courier New', monospace; color: #eee;">
-                
                 <div class="article-section" style="margin-bottom: 30px;">
-                    <p style="line-height: 1.7; text-align: justify; border-left: 3px solid #ff0000; padding-left: 15px;">
-                        ${t.p1}
-                    </p>
-                    <p style="line-height: 1.7; margin-top: 15px;">
-                        ${t.p2}
-                    </p>
-                    
-                    <!-- Night_preview4.jpg -->
+                    <p style="line-height: 1.7; text-align: justify; border-left: 3px solid #ff0000; padding-left: 15px;">${t.p1}</p>
+                    <p style="line-height: 1.7; margin-top: 15px;">${t.p2}</p>
                     <div style="margin: 25px auto; border: 1px solid #333; padding: 4px; background: #000; max-width: 550px;">
                         <img src="Night_preview4.jpg" alt="Preview 4" style="width: 100%; height: auto; display: block; opacity: 0.9;">
                         <div style="font-size: 0.7rem; color: #ff0000; padding: 5px; text-transform: uppercase;">${t.caption}</div>
@@ -1491,38 +1411,23 @@ function showMenu(type, prevEl = mainWrapper) {
                 </div>
 
                 <div class="article-section" style="margin-bottom: 30px;">
-                    <p style="line-height: 1.7;">
-                        ${t.p3}
-                    </p>
-                    
-                    <!-- Night_preview3.jpg -->
+                    <p style="line-height: 1.7;">${t.p3}</p>
                     <div style="margin: 25px auto; border: 1px solid #333; padding: 4px; background: #000; max-width: 550px;">
                         <img src="Night_preview3.jpg" alt="Preview 3" style="width: 100%; height: auto; display: block;">
                     </div>
                 </div>
 
                 <div class="article-section" style="margin-bottom: 30px;">
-                    <p style="line-height: 1.7;">
-                        ${t.p4}
-                    </p>
-                    
-                    <!-- Night_preview2.jpg -->
+                    <p style="line-height: 1.7;">${t.p4}</p>
                     <div style="margin: 25px auto; border: 1px solid #333; padding: 4px; background: #000; max-width: 550px;">
                         <img src="Night_preview2.jpg" alt="Preview 2" style="width: 100%; height: auto; display: block;">
                     </div>
                 </div>
 
-                <!-- Финал -->
                 <div style="margin-top: 40px; text-align: center; border-top: 1px solid #333; padding-top: 20px;">
-                    <!-- Night_preview1.jpg -->
                     <img src="Night_preview1.jpg" alt="Preview 1" style="width: 100%; max-width: 500px; height: auto; margin-bottom: 20px; border: 1px solid #ff0000;">
-                    
-                    <h2 style="color: #fff; text-transform: uppercase; letter-spacing: 2px; font-size: 1.2rem;">
-                        ${t.playNow}
-                    </h2>
-                    <p style="color: #ff0000; font-weight: bold; margin-top: 10px;">
-                        ${t.platforms}
-                    </p>
+                    <h2 style="color: #fff; text-transform: uppercase; letter-spacing: 2px; font-size: 1.2rem;">${t.playNow}</h2>
+                    <p style="color: #ff0000; font-weight: bold; margin-top: 10px;">${t.platforms}</p>
                 </div>
             </div>
         </div>
@@ -1532,21 +1437,20 @@ function showMenu(type, prevEl = mainWrapper) {
         </div>
     `;
 
+    // ИСПРАВЛЕНО: Кнопка назад использует системную историю
     section.querySelector('#back-to-night-main').onclick = (e) => {
         e.preventDefault();
-        showMenu('night_main', section);
+        history.back();
     };
 
         } else if (type === 'aqua_guide') {
     // === ПОЛНЫЙ ГАЙД AQUA С ИСПРАВЛЕННЫМ YOUTUBE ПЛЕЕРОМ ===
     const lang = translations[currentLang];
     
-    // Обновленная функция для генерации плеера (фикс ошибки 153)
     const getYoutubeEmbed = (url) => {
         const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/;
         const match = url.match(regExp);
         const videoId = (match && match[2].length === 11) ? match[2] : null;
-
         if (!videoId) return `<p style="color:red;">Error: Invalid Video ID</p>`;
 
         return `
@@ -1560,7 +1464,6 @@ function showMenu(type, prevEl = mainWrapper) {
                     overflow: hidden;
                     background: #000;
                     box-shadow: 0 0 20px rgba(0, 255, 216, 0.15);
-                    /* Убираем стандартный курсор на уровне контейнера */
                     cursor: none !important; 
                 ">
                     <iframe 
@@ -1577,6 +1480,12 @@ function showMenu(type, prevEl = mainWrapper) {
     };
 
     section.innerHTML = `
+        <div class="mobile-back-top">
+            <a href="#" class="btn btn-mobile-back" onclick="event.preventDefault(); history.back();">
+                <i class="fas fa-chevron-left"></i> ${lang.btn_back}
+            </a>
+        </div>
+
         <div class="header"><h1>${lang.guide_title}</h1></div>
         <div class="guide-scroll-container" style="max-height: 60vh; overflow-y: auto; padding: 10px;">
             
@@ -1623,17 +1532,14 @@ function showMenu(type, prevEl = mainWrapper) {
             
             <div class="guide-card warning-card" id="lock-screen">
                 <div style="color: #ff9d00; margin-bottom: 15px; font-weight: bold;">[ SECURITY VERIFICATION ]</div>
-                
                 <label class="confirm-item">
                     <input type="checkbox" id="risk1">
                     <span>${lang.confirm_risk_1}</span>
                 </label>
-
                 <label class="confirm-item">
                     <input type="checkbox" id="risk2">
                     <span>${lang.confirm_risk_2}</span>
                 </label>
-
                 <button id="unlock-android" disabled style="margin-top:10px;">${lang.btn_show_android}</button>
             </div>
 
@@ -1642,17 +1548,14 @@ function showMenu(type, prevEl = mainWrapper) {
                     <h3>${lang.android_visual_guide}</h3>
                     ${getYoutubeEmbed("https://www.youtube.com/watch?v=ip5U2XV_yCs")}
                 </div>
-
                 <div class="guide-card">
                     <div class="step-num">01</div>
                     <p>${lang.android_step_1}</p>
                 </div>
-
                 <div class="guide-card">
                     <div class="step-num">02</div>
                     <p>${lang.android_step_2}</p>
                 </div>
-
                 <div class="guide-card finish-card">
                     <div class="step-num">03</div>
                     <h3 style="color: var(--current-accent); text-align: center; margin: 0;">${lang.android_step_3}</h3>
@@ -1665,38 +1568,51 @@ function showMenu(type, prevEl = mainWrapper) {
         </div>
     `;
 
-    // Логика чекбоксов и кнопки разблокировки
+    // Логика чекбоксов (работает только внутри этого блока)
     const r1 = section.querySelector('#risk1');
     const r2 = section.querySelector('#risk2');
-    const btn = section.querySelector('#unlock-android');
+    const btnUnlock = section.querySelector('#unlock-android');
     const lockScreen = section.querySelector('#lock-screen');
     const androidSteps = section.querySelector('#android-steps');
 
-    const check = () => btn.disabled = !(r1.checked && r2.checked);
-    r1.onchange = check;
-    r2.onchange = check;
+    if (r1 && r2 && btnUnlock) {
+        const check = () => btnUnlock.disabled = !(r1.checked && r2.checked);
+        r1.onchange = check;
+        r2.onchange = check;
 
-    btn.onclick = () => {
-        lockScreen.style.display = 'none';
-        androidSteps.style.display = 'block';
-        androidSteps.scrollIntoView({ behavior: 'smooth' });
-    };
+        btnUnlock.onclick = () => {
+            lockScreen.style.display = 'none';
+            androidSteps.style.display = 'block';
+            androidSteps.scrollIntoView({ behavior: 'smooth' });
+        };
+    }
 
-    section.querySelector('#back-to-prev').onclick = (e) => {
-        e.preventDefault();
-        showMenu('misc_main', section);
-    };
-    
-}
+    // Кнопка назад
+    const backBtn = section.querySelector('#back-to-prev');
+    if (backBtn) {
+        backBtn.onclick = (e) => {
+            e.preventDefault();
+            history.back();
+        };
+    }
+} // <--- ВОТ ТУТ ЗАКАНЧИВАЕТСЯ AQUA_GUIDE
 
-        mainContent.appendChild(section);
-        animateIn(section);
-    };
+        // Вставляем созданную секцию в основной контейнер
+        const mainContent = document.getElementById('main-content');
+        if (mainContent) {
+            mainContent.style.display = 'flex';
+            mainContent.appendChild(section);
+            animateIn(section);
+        }
+    }; // Конец функции render
 
-    if (isRefresh) render(); 
-    else animateOut(prevEl, render);
-    
-}
+    // Запуск процесса: либо через анимацию ухода, либо мгновенно (F5)
+    if (!isRefresh && prevEl && document.body.contains(prevEl)) {
+        animateOut(prevEl, render);
+    } else {
+        render();
+    }
+} // Конец функции showMenu
 
 
 function animateOut(el, callback) {
@@ -1717,34 +1633,66 @@ function animateIn(el) {
 }
 
 window.addEventListener('load', () => {
-    const savedLang = localStorage.getItem('selectedLang') || 'en';
-    setLanguage(savedLang);
+    const mainWrapper = document.querySelector('.zoom-wrapper');
+    const mainContent = document.getElementById('main-content');
+    const loader = document.getElementById('loading-screen');
 
+    // 1. СРАЗУ ПРОВЕРЯЕМ ХЭШ (F5 FIX)
+    let currentHash = window.location.hash.replace('#', '');
+    if (currentHash === 'evo_main') currentHash = 'main';
+
+    const isMenuRequested = currentHash && currentHash !== 'start' && currentHash !== '';
+
+    if (isMenuRequested) {
+        // Если есть хэш — гасим всё лишнее сразу
+        if (mainWrapper) mainWrapper.style.display = 'none';
+        
+        // Маленький таймаут, чтобы основной JS успел прожевать функции
+        setTimeout(() => {
+            if (mainContent) {
+                mainContent.style.display = 'flex'; // ВКЛЮЧАЕМ КОНТЕЙНЕР
+                mainContent.classList.add('visible'); // ДЕЛАЕМ ВИДИМЫМ
+            }
+            showMenu(currentHash, null);
+        }, 200); 
+    } else {
+        if (!history.state) history.replaceState({ menuId: 'start' }, "", " ");
+    }
+
+    // 2. ЛОГИКА ЛОАДЕРА
     setTimeout(() => {
-        const loader = document.getElementById('loading-screen');
-        const widget = document.getElementById('patch-widget'); // Находим наш виджет
-
         if (loader) {
             loader.style.opacity = '0';
             setTimeout(() => {
                 loader.style.display = 'none';
                 
-                // Основной контент становится видимым
-                mainContent.classList.add('visible'); 
+                // Показываем главную, только если МЕНЮ НЕ БЫЛО ВЫЗВАНО (не F5)
+                if (!isMenuRequested) {
+                    if (mainContent) {
+                        mainContent.style.display = 'flex';
+                        mainContent.classList.add('visible');
+                    }
+                    if (typeof startTyping === 'function') startTyping();
+                }
 
-                // СИНХРОНИЗАЦИЯ ПАТЧ-НОУТА
-                // Добавляем класс loaded, чтобы сработала CSS анимация приближения
+                const widget = document.getElementById('patch-widget');
                 if (widget) widget.classList.add('loaded');
-
-                if (vignette) vignette.classList.add('visible');
-                startTyping();
+                if (typeof vignette !== 'undefined' && vignette) vignette.classList.add('visible');
             }, 1000);
         }
     }, 3000);
+
+    // Вспомогательные системы
+    const savedLang = localStorage.getItem('selectedLang') || 'en';
+    if (typeof setLanguage === 'function') setLanguage(savedLang);
+    
     setInterval(() => { 
         const cpu = document.getElementById('cpu-val');
-        if(cpu) cpu.innerText = Math.floor(Math.random()*15)+5; 
+        if(cpu) cpu.innerText = Math.floor(Math.random() * 15) + 5; 
     }, 2000);
+
+    if (typeof attachUIEffects === 'function') attachUIEffects();
+});
 
     
 
@@ -1812,7 +1760,6 @@ if (isMobile && typeof VanillaTilt !== 'undefined') {
 }
 
 
-});
 
 function initSessionID() {
     const sessionEl = document.getElementById('visitor-count');
@@ -1897,7 +1844,7 @@ function prevPatch() {
 
 
 // Обнови инициализацию в DOMContentLoaded
-wwindow.addEventListener('DOMContentLoaded', () => {
+window.addEventListener('DOMContentLoaded', () => {
     const widget = document.getElementById('patch-widget');
     const trigger = document.getElementById('patch-notes-trigger');
     
@@ -1942,6 +1889,7 @@ function closePatchWidget() {
         // Появление кнопки почти сразу
         setTimeout(() => {
             trigger.style.display = 'block';
+            trigger.style.setProperty('display', 'flex', 'important');
             
             requestAnimationFrame(() => {
                 trigger.classList.add('active');
@@ -2007,24 +1955,48 @@ function animatePatchTransition() {
 }
 
 window.addEventListener('popstate', (event) => {
-    // Получаем ID меню из хэша, если в state пусто
     const menuId = (event.state && event.state.menuId) || window.location.hash.replace('#', '') || 'start';
-
     const activeSection = document.querySelector('.evo-section');
+    const mainWrapper = document.querySelector('.zoom-wrapper');
+    const mainContent = document.getElementById('main-content');
 
+    // === ФИКС СМЕНЫ ТЕМЫ ПРИ ОТКАТЕ НАЗАД ===
+    // Если мы вышли из любого меню Project Night (содержащего 'night') 
+    // и вернулись в главное меню или на старт — принудительно включаем Aqua
+    if (menuId === 'start' || menuId === 'main' || menuId === 'evo_main') {
+        if (document.body.classList.contains('red-mode')) {
+            // Выполняем те же действия, что и команда 'aqua' в консоли
+            document.documentElement.style.setProperty('--current-accent', '#00ffd8');
+            document.documentElement.style.setProperty('--vignette-color', 'rgba(0, 50, 50, 0.4)');
+            document.body.classList.remove('red-mode');
+            
+            if (typeof switchAmbient === 'function') {
+                switchAmbient(false); // Переключаем звук на Aqua
+            }
+            
+            const modeText = document.getElementById('mode-text');
+            if (modeText) modeText.innerText = "AQUA_CORE";
+            
+            const logoMain = document.getElementById('logo-main');
+            if (logoMain) logoMain.style.backgroundImage = "url('EV_Dark_2k.png')";
+        }
+    }
+
+    // Стандартная логика переключения экранов
     if (menuId === 'start' || menuId === '') {
         if (activeSection) {
             animateOut(activeSection, () => {
                 activeSection.remove();
-                mainWrapper.style.display = 'flex';
-                animateIn(mainWrapper);
+                if (mainContent && mainWrapper) {
+                    mainContent.style.display = 'flex';
+                    mainWrapper.style.display = 'flex';
+                    requestAnimationFrame(() => animateIn(mainWrapper));
+                }
             });
         }
     } else {
-        // Если мы уже в этом меню, не перерисовываем (чтобы избежать циклов)
         if (activeSection && activeSection.dataset.menuId === menuId) return;
-        
-        // Вызываем меню
         showMenu(menuId, activeSection || mainWrapper);
     }
 });
+

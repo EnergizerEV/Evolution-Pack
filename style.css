@@ -1436,7 +1436,54 @@ body.red-mode .night-drawer.open {
         min-height: 100vh !important;
         background-attachment: scroll !important;
     }
+/* ЦЕНТРОВКА ОСНОВНОГО БЛОКА ПАТЧ-НОУТА */
+    #patch-widget {
+        /* 1. Отрываем от боковой панели */
+        position: fixed !important;
+        
+        /* 2. Центрируем по горизонтали и вертикали */
+        left: 50% !important;
+        top: 50% !important;
+        
+        /* 3. Сдвигаем на половину своей ширины/высоты назад для идеального центра */
+        transform: translate(-50%, -50%) !important;
+        
+        /* 4. Настраиваем размеры, чтобы не вылезало за экран телефона */
+        width: 92vw !important;  /* Ширина 92% от экрана */
+        height: auto !important;
+        max-height: 85vh !important; /* Высота не более 85% экрана */
+        
+        /* 5. Обнуляем старые отступы и привязки */
+        right: auto !important;
+        bottom: auto !important;
+        margin: 0 !important;
+        
+        /* Дополнительный визуальный порядок */
+        z-index: 10001 !important;
+        display: flex !important; /* Чтобы внутренности окна не съезжали */
+        flex-direction: column !important;
+        overflow: hidden !important;
+    }
 
+    /* Исправляем скролл внутри патч-ноута, если текста много */
+    .patch-body {
+        overflow-y: auto !important;
+        flex-grow: 1 !important;
+    }
+/* Когда патч-ноут ЗАКРЫТ */
+    #patch-widget.hidden {
+        opacity: 0 !important;
+        visibility: hidden !important; /* Убирает элемент из дерева взаимодействия */
+        pointer-events: none !important; /* Клики проходят насквозь к обычным кнопкам */
+    }
+
+    /* Когда патч-ноут ОТКРЫТ */
+    #patch-widget:not(.hidden) {
+        opacity: 1 !important;
+        visibility: visible !important;
+        pointer-events: auto !important; /* Снова можно кликать внутри патча */
+    }
+    
     /* 2. ЦЕНТРАЛЬНЫЙ КОНТЕНТ */
     #main-content {
         padding-top: 80px !important;
@@ -1556,6 +1603,8 @@ body.red-mode .night-drawer.open {
         width: 100% !important;
     }
 
+    
+
     /* 8. ПРОЧЕЕ */
     .vignette, body::after, .red-mode::after { display: none !important; }
     .bottom-row-container {
@@ -1612,6 +1661,8 @@ body.red-mode .night-drawer.open {
         display: block !important;
         margin: 0 auto !important; /* Центрируем */
         filter: drop-shadow(0 0 15px rgba(255, 0, 0, 0.6)) !important;
+        
+        
     }
 
     /* Скрываем эту кнопку на ПК, чтобы не дублировать */
@@ -2097,4 +2148,23 @@ body.red-mode .night-drawer.open {
     /* Подсвечиваем цветом акцента и добавляем неон */
     color: var(--current-accent) !important;
     text-shadow: 0 0 10px var(--current-accent);
+}
+#main-content {
+    overflow: visible !important; /* Разрешаем вылет за границы */
+    perspective: 1000px; /* Добавляет глубины для scale и transform */
+}
+
+/* Сама секция меню */
+.evo-section {
+    width: 100%;
+    max-width: 600px; /* Или какая у тебя ширина */
+    margin: 0 auto;
+    will-change: transform, opacity;
+    /* Убедись, что нет overflow: hidden */
+    overflow: visible !important; 
+}
+
+/* Если есть общий оберточный контейнер */
+.zoom-wrapper {
+    overflow: visible !important;
 }
