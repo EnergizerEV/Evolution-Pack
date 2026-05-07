@@ -383,14 +383,7 @@ body.red-mode .aqua-style:hover { box-shadow: 0 0 50px rgba(255, 0, 0, 0.2); }
 
 #main-content.visible .zoom-wrapper { transform: scale(1); }
 
-@media screen and (max-width: 768px) {
-    * { cursor: auto !important; }
-    #custom-cursor { display: none; }
-    html, body { overflow-y: auto; height: auto; min-height: 100%; }
-    #main-content { padding: 40px 20px; width: calc(100% - 40px); }
-    .social-sidebar { position: static; transform: none; flex-direction: row; justify-content: center; margin-bottom: 20px; }
-    #sys-status, .footer, .demo-footer-text { position: static !important; text-align: center; margin: 10px 0 !important; }
-}
+
 /* РАЗДЕЛ EVOLUTION */
 
 .evo-section {
@@ -1427,134 +1420,206 @@ body.red-mode .night-drawer.open {
     backdrop-filter: blur(2px);
     transition: all 0.3s ease;
 }
-/* --- ANDROID & MOBILE OPTIMIZATION --- */
 @media screen and (max-width: 768px) {
-    /* 1. Возвращаем системный курсор, так как на сенсоре JS-курсор бесполезен */
-    * { cursor: auto !important; }
+    /* 1. ГЛОБАЛЬНЫЙ ФИКС ФОНА И СКРОЛЛА */
+    * { 
+        cursor: auto !important; 
+        letter-spacing: normal !important; 
+    }
     #custom-cursor { display: none !important; }
 
-    /* 2. Разрешаем скролл, если контент не влезает */
-    html, body { 
-        overflow-y: auto !important; 
+    html, body {
+        overflow-x: hidden !important;
+        overflow-y: auto !important;
+        /* ИСПРАВЛЕНИЕ ОБРЕЗАННОГО ФОНА: */
         height: auto !important; 
-        touch-action: manipulation; 
-    }
-/* Убираем виньетку и фонарик в Red Mode везде */
-    .red-mode .flashlight-overlay, 
-    .red-mode #flashlight, 
-    .red-mode #vignette, 
-    .red-mode::after, 
-    .red-mode::before,
-    [class*="vignette"], 
-    [id*="vignette"] {
-        display: none !important;
-        background: none !important;
-        box-shadow: none !important;
-        mask-image: none !important;
-        -webkit-mask-image: none !important;
-    }
-    /* 3. Масштабируем контент */
-    .zoom-wrapper { 
-        transform: scale(1) !important; /* Убираем отдаление для мобилок */
-        padding: 20px 10px;
-        width: 100%;
-        box-sizing: border-box;
+        min-height: 100vh !important;
+        background-attachment: scroll !important;
     }
 
+    /* 2. ЦЕНТРАЛЬНЫЙ КОНТЕНТ */
     #main-content {
-        padding-top: 60px; /* Место под переключатель языков */
+        padding-top: 80px !important;
+        padding-bottom: 50px !important;
+        display: flex !important;
+        flex-direction: column !important;
+        align-items: center !important;
+        width: 100% !important;
+        max-height: none !important;
+        height: auto !important;
+        transform: none !important;
     }
 
-    /* 4. Адаптация карточек */
-    .card {
-        padding: 20px !important;
-        max-width: 95% !important;
-        margin-left: auto;
-        margin-right: auto;
+    .zoom-wrapper {
+        transform: scale(1) !important;
+        width: 100% !important;
+    }
+
+    /* 3. КАРТОЧКИ ГЛАВНОГО МЕНЮ */
+    .card, .sub-card {
+        width: 80% !important;
+        max-width: 300px !important;
+        padding: 12px 15px !important;
+        margin-bottom: 12px !important;
+        display: flex !important;
+        flex-direction: column !important;
+        align-items: center !important;
+        background: rgba(10, 15, 20, 0.95) !important;
+    }
+
+    .card h2, .sub-card h2 {
+        font-size: 0.9rem !important;
+        text-align: center !important;
+    }
+
+    .half-card {
+        width: 80% !important;
+        max-width: 300px !important;
+        min-height: 70px !important; /* Еще чуть меньше */
+        padding: 10px 15px !important;
+        margin: 0 auto 10px auto !important;
+    }
+
+    .half-card h3 { font-size: 0.8rem !important; }
+
+    /* 4. УМЕНЬШЕНИЕ СТАТЕЙ НА 20% И ФИКС ЗАГОЛОВКОВ */
+    .article-card, .guide-card {
+        width: 75% !important; /* Уменьшили общую ширину статьи */
+        max-width: 320px !important;
+        padding: 15px !important;
+        margin: 10px auto !important;
+        box-sizing: border-box !important;
+    }
+
+    .article-text, .guide-text, .article-content p {
+        font-size: 0.75rem !important; /* Уменьшили текст */
+        line-height: 1.4 !important;
+    }
+
+    .header img {
+        width: 140px !important; /* Уменьшили логотип в статье */
+        height: auto !important;
     }
 
     .header h1 {
-        font-size: 1.5rem !important;
-        letter-spacing: 5px !important;
+        font-size: 0.9rem !important; /* Уменьшили заголовок статьи */
+        margin: 10px 0 !important;
     }
 
-    /* 5. Удобство нажатий (Tap Targets) */
-    .btn, .sub-card, .mini-platform-btn {
-        min-height: 44px; /* Минимальный размер для пальца */
-        margin-bottom: 15px;
-    }
-
-    /* 6. Фикс видео-плеера */
-    .video-container {
-        pointer-events: all !important; /* Чтобы видео можно было запустить тапом */
-    }
-
-    /* 7. Скрываем ненужные элементы */
+    /* 5. ФИКС СОЦСЕТЕЙ (СДВИГ ВЛЕВО) */
     .social-sidebar {
-        position: relative !important;
+        position: fixed !important;
+        top: 15px !important;
+        /* Сдвигаем левее, чтобы не мешать кнопкам языка справа */
+        left: 15px !important; 
+        right: auto !important;
+        display: flex !important;
         flex-direction: row !important;
-        top: 0 !important;
-        transform: none !important;
-        margin-top: 20px;
-        justify-content: center;
+        gap: 12px !important;
+        z-index: 10002;
     }
+    .social-link { font-size: 16px !important; }
 
-    /* 8. Отключаем параллакс (он сильно лагает на мобильных процессорах) */
-    .parallax-layer {
-        transform: none !important;
-        transition: none !important;
-    }
-}
-@media screen and (max-width: 768px) {
-    /* 1. Контейнер для кнопок стилей и соцсетей */
-    #main-content {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-    }
-
-    /* 2. Позиционируем значки соцсетей под кнопками режимов */
-.social-sidebar {
-    position: relative !important;
-    inset: auto !important;
-    transform: none !important;
-    
-    display: flex !important;
-    flex-direction: row !important; /* Горизонтальный ряд */
-    
-    /* ИЗМЕНЕНИЯ ТУТ: */
-    justify-content: flex-start !important; /* Выравниваем по левому краю */
-    padding-left: 20px !important;           /* Небольшой отступ от левого края экрана */
-    padding-right: 80px !important;          /* Сдвигаем их ВЛЕВО, освобождая место СПРАВА */
-    gap: 20px !important;                    /* Чуть уменьшим расстояние между иконками для мобилки */
-    
-    margin-top: 30px !important;
-    margin-bottom: 20px !important;
-    width: 100% !important;
-    box-sizing: border-box !important;       /* Чтобы padding не распирал ширину */
-    z-index: 10;
-}
-
-    /* Стиль самих иконок, чтобы по ним было легче попадать */
-    .social-sidebar a {
-        font-size: 24px !important;
-        opacity: 0.8;
-    }
-
-    /* 3. Убираем "фонарик" в Red Mode (дублируем для надежности) */
-    .red-mode .flashlight-overlay,
-    .red-mode #flashlight,
-    .red-mode::after {
-        display: none !important;
+    /* 6. ФИКС ФУТЕРА */
+    #sys-status, .footer, .demo-footer-text {
+        position: static !important;
+        width: 100% !important;
+        text-align: center !important;
+        margin: 8px 0 !important;
         background: none !important;
-        box-shadow: none !important;
+        opacity: 0.5;
+    }
+    #sys-status { font-size: 7px !important; margin-top: 25px !important; }
+    .footer { font-size: 7px !important; }
+    /* ФИНАЛЬНАЯ ЦЕНТРОВКА ДЕМО-ТЕКСТА */
+    .demo-footer-text {
+        position: static !important; /* Убираем фиксированное позиционирование */
+        display: block !important;
+        width: 100% !important;
+        text-align: center !important;
+        margin: 10px auto 20px auto !important; /* Центрируем через auto и даем отступ снизу */
+        font-size: 7px !important;
+        opacity: 0.3;
+        left: auto !important;
+        transform: none !important;
+        clear: both !important; /* Чтобы никакие плавающие элементы не мешали */
     }
 
-    /* 4. Смещение контента, чтобы не лез на переключатель языков */
-    .zoom-wrapper {
-        padding-top: 80px !important; 
+    /* 7. УДАЛЕНИЕ ДВОЙНОГО СКРОЛЛА */
+    .article-scroll-container, 
+    .guide-scroll-container,
+    .night-scroll-container,
+    .article-content {
+        max-height: none !important;
+        overflow: visible !important;
+        display: block !important;
+        width: 100% !important;
     }
+
+    /* 8. ПРОЧЕЕ */
+    .vignette, body::after, .red-mode::after { display: none !important; }
+    .bottom-row-container {
+        flex-direction: column !important;
+        align-items: center !important;
+    }
+/* КНОПКА НАЗАД СВЕРХУ */
+    .mobile-back-top {
+        display: flex !important;
+        justify-content: center;
+        width: 100%;
+        margin-top: -10px; /* Приподнимаем чуть выше к заголовку */
+        margin-bottom: 20px;
+        z-index: 100;
+    }
+
+    .btn-mobile-back {
+        padding: 8px 20px !important;
+        font-size: 0.7rem !important;
+        border-color: var(--current-accent) !important;
+        color: var(--current-accent) !important;
+        background: rgba(0, 0, 0, 0.4) !important;
+        display: flex !important;
+        align-items: center;
+        gap: 8px;
+    }
+    .article-image-box img, 
+    .article-content img:not([src*="kiwi_splash_Night_PN.png"]) {
+        width: 100% !important;
+        max-width: 100% !important;
+        height: auto !important;
+        display: block !important;
+        margin: 15px auto !important;
+    }
+
+    /* Убираем ограничение ширины у самого текста, чтобы он не сжимал картинки */
+    .article-content {
+        width: 100% !important;
+        padding: 0 10px !important;
+        box-sizing: border-box !important;
+        text-align: center !important; /* Чтобы контейнеры внутри центрировались */
+    }
+
+    /* А вот параграфы текста пусть остаются по левому краю для удобства чтения */
+    .article-content p {
+        text-align: left !important;
+        font-size: 0.85rem !important;
+        width: 100% !important;
+    }
+    /* Точечное уменьшение логотипа Project Night в статье */
+    img[src*="kiwi_splash_Night_PN.png"] {
+        width: 150px !important; /* Уменьшаем в 2 раза (было 300px) */
+        height: auto !important;
+        display: block !important;
+        margin: 0 auto !important; /* Центрируем */
+        filter: drop-shadow(0 0 15px rgba(255, 0, 0, 0.6)) !important;
+    }
+
+    /* Скрываем эту кнопку на ПК, чтобы не дублировать */
+    .mobile-back-top { display: none; } 
 }
+
+/* Вне медиа-запроса (для ПК) принудительно скрываем */
+.mobile-back-top { display: none; }
 #main-content { 
     opacity: 0; 
     transform: scale(0.8) translateZ(-100px); 

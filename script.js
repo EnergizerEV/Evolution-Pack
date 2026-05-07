@@ -859,7 +859,6 @@ function showMenu(type, prevEl = mainWrapper) {
 
         } else if (type === 'evo_about_article') {
     const lang = translations[currentLang];
-    
     // Заголовок и подзаголовок
     const subHeaderTop = "Evolution Pack - Dark-Aqua / Equipments & Skins / SFX-Pack";
     const authorCredit = "By [EV] Energizer";
@@ -936,6 +935,7 @@ function showMenu(type, prevEl = mainWrapper) {
                 </div>
             </div>
         </div>
+        
 
         <div class="back-btn-wrapper">
             <a href="#" class="btn" id="back-to-main-from-article">${lang.btn_back}</a>
@@ -1380,6 +1380,14 @@ function showMenu(type, prevEl = mainWrapper) {
 
     section.innerHTML = `
         <div class="terminal-overlay"></div>
+
+        <div class="mobile-back-top">
+            <a href="#" class="btn btn-mobile-back" onclick="event.preventDefault(); document.getElementById('back-to-night-main')?.click();">
+                <i class="fas fa-chevron-left"></i> BACK
+            </a>
+        </div>
+        <div class="terminal-overlay"></div>
+        <div class="header">
         
         <!-- Заголовок: Текст + Логотип -->
         <div class="header" style="
