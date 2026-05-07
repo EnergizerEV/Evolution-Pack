@@ -811,6 +811,11 @@ if (evoCard) {
 }
 
 function showMenu(type, prevEl = mainWrapper) {
+    // Добавляем текущее меню в историю браузера
+    // Чтобы при нажатии системной кнопки "Назад" мы не вылетели с сайта
+    if (window.location.hash !== '#' + type) {
+        history.pushState({ menuId: type }, "", "#" + type);
+    }
     const isRefresh = !document.body.contains(prevEl) && prevEl !== mainWrapper;
 
     const render = () => {
@@ -2000,3 +2005,26 @@ function animatePatchTransition() {
         updatePatchUI();
     }
 }
+
+window.addEventListener('popstate', (event) => {
+    // Получаем ID меню из хэша, если в state пусто
+    const menuId = (event.state && event.state.menuId) || window.location.hash.replace('#', '') || 'start';
+
+    const activeSection = document.querySelector('.evo-section');
+
+    if (menuId === 'start' || menuId === '') {
+        if (activeSection) {
+            animateOut(activeSection, () => {
+                activeSection.remove();
+                mainWrapper.style.display = 'flex';
+                animateIn(mainWrapper);
+            });
+        }
+    } else {
+        // Если мы уже в этом меню, не перерисовываем (чтобы избежать циклов)
+        if (activeSection && activeSection.dataset.menuId === menuId) return;
+        
+        // Вызываем меню
+        showMenu(menuId, activeSection || mainWrapper);
+    }
+});
