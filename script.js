@@ -750,50 +750,253 @@ inputEl.addEventListener('keypress', (e) => {
     if (e.key === 'Enter') {
         const cmd = inputEl.value.toLowerCase().trim();
         
-        if (cmd === 'red') {
-            // Визуальные настройки
-            document.documentElement.style.setProperty('--current-accent', '#ff0000');
-            document.documentElement.style.setProperty('--vignette-color', 'rgba(120, 0, 0, 0.4)');
-            document.body.classList.add('red-mode');
-            
-            if (logoMain) {
-                logoMain.style.backgroundImage = "url('Project_Night_Icon.png')";
-                logoMain.style.filter = "drop-shadow(0 0 20px rgba(255, 0, 0, 0.5))";
-            }
-            if (logoErr) logoErr.style.backgroundImage = "url('Project_Night_Icon_ERR.png')";
-            modeText.innerText = "NIGHT_PROTOCOL";
+        // 1. КОМАНДА: RONIN
+        if (cmd === 'ronin') {
+            inputEl.value = '';
+            const termWindow = document.createElement('div');
+            termWindow.id = 'samurai-terminal';
+            termWindow.innerHTML = `
+                <div class="term-header">
+                    <span><i class="fas fa-shredder"></i> DECRYPTING_SAMURAI_DATA...</span>
+                    <div class="term-dots"><span></span><span></span><span></span></div>
+                </div>
+                <div class="term-body" style="position: relative; width: 500px; height: 500px; background: #000; overflow: hidden;">
+                    <video id="arg-video" autoplay muted style="width: 100%; height: 100%; object-fit: cover; position: relative; z-index: 1;">
+                        <source src="Samurai_Intro_1.mp4" type="video/mp4">
+                    </video>
+                    <div class="video-pattern-overlay"></div>
+                    <div class="crt-overlay" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 5; pointer-events: none;"></div>
+                </div>`;
+            document.body.appendChild(termWindow);
 
-            // Переключение звука на Red (true)
-            switchAmbient(true); 
+            const video = document.getElementById('arg-video');
+            const finishEverything = () => {
+                termWindow.classList.add('crt-breakdown');
+                setTimeout(() => {
+                    termWindow.style.transform = 'translate(-50%, -50%) scaleY(0) scaleX(1.5)';
+                    termWindow.style.opacity = '0';
+                    setTimeout(() => {
+                        termWindow.remove();
+                        if (consoleEl) consoleEl.classList.remove('active');
 
-        } else if (cmd === 'aqua') {
-            // Визуальные настройки
-            document.documentElement.style.setProperty('--current-accent', '#00ffd8');
-            document.documentElement.style.setProperty('--vignette-color', 'rgba(0, 50, 50, 0.4)');
-            document.body.classList.remove('red-mode');
-            
-            if (logoMain) {
-                logoMain.style.backgroundImage = "url('EV_Dark_2k.png')";
-                logoMain.style.filter = "drop-shadow(0 0 15px var(--current-accent))";
-            }
-            if (logoErr) logoErr.style.backgroundImage = "url('EV_Dark_2k_ERR.png')";
-            modeText.innerText = "AQUA_CORE";
+                        const finalNotice = document.createElement('div');
+                        finalNotice.innerText = "SAMURAI PACK: COMING SOON";
+                        Object.assign(finalNotice.style, {
+                            position: 'fixed', top: '50%', left: '50%', transform: 'translate(-50%, -50%) scale(0.8)',
+                            fontFamily: "'Orbitron', sans-serif", fontSize: 'clamp(24px, 6vw, 42px)', fontWeight: '900',
+                            letterSpacing: '6px', zIndex: '2000005', opacity: '0', textAlign: 'center', pointerEvents: 'none',
+                            background: 'linear-gradient(to bottom, #bf953f 0%, #fcf6ba 30%, #b38728 60%, #fcf6ba 80%, #bf953f 100%)',
+                            webkitBackgroundClip: 'text', webkitTextFillColor: 'transparent',
+                            filter: 'drop-shadow(0 0 10px rgba(255, 0, 0, 0.8)) drop-shadow(0 0 25px rgba(255, 0, 0, 0.4))',
+                            transition: 'all 1.5s cubic-bezier(0.2, 1, 0.3, 1)'
+                        });
+                        document.body.appendChild(finalNotice);
+                        requestAnimationFrame(() => {
+                            finalNotice.style.opacity = '1';
+                            finalNotice.style.transform = 'translate(-50%, -65%) scale(1.1)';
+                        });
+                        setTimeout(() => {
+                            finalNotice.style.opacity = '0';
+                            finalNotice.style.filter = 'drop-shadow(0 0 30px rgba(255, 0, 0, 0)) blur(10px)';
+                            setTimeout(() => finalNotice.remove(), 2000);
+                        }, 4000);
 
-            // Переключение звука на Aqua (false)
-            switchAmbient(false);
+                        const nick = document.getElementById('nickname');
+                        if(nick) nick.innerText = "SAMURAI_DETECTED";
+                    }, 300);
+                }, 1300);
+            };
+            video.onplay = () => { setTimeout(finishEverything, 7000); };
+            return; // Выходим, чтобы не сработал блок ошибки ниже
         }
 
-        if (cmd === 'clear') consoleEl.classList.remove('active');
-        inputEl.value = '';
+        // 2. КОМАНДА: RED
+        if (cmd === 'red') {
+            document.documentElement.style.setProperty('--current-accent', '#ff0000');
+            document.body.classList.add('red-mode');
+            modeText.innerText = "NIGHT_PROTOCOL";
+            switchAmbient(true); 
+        } 
+        // 3. КОМАНДА: AQUA
+        else if (cmd === 'aqua') {
+            document.documentElement.style.setProperty('--current-accent', '#00ffd8');
+            document.body.classList.remove('red-mode');
+            modeText.innerText = "AQUA_CORE";
+            switchAmbient(false);
+        }
+        // 4. КОМАНДА: CLEAR
+        else if (cmd === 'clear') {
+            consoleEl.classList.remove('active');
+        }
+        // 5. ЛОГИКА ОШИБКИ (если введено что-то другое)
+        else if (cmd !== "") {
+            showConsoleError("ERROR: UNKNOWN_COMMAND");
+        }
+        // --- СЕКЦИЯ ПАСХАЛОК ---
 
+// 1. Попытка взлома (с процентами)
+if (cmd === 'hack') {
+    inputEl.value = '';
+    let count = 0;
+    const hackInterval = setInterval(() => {
+        showConsoleError("BYPASSING_FIREWALL..." + (count * 20) + "%");
+        count++;
+        if (count > 5) {
+            clearInterval(hackInterval);
+            // Финальная точка
+            showConsoleError("ACCESS_DENIED: NICE TRY");
+        }
+    }, 400);
+    return;
+}
+
+// 2. Portal (Твой вариант)
+else if (cmd === 'cake') {
+    inputEl.value = '';
+    showConsoleError("THE CAKE IS A CAKE");
+    return;
+}
+
+// 3. Помощь (Твой вариант)
+else if (cmd === 'help') {
+    inputEl.value = '';
+    showConsoleError("NO HELP...");
+    return;
+}
+
+// 4. Matrix (Проснись, Нео)
+else if (cmd === 'matrix') {
+    inputEl.value = '';
+    showConsoleError("WAKE UP, NEO...");
+    document.body.classList.add('matrix-glitch');
+    setTimeout(() => document.body.classList.remove('matrix-glitch'), 2000);
+    return;
+}
+
+// 5. Shutdown (Мой совет: эффект выключения)
+else if (cmd === 'shutdown') {
+    inputEl.value = '';
+    showConsoleError("SYSTEM_TERMINATED");
+    document.body.style.opacity = '0';
+    document.body.style.transition = 'opacity 1s ease';
+    setTimeout(() => {
+        document.body.style.opacity = '1';
+        showConsoleError("REBOOT_SUCCESSFUL");
+    }, 2500);
+    return;
+}
+// 1. Admin (Гендальф одобряет)
+if (cmd === 'admin') {
+    inputEl.value = '';
+    showConsoleError("YOU_HAVE_NO_POWER_HERE");
+    return;
+}
+
+// --- КОМАНДА KILL (УЛЬТИМАТИВНЫЙ CRT OFF) ---
+if (cmd === 'kill') {
+    inputEl.value = '';
+    showConsoleError("SYSTEM_CRITICAL_FAILURE: TERMINATING...");
+    
+    setTimeout(() => {
+        // Добавляем эффект выключения на весь сайт
+        document.body.classList.add('crt-power-off');
         
+        setTimeout(() => {
+            // Пытаемся закрыть вкладку
+            window.close();
+            
+            // Если вкладка не закрылась (заблокировано браузером),
+            // оставляем черный экран с финальной точкой
+            document.body.innerHTML = `
+                <div style="
+                    background: #000; 
+                    height: 100vh; 
+                    display: flex; 
+                    align-items: center; 
+                    justify-content: center;
+                ">
+                    <div style="
+                        width: 4px; 
+                        height: 4px; 
+                        background: #fff; 
+                        border-radius: 50%; 
+                        box-shadow: 0 0 10px #fff;
+                    "></div>
+                </div>
+            `;
+        }, 600); // Длительность анимации схлопывания
+    }, 1000);
+    return;
+}
+
+// --- КОМАНДА DEV ---
+if (cmd === 'dev') {
+    inputEl.value = '';
+    showConsoleError("CREATOR_LOGGED_IN");
+    
+    const devLogo = document.querySelector('.header h1');
+    if (devLogo) {
+        // Включаем эффект
+        devLogo.classList.add('dev-glow-aqua');
+        
+        // Через 5 секунд выключаем
+        setTimeout(() => {
+            devLogo.classList.remove('dev-glow-aqua');
+            // Теперь, благодаря transition в CSS, opacity упадет до 0 ПЛАВНО за 2 секунды
+        }, 5000);
+    }
+    return;
+}
+else if (cmd === 'ghost') {
+    inputEl.value = '';
+    showConsoleError("PARANORMAL_ACTIVITY_DETECTED");
+    document.body.classList.add('ghost-mode');
+    setTimeout(() => document.body.classList.remove('ghost-mode'), 2000);
+    return;
+}
+        inputEl.value = '';
     }
 });
+
+// ФУНКЦИЯ ДЛЯ ОШИБКИ (вынеси её за пределы addEventListener, просто в любое место скрипта)
+function showConsoleError(message) {
+    const oldErr = document.getElementById('console-err-msg');
+    if (oldErr) oldErr.remove();
+
+    const errBox = document.createElement('div');
+    errBox.id = 'console-err-msg';
+    
+    // Если мы передали сообщение — пишем его, если нет — стандартное
+    errBox.innerText = message || "COMMAND_ERR"; 
+    
+    consoleEl.appendChild(errBox);
+
+    setTimeout(() => {
+        errBox.style.opacity = '0';
+        errBox.style.transform = 'translateY(10px)';
+        setTimeout(() => errBox.remove(), 500);
+    }, 2000); // Для пасхалок увеличим время до 2 сек
+}
 
 const nicknameTrigger = document.getElementById('nickname');
 
 if (nicknameTrigger) {
     nicknameTrigger.addEventListener('click', () => {
+        // ПРОВЕРКА: Если ник изменен, сначала возвращаем его назад
+        if (nicknameTrigger.innerText === "SAMURAI_DETECTED") {
+            nicknameTrigger.innerText = "M45T0D0NM4N";
+            
+            // Визуальный отклик (вспышка цветом акцента)
+            nicknameTrigger.style.color = 'var(--current-accent)';
+            setTimeout(() => { nicknameTrigger.style.color = ''; }, 300);
+            
+            if (typeof playSFX === 'function') playSFX('click');
+            
+            // Выходим из функции, чтобы консоль не открылась в этот раз
+            return;
+        }
+
+        // ОБЫЧНАЯ ЛОГИКА: Открытие консоли
         consoleEl.classList.toggle('active');
         if (consoleEl.classList.contains('active')) {
             inputEl.focus();
@@ -809,6 +1012,61 @@ if (evoCard) {
         showMenu('main');
     });
 }
+
+document.addEventListener('DOMContentLoaded', () => {
+    let logoClickCount = 0;
+    let logoClickTimer;
+
+    // Ищем элементы
+    const mainLogo = document.getElementById('logo-main');
+    const evolutionTitle = document.querySelector('.header h1');
+
+    // Проверка в консоли браузера (F12), чтобы мы знали, что скрипт нашел лого
+    if (!mainLogo) {
+        console.error("LOG_ERROR: #logo-main не найден в HTML!");
+    } else {
+        console.log("LOG_SUCCESS: Система кликов по логотипу активирована.");
+        
+        mainLogo.style.cursor = 'pointer';
+
+        mainLogo.addEventListener('click', () => {
+            logoClickCount++;
+
+            // Сброс счетчика, если клики слишком медленные
+            clearTimeout(logoClickTimer);
+            logoClickTimer = setTimeout(() => {
+                logoClickCount = 0;
+            }, 500); // 0.5 сек на все клики — нужно кликать быстро!
+
+            // Если кликнули 3 раза
+            if (logoClickCount === 3) {
+                logoClickCount = 0;
+
+                // Вызываем визуальный эффект
+                if (evolutionTitle) {
+                    // Перезагрузка анимации
+                    evolutionTitle.classList.remove('dev-glow-aqua');
+                    void evolutionTitle.offsetWidth; 
+                    evolutionTitle.classList.add('dev-glow-aqua');
+
+                    // Уведомление в твоей консоли
+                    if (typeof showConsoleError === 'function') {
+                        showConsoleError("MANUAL_OVERRIDE: DEV_MODE");
+                    }
+
+                    // Таймер на удаление эффекта
+                    setTimeout(() => {
+                        evolutionTitle.classList.remove('dev-glow-aqua');
+                    }, 5000);
+                }
+
+                // Вспышка самого лого
+                mainLogo.style.filter = 'cyan-rotate(90deg) brightness(2) drop-shadow(0 0 10px #00ffd8)';
+                setTimeout(() => { mainLogo.style.filter = ''; }, 300);
+            }
+        });
+    }
+});
 
 function showMenu(type, prevEl = mainWrapper) {
     // 1. История

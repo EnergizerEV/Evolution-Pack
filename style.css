@@ -2168,3 +2168,303 @@ body.red-mode .night-drawer.open {
 .zoom-wrapper {
     overflow: visible !important;
 }
+/* Окно терминала для видео */
+#samurai-terminal {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%) scale(1);
+    width: 500px;
+    background: #05080a;
+    border: 1px solid #ff0000;
+    box-shadow: 0 0 40px rgba(255, 0, 0, 0.2), inset 0 0 20px rgba(0, 0, 0, 1);
+    z-index: 2000001;
+    font-family: 'Source Code Pro', monospace;
+    overflow: hidden;
+    animation: term-appear 0.5s cubic-bezier(0.165, 0.84, 0.44, 1);
+}
+
+.term-header {
+    background: rgba(255, 0, 0, 0.1);
+    padding: 8px 15px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid rgba(255, 0, 0, 0.3);
+    color: #ff4444;
+    font-size: 10px;
+    letter-spacing: 1px;
+}
+
+.term-dots span {
+    display: inline-block;
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    background: #ff0000;
+    margin-left: 5px;
+    opacity: 0.5;
+}
+
+.term-body {
+    position: relative;
+    width: 500px;
+    height: 500px;
+    line-height: 0;
+}
+
+#arg-video {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+/* Мягкий шум поверх видео */
+.video-overlay-noise {
+    position: absolute;
+    top: 0; left: 0; width: 100%; height: 100%;
+    background: repeating-linear-gradient(0deg, rgba(0,0,0,0.1) 0px, rgba(0,0,0,0.1) 1px, transparent 1px, transparent 2px);
+    pointer-events: none;
+}
+
+/* МЯГКИЙ ГЛИТЧ (не бьет по глазам) */
+.soft-glitch {
+    animation: soft-shake 0.4s infinite alternate;
+    filter: brightness(1.5) sepia(0.5) hue-rotate(-20deg);
+    opacity: 0.7;
+}
+
+@keyframes soft-shake {
+    0% { transform: translate(-50%, -50%) translateX(2px); }
+    100% { transform: translate(-50%, -50%) translateX(-2px); }
+}
+
+@keyframes term-appear {
+    from { opacity: 0; transform: translate(-50%, -45%) scale(0.9); }
+    to { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+}
+/* Эффект помех и разрыва строк как в старом ТВ */
+.crt-breakdown {
+    animation: crt-vibration 0.1s infinite, crt-distort 0.2s infinite !important;
+    filter: contrast(3) brightness(1.5) saturate(0) !important;
+}
+
+/* Дрожание всего окна */
+@keyframes crt-vibration {
+    0% { transform: translate(-51%, -49%); }
+    50% { transform: translate(-49%, -51%); }
+    100% { transform: translate(-50%, -50%); }
+}
+
+/* Эффект горизонтального смещения (разрыв кадра) */
+@keyframes crt-distort {
+    0% { clip-path: inset(10% 0 30% 0); margin-left: -5px; }
+    20% { clip-path: inset(40% 0 10% 0); margin-left: 10px; }
+    40% { clip-path: inset(80% 0 5% 0); margin-left: -15px; }
+    60% { clip-path: inset(2% 0 70% 0); margin-left: 5px; }
+    80% { clip-path: inset(50% 0 25% 0); margin-left: -2px; }
+    100% { clip-path: inset(0 0 0 0); }
+}
+
+/* Дополнительный слой помех внутри окна */
+.crt-overlay {
+    position: absolute;
+    top: 0; left: 0; width: 100%; height: 100%;
+    background: repeating-linear-gradient(
+        0deg,
+        rgba(255, 255, 255, 0.05) 0px,
+        rgba(255, 255, 255, 0.05) 1px,
+        transparent 2px
+    );
+    pointer-events: none;
+    z-index: 5;
+    animation: crt-lines 0.1s infinite;
+}
+
+@keyframes crt-lines {
+    from { background-position: 0 0; }
+    to { background-position: 0 5px; }
+}
+
+/* Плавное схлопывание терминала */
+#samurai-terminal {
+    transition: transform 0.2s ease-in, opacity 0.2s ease-in !important;
+}
+.video-pattern-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 10; /* Поверх видео */
+    pointer-events: none; /* Чтобы не мешало кликам, если они будут */
+    
+    /* Создаем узор из черных полос */
+    background: linear-gradient(
+        rgba(18, 16, 16, 0) 50%, 
+        rgba(0, 0, 0, 0.4) 50%
+    );
+    background-size: 100% 4px; /* Толщина полос (можно менять 4px на 2px для более мелкой сетки) */
+    
+    /* Добавляем легкое свечение, чтобы полосы казались объемными */
+    opacity: 0.6; 
+}
+
+/* Дополнительно: добавим эффект "бегущей" помехи для реализма */
+.video-pattern-overlay::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(255, 255, 255, 0.03);
+    opacity: 0;
+    animation: flickering 0.05s infinite;
+}
+
+@keyframes flickering {
+    0% { opacity: 0.1; }
+    50% { opacity: 0.05; }
+    100% { opacity: 0.1; }
+}
+#console-err-msg {
+    position: absolute;
+    /* Выравниваем по левому краю, где начинается ввод */
+    right: 0px; 
+    /* Расстояние от верха консоли (примерно 1 см под инпутом) */
+    top: 70px; 
+    
+    font-family: 'Source Code Pro', monospace;
+    font-size: 15px;
+    font-weight: bold;
+    letter-spacing: 1.5px;
+    z-index: 10006;
+    pointer-events: none;
+    
+    /* Красный градиент */
+    background: linear-gradient(to bottom, #ff4444 0%, #880000 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    
+    /* Свечение */
+    filter: drop-shadow(0 0 5px rgba(255, 0, 0, 0.7));
+    
+    /* Анимация появления */
+    opacity: 0;
+    animation: error-slide-down 0.3s ease-out forwards;
+    transition: opacity 0.5s, transform 0.5s;
+}
+
+@keyframes error-slide-down {
+    0% {
+        opacity: 0;
+        transform: translateY(-10px); /* Всплывает сверху вниз */
+    }
+    100% {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+.matrix-glitch {
+    filter: sepia(1) hue-rotate(100deg) brightness(1.2) contrast(2);
+    transition: filter 0.2s ease;
+}
+/* Базовый стиль заголовка */
+.header h1 {
+    position: relative;
+    display: inline-block;
+    color: #fff; /* Твой стандартный цвет */
+    transition: color 1s ease;
+}
+
+/* Слой для эффекта DEV (аква-градиент и свечение) */
+.header h1::after {
+    content: "EVolution"; /* Текст должен совпадать с заголовком! */
+    position: absolute;
+    top: 0; left: 0; width: 100%; height: 100%;
+    
+    background: linear-gradient(to bottom, #00ffd8 0%, #008a75 50%, #00ffd8 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    filter: drop-shadow(0 0 15px rgba(0, 255, 216, 0.8));
+    
+    /* Изначально эффект скрыт */
+    opacity: 0;
+    transition: opacity 2s ease-in-out;
+    pointer-events: none;
+    z-index: 1;
+}
+
+/* Когда класс активен — плавно показываем слой ::after */
+.header h1.dev-glow-aqua::after {
+    opacity: 1;
+    animation: aqua-shimmer 2s linear infinite;
+}
+
+/* Пульсацию добавим на весь h1, чтобы не мешала градиенту */
+.header h1.dev-glow-aqua {
+    animation: aqua-neon-pulse 1s infinite alternate;
+}
+/* Эффект выключения старого ТВ */
+.crt-power-off {
+    background: #000 !important;
+    transition: all 0.6s cubic-bezier(0.23, 1, 0.32, 1);
+    pointer-events: none;
+    overflow: hidden;
+    animation: tv-off 0.6s forwards;
+}
+
+@keyframes tv-off {
+    0% {
+        transform: scale(1, 1);
+        filter: brightness(1) contrast(1);
+    }
+    40% {
+        /* Сжимаем по вертикали в тонкую линию */
+        transform: scale(1.3, 0.001);
+        filter: brightness(2) contrast(2);
+    }
+    70% {
+        /* Сжимаем в одну точку */
+        transform: scale(0.001, 0.001);
+        filter: brightness(5);
+    }
+    100% {
+        transform: scale(0, 0);
+        opacity: 0;
+    }
+}
+
+/* Дополнительно: вспышка перед выключением */
+.crt-power-off::before {
+    content: "";
+    position: fixed;
+    top: 0; left: 0; width: 100%; height: 100%;
+    background: white;
+    z-index: 9999999;
+    opacity: 0;
+    animation: flash 0.15s ease-out;
+}
+
+@keyframes flash {
+    0% { opacity: 0; }
+    50% { opacity: 0.8; }
+    100% { opacity: 0; }
+}
+.ghost-mode {
+    animation: ghost-flicker 0.2s infinite;
+    text-shadow: 10px 0 20px rgba(0, 255, 216, 0.5), -10px 0 20px rgba(255, 0, 0, 0.5);
+}
+@keyframes ghost-flicker {
+    0% { transform: translateX(2px); opacity: 0.8; }
+    50% { transform: translateX(-2px); opacity: 1; }
+    100% { transform: translateX(1px); opacity: 0.9; }
+}
+.logo-glitch, .logo-err {
+    pointer-events: none; /* Чтобы верхние слои не мешали кликать по основному лого */
+}
+
+#logo-main {
+    pointer-events: all; /* Разрешаем клики по основному слою */
+    cursor: pointer;
+}
