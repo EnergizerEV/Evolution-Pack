@@ -2818,13 +2818,14 @@ window.addEventListener('load', () => {
         // Если есть хэш — гасим всё лишнее сразу
         if (mainWrapper) mainWrapper.style.display = 'none';
         
-        // Маленький таймаут, чтобы основной JS успел прожевать функции
         setTimeout(() => {
             if (mainContent) {
-                mainContent.style.display = 'flex'; // ВКЛЮЧАЕМ КОНТЕЙНЕР
-                mainContent.classList.add('visible'); // ДЕЛАЕМ ВИДИМЫМ
+                mainContent.style.display = 'flex';
+                mainContent.classList.add('visible');
             }
             showMenu(currentHash, null);
+            // На время загрузки прячем логотип, чтобы он не летал на чёрном фоне
+            updateCornerHomeLogo(false);
         }, 200); 
     } else {
         if (!history.state) history.replaceState({ menuId: 'start' }, "", " ");
@@ -2844,6 +2845,11 @@ window.addEventListener('load', () => {
                         mainContent.classList.add('visible');
                     }
                     if (typeof startTyping === 'function') startTyping();
+                } else {
+                    // Запускаем плавный перелёт логотипа в угол с небольшой задержкой после загрузки
+                    setTimeout(() => {
+                        updateCornerHomeLogo(true);
+                    }, 350);
                 }
 
                 const widget = document.getElementById('patch-widget');
@@ -3126,7 +3132,7 @@ function animatePatchTransition() {
 }
 
 // === УПРАВЛЕНИЕ ЛОГОТИПОМ ВОЗВРАТА НА ГЛАВНЫЙ ЭКРАН ===
-function updateCornerHomeLogo(isSubMenu) {
+function updateCornerHomeLogo(isSubMenu, instant = false) {
     const cornerLogo = document.getElementById('home-corner-logo');
     const mainLogoWrapper = document.querySelector('.zoom-wrapper .logo-wrapper');
     if (!cornerLogo) return;
@@ -3134,11 +3140,18 @@ function updateCornerHomeLogo(isSubMenu) {
     if (isSubMenu) {
         cornerLogo.classList.remove('is-hiding');
         if (mainLogoWrapper) mainLogoWrapper.style.opacity = '0';
-        requestAnimationFrame(() => {
+
+        if (instant) {
             cornerLogo.classList.add('in-corner');
-        });
+        } else {
+            // Двойной requestAnimationFrame гарантирует, что браузер применит стартовую позицию перед анимацией
+            requestAnimationFrame(() => {
+                requestAnimationFrame(() => {
+                    cornerLogo.classList.add('in-corner');
+                });
+            });
+        }
     } else {
-        // Плавно исчезаем прямо в углу без полёта обратно в центр
         if (cornerLogo.classList.contains('in-corner')) {
             cornerLogo.classList.add('is-hiding');
             cornerLogo.classList.remove('in-corner');
