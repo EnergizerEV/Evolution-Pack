@@ -3483,3 +3483,435 @@ body.ny-mode .logo-glitch {
 #console-err-msg.console-easter-icon.is-night {
     filter: drop-shadow(0 0 12px rgba(255, 0, 0, 0.85));
 }
+
+/* === SAS4 PLUS MOD: КНОПКА И ВЫБОР ПЛАТФОРМЫ === */
+.sas4-plus-mod-box {
+    max-width: 680px;
+    margin: 28px auto 0;
+    padding: 16px 20px;
+    border-radius: 10px;
+    background: rgba(12, 18, 24, 0.82);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35);
+}
+
+.sas4-plus-mod-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    flex-wrap: wrap;
+}
+
+.sas4-plus-mod-label {
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    font-size: 0.95rem;
+    color: var(--current-accent, #00f0ff);
+}
+
+.sas4-plus-toggle-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+}
+
+.sas4-plus-platforms-drawer {
+    max-height: 0;
+    overflow: hidden;
+    opacity: 0;
+    transition: max-height 0.32s ease, opacity 0.25s ease, margin-top 0.32s ease;
+    margin-top: 0;
+}
+
+.sas4-plus-mod-box.open .sas4-plus-platforms-drawer {
+    max-height: 140px;
+    opacity: 1;
+    margin-top: 16px;
+}
+
+.sas4-plus-platforms-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 12px;
+}
+
+.sas4-platform-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 11px 14px;
+    border-radius: 8px;
+    text-decoration: none;
+    font-weight: 700;
+    font-size: 0.88rem;
+    letter-spacing: 0.05em;
+    color: #ffffff;
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px solid rgba(255, 255, 255, 0.14);
+    transition: transform 0.18s ease, border-color 0.18s ease, background 0.18s ease, box-shadow 0.18s ease;
+}
+
+.sas4-platform-btn:hover {
+    transform: translateY(-2px);
+    border-color: var(--current-accent, #00f0ff);
+    background: rgba(255, 255, 255, 0.11);
+    box-shadow: 0 0 14px color-mix(in srgb, var(--current-accent, #00f0ff) 35%, transparent);
+}
+
+/* === КОМПАКТНЫЙ БАННЕР АВТОРА С ПЕРЕЛИВАЮЩИМСЯ ГРАДИЕНТОМ === */
+.sas4-author-banner {
+    position: relative;
+    width: fit-content;
+    min-width: 340px;
+    max-width: 92%;
+    margin: 22px auto 0;
+    border-radius: 12px;
+    overflow: hidden;
+    background:
+        radial-gradient(circle at 82% 70%, rgba(185, 28, 28, 0.28), transparent 55%),
+        linear-gradient(125deg, #1a0a0c 0%, #260d11 45%, #120809 100%);
+    background-size: 200% 200%;
+    animation: scorch-banner-flow 8s ease-in-out infinite;
+    border: 1px solid rgba(255, 72, 72, 0.34);
+    box-shadow: 0 10px 26px rgba(0, 0, 0, 0.58), inset 0 0 18px rgba(255, 45, 45, 0.08);
+    box-sizing: border-box;
+}
+
+@keyframes scorch-banner-flow {
+    0%, 100% { background-position: 0% 50%; }
+    50%      { background-position: 100% 50%; }
+}
+
+/* Тег "АВТОР МОДА / MOD AUTHOR" в правом верхнем углу */
+.sas4-author-badge {
+    position: absolute;
+    top: 10px;
+    right: 12px;
+    z-index: 10;
+    pointer-events: none;
+    font-size: 0.58rem;
+    font-weight: 700;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    padding: 2px 7px;
+    border-radius: 4px;
+    color: #ff9c9c;
+    background: rgba(15, 5, 6, 0.75);
+    border: 1px solid rgba(255, 72, 72, 0.5);
+    box-shadow: 0 0 10px rgba(255, 50, 50, 0.22);
+    backdrop-filter: blur(2px);
+}
+
+/* Переливающаяся верхняя полоса баннера */
+.sas4-author-strip {
+    height: 38px;
+    background: linear-gradient(
+        115deg,
+        #1e0b0d 0%,
+        #4a1419 28%,
+        #7a1c1c 50%,
+        #361115 72%,
+        #18090b 100%
+    );
+    background-size: 240% 240%;
+    animation: scorch-strip-shimmer 6s ease-in-out infinite;
+    border-bottom: 1px solid rgba(255, 95, 95, 0.16);
+}
+
+@keyframes scorch-strip-shimmer {
+    0%, 100% { background-position: 0% 50%; }
+    50%      { background-position: 100% 50%; }
+}
+
+.sas4-author-content {
+    display: flex;
+    align-items: center;
+    gap: 18px;
+    padding: 0 24px 16px 20px;
+    margin-top: -24px;
+}
+
+/* Аватарка с пульсирующим красным контуром */
+.sas4-author-avatar-wrap {
+    flex-shrink: 0;
+    width: 86px;
+    height: 86px;
+    border-radius: 50%;
+    overflow: hidden;
+    background: #140c0d;
+    border: 3px solid #140c0d;
+    animation: scorch-avatar-pulse 4s ease-in-out infinite;
+}
+
+@keyframes scorch-avatar-pulse {
+    0%, 100% {
+        box-shadow: 0 0 0 2px rgba(255, 65, 65, 0.7), 0 6px 18px rgba(0, 0, 0, 0.7);
+    }
+    50% {
+        box-shadow: 0 0 0 2px rgba(255, 130, 95, 0.95), 0 0 18px rgba(255, 55, 45, 0.45);
+    }
+}
+
+.sas4-author-logo {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+
+.sas4-author-meta {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding-top: 26px;
+    min-width: 0;
+}
+
+.sas4-author-text-wrap {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    width: 195px;
+    max-width: 100%;
+}
+
+.sas4-author-text-img {
+    width: 100%;
+    height: auto;
+    object-fit: contain;
+    object-position: left center;
+    display: block;
+    animation: scorch-text-glow 4s ease-in-out infinite;
+}
+
+@keyframes scorch-text-glow {
+    0%, 100% {
+        filter: drop-shadow(0 0 8px rgba(255, 55, 45, 0.4));
+    }
+    50% {
+        filter: drop-shadow(0 0 15px rgba(255, 110, 75, 0.75));
+    }
+}
+
+/* Переливающийся градиентный блик строго по форме букв Scorch_TEXT.png */
+.sas4-author-text-shimmer {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background: linear-gradient(
+        110deg,
+        transparent 20%,
+        rgba(255, 145, 110, 0.55) 45%,
+        rgba(255, 225, 200, 0.85) 50%,
+        rgba(255, 75, 65, 0.55) 55%,
+        transparent 80%
+    );
+    background-size: 250% 100%;
+    mix-blend-mode: screen;
+    -webkit-mask-image: url('Scorch_TEXT.png');
+    -webkit-mask-size: contain;
+    -webkit-mask-repeat: no-repeat;
+    -webkit-mask-position: left center;
+    mask-image: url('Scorch_TEXT.png');
+    mask-size: contain;
+    mask-repeat: no-repeat;
+    mask-position: left center;
+    animation: scorch-letters-sweep 4.5s ease-in-out infinite;
+}
+
+@keyframes scorch-letters-sweep {
+    0%   { background-position: 140% 0; }
+    55%  { background-position: -60% 0; }
+    100% { background-position: -60% 0; }
+}
+
+@media screen and (max-width: 768px) {
+    .sas4-author-banner {
+        min-width: 280px;
+        max-width: 90%;
+    }
+
+    .sas4-author-badge {
+        top: 8px;
+        right: 9px;
+        font-size: 0.5rem;
+        padding: 2px 6px;
+    }
+
+    .sas4-author-strip {
+        height: 32px;
+    }
+
+    .sas4-author-content {
+        gap: 14px;
+        padding: 0 18px 14px 16px;
+        margin-top: -20px;
+    }
+
+    .sas4-author-avatar-wrap {
+        width: 70px;
+        height: 70px;
+    }
+
+    .sas4-author-meta {
+        padding-top: 22px;
+    }
+
+    .sas4-author-text-wrap {
+        width: 155px;
+    }
+}
+/* === 3D-НАКЛОН САМОГО ПРЯМОУГОЛЬНИКА КНОПКИ === */
+#sas4-plus-mod-trigger {
+    position: relative;
+    overflow: hidden;
+    transform-style: preserve-3d;
+    will-change: transform;
+    /* Перебиваем стандартный hover-сдвиг .card */
+    transition: border-color 0.25s ease, box-shadow 0.25s ease !important;
+}
+
+#sas4-plus-mod-trigger.is-resetting {
+    transition: transform 0.45s cubic-bezier(0.22, 1, 0.36, 1), border-color 0.3s ease, box-shadow 0.3s ease !important;
+}
+
+/* Световой блик на поверхности самого прямоугольника при 3D-наклоне */
+#sas4-plus-mod-trigger::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.25s ease;
+    background: radial-gradient(
+        260px circle at var(--mouse-x, 50%) var(--mouse-y, 50%),
+        rgba(0, 255, 216, 0.22),
+        transparent 70%
+    );
+}
+
+#sas4-plus-mod-trigger:hover::after {
+    opacity: 1;
+}
+
+#sas4-plus-mod-trigger:hover {
+    border-color: rgba(0, 255, 216, 0.85) !important;
+    box-shadow: 0 16px 36px rgba(0, 0, 0, 0.7), 0 0 24px rgba(0, 255, 216, 0.25) !important;
+}
+
+/* Внутренние элементы слегка приподняты над плоскостью кнопки */
+#sas4-plus-mod-trigger h2,
+#sas4-plus-mod-trigger .tag-info,
+#sas4-plus-mod-trigger .platform-tags {
+    pointer-events: none;
+    transition: transform 0.15s ease-out;
+}
+
+/* === ПЛАВАЮЩИЙ ЛОГОТИП ВОЗВРАТА НА ГЛАВНЫЙ ЭКРАН === */
+#home-corner-logo {
+    position: fixed;
+    /* Начальная позиция перед вылетом в угол */
+    top: 12vh;
+    left: 50%;
+    width: 150px;
+    height: 150px;
+    transform: translate(-50%, 0) scale(1);
+    opacity: 0;
+    pointer-events: none;
+    z-index: 1000001;
+    cursor: none !important;
+    transition:
+        top 0.8s cubic-bezier(0.70, 0.15, 0.54, 0.88),
+        left 0.8s cubic-bezier(0.70, 0.15, 0.54, 0.88),
+        width 0.8s cubic-bezier(0.70, 0.15, 0.54, 0.88),
+        height 0.8s cubic-bezier(0.70, 0.15, 0.54, 0.88),
+        transform 0.8s cubic-bezier(0.70, 0.15, 0.54, 0.88),
+        opacity 0.4s ease-in,
+        filter 0.3s ease;
+}
+
+/* Увеличенный размер в левом верхнем углу */
+#home-corner-logo.in-corner {
+    top: 22px;
+    left: 24px;
+    width: 90px;
+    height: 90px;
+    transform: translate(0, 0) scale(1);
+    opacity: 0.42;
+    pointer-events: all !important;
+}
+
+/* При наведении становится ярким и чуть увеличивается */
+#home-corner-logo.in-corner:hover {
+    opacity: 1;
+    transform: translate(0, 0) scale(1.1);
+    filter: drop-shadow(0 0 16px var(--current-accent));
+}
+
+/* При возврате на главный экран: остаётся в углу и просто растворяется без перелёта обратно */
+#home-corner-logo.is-hiding {
+    top: 22px;
+    left: 24px;
+    width: 90px;
+    height: 90px;
+    transform: translate(0, 0) scale(0.9);
+    opacity: 0 !important;
+    pointer-events: none !important;
+    transition: opacity 0.25s ease, transform 0.25s ease !important;
+}
+
+#home-corner-logo .home-logo-base,
+#home-corner-logo .home-logo-glitch {
+    position: absolute;
+    inset: 0;
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center;
+    pointer-events: none;
+}
+
+#home-corner-logo .home-logo-base {
+    background-image: url('EV_Dark_2k.png');
+    filter: drop-shadow(0 0 10px var(--current-accent));
+    transition: background-image 0.5s ease, filter 0.5s ease;
+}
+
+#home-corner-logo .home-logo-glitch {
+    background-image: url('EV_Dark_2k_ERR.png');
+    opacity: 0;
+    animation: glitch-step 5s infinite step-end;
+}
+
+/* Адаптация под Project Night (Red Mode) */
+body.red-mode #home-corner-logo .home-logo-base {
+    filter: drop-shadow(0 0 12px #ff0000);
+}
+
+/* Адаптация под Новогодний режим */
+body.ny-mode #home-corner-logo .home-logo-base {
+    background-image: url('EV_New%20Year%20LOGO%20SAS.png') !important;
+    filter: drop-shadow(0 0 12px rgba(139, 233, 255, 0.7));
+}
+
+body.ny-mode #home-corner-logo .home-logo-glitch {
+    opacity: 0 !important;
+    animation: none !important;
+}
+
+/* Мобильная адаптация */
+@media screen and (max-width: 768px) {
+    #home-corner-logo.in-corner,
+    #home-corner-logo.is-hiding {
+        top: 46px;
+        left: 14px;
+        width: 62px;
+        height: 62px;
+    }
+
+    #home-corner-logo.in-corner {
+        opacity: 0.55;
+    }
+}

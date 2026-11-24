@@ -1467,6 +1467,7 @@ function showMenu(type, prevEl = mainWrapper) {
     if (window.location.hash !== '#' + type) {
         const historyId = (type === 'main') ? 'evo_main' : type;
         history.pushState({ menuId: type }, "", "#" + historyId);
+        updateCornerHomeLogo(true);
     }
 
     // Проверка на F5 (если prevEl пустой или его нет в DOM)
@@ -1816,15 +1817,44 @@ function showMenu(type, prevEl = mainWrapper) {
                 history.back();
             };
 
-        } else if (type === 'sas4_plus') {
-            // === НОВЫЙ РАЗДЕЛ: SAS4 PLUS MOD (3 ИНТЕРАКТИВНЫХ ЛОГОТИПА) ===
-            const lang = translations[currentLang];
-            const dlText = lang.btn_download || "СКАЧАТЬ";
+} else if (type === 'sas4_plus') {
+            // === РАЗДЕЛ: SAS4 PLUS MOD (3 ПАКА + КАРТОЧКА МОДА + БАННЕР АВТОРА) ===
+            const lang = translations[currentLang] || translations.en || {};
+
+            // Локальный словарь переводов прямо для этого раздела
+            const plusTexts = {
+                ru: {
+                    modTitle: "СКАЧАТЬ SAS4 PLUS MOD",
+                    modTag: "ОРИГИНАЛЬНЫЙ МОД",
+                    authorLabel: "АВТОР МОДА"
+                },
+                en: {
+                    modTitle: "DOWNLOAD SAS4 PLUS MOD",
+                    modTag: "ORIGINAL MOD",
+                    authorLabel: "MOD AUTHOR"
+                },
+                es: {
+                    modTitle: "DESCARGAR SAS4 PLUS MOD",
+                    modTag: "MOD ORIGINAL",
+                    authorLabel: "AUTOR DEL MOD"
+                }
+            };
+
+            const t = plusTexts[currentLang] || plusTexts.en;
+            const dlText = lang.btn_download || "DOWNLOAD";
+            const backText = lang.btn_back || "BACK";
+
+            // Подставь свои ссылки на сборки PC / ANDROID / IOS
+            const modLinks = {
+                pc: "https://drive.google.com/file/d/1n3cp4RVlTuja6rXXU4jv7_O7lsTk2tzw/view",
+                android: "https://drive.google.com/file/d/10YmpQyRynAtVArUCmO_uVAe30w0Wm8So/view",
+                ios: "https://drive.google.com/file/d/166U0eGraUqF0yJQ_3NxNrwcRDbFlWD0J/view"
+            };
 
             section.innerHTML = `
                 <div class="mobile-back-top">
                     <a href="#" class="btn btn-mobile-back" onclick="event.preventDefault(); history.back();">
-                        <i class="fas fa-chevron-left"></i> ${lang.btn_back}
+                        <i class="fas fa-chevron-left"></i> ${backText}
                     </a>
                 </div>
 
@@ -1838,7 +1868,7 @@ function showMenu(type, prevEl = mainWrapper) {
                             <h3 class="qol-pack-title">EVolution Pack</h3>
                         </div>
                         <div class="qol-dl-drawer">
-                            <a href="https://drive.google.com/file/d/1at3sqvMh9IcsiJt3Pn8aRvbRPQlSMo7_/view?usp=drive_link" target="_blank" class="qol-dl-btn">${dlText}</a>
+                            <a href="https://drive.google.com/file/d/1at3sqvMh9IcsiJt3Pn8aRvbRPQlSMo7_/view?usp=drive_link" target="_blank" rel="noopener noreferrer" class="qol-dl-btn">${dlText}</a>
                         </div>
                     </div>
 
@@ -1849,7 +1879,7 @@ function showMenu(type, prevEl = mainWrapper) {
                             <h3 class="qol-pack-title">Project Night</h3>
                         </div>
                         <div class="qol-dl-drawer">
-                            <a href="https://drive.google.com/file/d/1bkbJ6OEsHAvdOvUfWU6PatQUzx3kRTGE/view?usp=sharing" target="_blank" class="qol-dl-btn">${dlText}</a>
+                            <a href="https://drive.google.com/file/d/1bkbJ6OEsHAvdOvUfWU6PatQUzx3kRTGE/view?usp=sharing" target="_blank" rel="noopener noreferrer" class="qol-dl-btn">${dlText}</a>
                         </div>
                     </div>
 
@@ -1860,17 +1890,54 @@ function showMenu(type, prevEl = mainWrapper) {
                             <h3 class="qol-pack-title">New Year</h3>
                         </div>
                         <div class="qol-dl-drawer">
-                            <a href="https://drive.google.com/file/d/1ONF7vnk8qx3G8Z21T8Uuo5qd0cSDbbRJ/view?usp=sharing" target="_blank" class="qol-dl-btn">${dlText}</a>
+                            <a href="https://drive.google.com/file/d/1ONF7vnk8qx3G8Z21T8Uuo5qd0cSDbbRJ/view?usp=sharing" target="_blank" rel="noopener noreferrer" class="qol-dl-btn">${dlText}</a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Скачать SAS4 Plus Mod в фирменном стиле карточек сайта -->
+                <div class="expand-container" style="width:100%; display:flex; flex-direction:column; align-items:center; margin-top: 10px;">
+                    <div class="card sub-card" id="sas4-plus-mod-trigger" style="position: relative; width: 100%; cursor: pointer;">
+                        <div class="platform-tags" style="position: absolute; top: 8px; right: 8px; display: flex; gap: 4px; pointer-events: none;">
+                            <span style="font-size: 0.55rem; padding: 1px 4px; border: 1px solid rgba(0, 255, 216, 0.5); color: #00ffd8; border-radius: 3px; text-transform: uppercase; font-weight: bold; background: rgba(0,0,0,0.3);">PC</span>
+                            <span style="font-size: 0.55rem; padding: 1px 4px; border: 1px solid rgba(255, 157, 0, 0.5); color: #ff9d00; border-radius: 3px; text-transform: uppercase; font-weight: bold; background: rgba(0,0,0,0.3);">Android</span>
+                            <span style="font-size: 0.55rem; padding: 1px 4px; border: 1px solid rgba(255, 255, 255, 0.5); color: #ffffff; border-radius: 3px; text-transform: uppercase; font-weight: bold; background: rgba(0,0,0,0.3);">iOS</span>
+                        </div>
+                        <h2>${t.modTitle}</h2>
+                        <div class="tag-info evolution-tag">${t.modTag}</div>
+                    </div>
+
+                    <div class="platform-drawer" id="sas4-plus-platforms">
+                        <a href="${modLinks.pc}" target="_blank" rel="noopener noreferrer" class="mini-platform-btn">PC</a>
+                        <a href="${modLinks.android}" target="_blank" rel="noopener noreferrer" class="mini-platform-btn">ANDROID</a>
+                        <a href="${modLinks.ios}" target="_blank" rel="noopener noreferrer" class="mini-platform-btn">IOS</a>
+                    </div>
+                </div>
+
+                <!-- Компактный баннер автора -->
+                <div class="sas4-author-banner">
+                    <span class="sas4-author-badge">${t.authorLabel}</span>
+                    <div class="sas4-author-strip"></div>
+                    <div class="sas4-author-content">
+                        <div class="sas4-author-avatar-wrap">
+                            <img src="Scorch_Logo.png" alt="Scorcher" class="sas4-author-logo">
+                        </div>
+
+                        <div class="sas4-author-meta">
+                           <div class="sas4-author-text-wrap">
+                                <img src="Scorch_TEXT.png" alt="Scorcher" class="sas4-author-text-img">
+                                <span class="sas4-author-text-shimmer" aria-hidden="true"></span>
+                            </div>
                         </div>
                     </div>
                 </div>
 
                 <div class="back-btn-wrapper">
-                    <a href="#" class="btn" id="back-to-misc-from-qol">${lang.btn_back}</a>
+                    <a href="#" class="btn" id="back-to-misc-from-qol">${backText}</a>
                 </div>
             `;
 
-            // Логика клика по логотипам (аккордеон: открывает выбранный, закрывает остальные)
+            // Логика клика по логотипам паков (аккордеон)
             const items = section.querySelectorAll('.qol-pack-item');
             items.forEach(item => {
                 const trigger = item.querySelector('.qol-logo-trigger');
@@ -1882,11 +1949,65 @@ function showMenu(type, prevEl = mainWrapper) {
                 };
             });
 
+// Раскрытие выдвижной панели платформ + 3D-наклон самого прямоугольника кнопки
+            const modTrigger = section.querySelector('#sas4-plus-mod-trigger');
+            const modDrawer = section.querySelector('#sas4-plus-platforms');
+            if (modTrigger && modDrawer) {
+                const modTitleEl = modTrigger.querySelector('h2');
+                const modTagEl = modTrigger.querySelector('.tag-info');
+                const modPlatformsEl = modTrigger.querySelector('.platform-tags');
+
+                modTrigger.onclick = () => {
+                    modDrawer.classList.toggle('open');
+                    if (typeof playSFX === 'function') playSFX('click');
+                };
+
+                modTrigger.addEventListener('mousemove', (e) => {
+                    if (window.innerWidth <= 768) return;
+                    modTrigger.classList.remove('is-resetting');
+
+                    const rect = modTrigger.getBoundingClientRect();
+                    const x = e.clientX - rect.left;
+                    const y = e.clientY - rect.top;
+
+                    modTrigger.style.setProperty('--mouse-x', `${x}px`);
+                    modTrigger.style.setProperty('--mouse-y', `${y}px`);
+
+                    const normX = (x / rect.width) - 0.5;   // -0.5 .. 0.5
+                    const normY = (y / rect.height) - 0.5;  // -0.5 .. 0.5
+
+                    // Мягкий, деликатный 3D-наклон прямоугольника
+                    const rotateX = (-normY * 7).toFixed(2);
+                    const rotateY = (normX * 6).toFixed(2);
+
+                    modTrigger.style.setProperty(
+                        'transform',
+                        `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) scale3d(1.015, 1.015, 1.015)`,
+                        'important'
+                    );
+
+                    if (modTitleEl) modTitleEl.style.transform = `translate3d(${(normX * 3).toFixed(1)}px, ${(normY * 2).toFixed(1)}px, 14px)`;
+                    if (modTagEl) modTagEl.style.transform = `translate3d(${(normX * 2).toFixed(1)}px, ${(normY * 1.5).toFixed(1)}px, 8px)`;
+                    if (modPlatformsEl) modPlatformsEl.style.transform = `translate3d(${(normX * 4).toFixed(1)}px, ${(normY * 2.5).toFixed(1)}px, 10px)`;
+                });
+
+                modTrigger.addEventListener('mouseleave', () => {
+                    modTrigger.classList.add('is-resetting');
+                    modTrigger.style.setProperty(
+                        'transform',
+                        'perspective(1000px) rotateX(0deg) rotateY(0deg) scale3d(1, 1, 1)',
+                        'important'
+                    );
+                    if (modTitleEl) modTitleEl.style.transform = 'translate3d(0, 0, 0)';
+                    if (modTagEl) modTagEl.style.transform = 'translate3d(0, 0, 0)';
+                    if (modPlatformsEl) modPlatformsEl.style.transform = 'translate3d(0, 0, 0)';
+                });
+            }
+
             section.querySelector('#back-to-misc-from-qol').onclick = (e) => {
                 e.preventDefault();
                 history.back();
             };
-
             
 } else if (type === 'sfx_download') {
     // === ЦЕНТРИРОВАННОЕ МЕНЮ SFX С РАБОЧИМИ КНОПКАМИ ===
@@ -3004,6 +3125,88 @@ function animatePatchTransition() {
     }
 }
 
+// === УПРАВЛЕНИЕ ЛОГОТИПОМ ВОЗВРАТА НА ГЛАВНЫЙ ЭКРАН ===
+function updateCornerHomeLogo(isSubMenu) {
+    const cornerLogo = document.getElementById('home-corner-logo');
+    const mainLogoWrapper = document.querySelector('.zoom-wrapper .logo-wrapper');
+    if (!cornerLogo) return;
+
+    if (isSubMenu) {
+        cornerLogo.classList.remove('is-hiding');
+        if (mainLogoWrapper) mainLogoWrapper.style.opacity = '0';
+        requestAnimationFrame(() => {
+            cornerLogo.classList.add('in-corner');
+        });
+    } else {
+        // Плавно исчезаем прямо в углу без полёта обратно в центр
+        if (cornerLogo.classList.contains('in-corner')) {
+            cornerLogo.classList.add('is-hiding');
+            cornerLogo.classList.remove('in-corner');
+            setTimeout(() => {
+                cornerLogo.classList.remove('is-hiding');
+            }, 300);
+        }
+        if (mainLogoWrapper) mainLogoWrapper.style.opacity = '1';
+    }
+}
+
+function returnToMainScreen() {
+    const activeSection = document.querySelector('.evo-section');
+    const mainWrapper = document.querySelector('.zoom-wrapper');
+    const mainContent = document.getElementById('main-content');
+
+    if (typeof playSFX === 'function') playSFX('click');
+
+    // Возвращаем логотип из угла обратно в центр
+    updateCornerHomeLogo(false);
+
+    // Если были в красном режиме (Project Night) — мягко возвращаем тему Aqua
+    if (document.body.classList.contains('red-mode')) {
+        document.documentElement.style.setProperty('--current-accent', '#00ffd8');
+        document.documentElement.style.setProperty('--vignette-color', 'rgba(0, 20, 25, 0.9)');
+        document.body.classList.remove('red-mode');
+
+        if (typeof switchAmbient === 'function') switchAmbient(false);
+
+        const modeText = document.getElementById('mode-text');
+        if (modeText) modeText.innerText = "AQUA_CORE";
+
+        const logoMain = document.getElementById('logo-main');
+        if (logoMain && !isNewYearActive) {
+            logoMain.style.backgroundImage = "url('EV_Dark_2k.png')";
+        }
+    }
+
+    // Обновляем URL без перезагрузки страницы
+    history.pushState({ menuId: 'start' }, "", window.location.pathname);
+
+    if (activeSection) {
+        animateOut(activeSection, () => {
+            activeSection.remove();
+            if (mainContent && mainWrapper) {
+                mainContent.style.display = 'flex';
+                mainWrapper.style.display = 'flex';
+                requestAnimationFrame(() => animateIn(mainWrapper));
+            }
+        });
+    } else if (mainContent && mainWrapper) {
+        mainContent.style.display = 'flex';
+        mainWrapper.style.display = 'flex';
+        requestAnimationFrame(() => animateIn(mainWrapper));
+    }
+}
+
+// Назначаем клик по логотипу в левом верхнем углу
+document.addEventListener('DOMContentLoaded', () => {
+    const cornerLogo = document.getElementById('home-corner-logo');
+    if (cornerLogo) {
+        cornerLogo.addEventListener('click', (e) => {
+            e.preventDefault();
+            returnToMainScreen();
+        });
+    }
+});
+
 window.addEventListener('popstate', (event) => {
     const menuId = (event.state && event.state.menuId) || window.location.hash.replace('#', '') || 'start';
     const activeSection = document.querySelector('.evo-section');
@@ -3034,6 +3237,7 @@ window.addEventListener('popstate', (event) => {
 
     // Стандартная логика переключения экранов
     if (menuId === 'start' || menuId === '') {
+        updateCornerHomeLogo(false);
         if (activeSection) {
             animateOut(activeSection, () => {
                 activeSection.remove();
