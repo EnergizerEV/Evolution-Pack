@@ -2,7 +2,7 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Evolution | Terminal</title>
     
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-4HCTM7RPBW"></script>
@@ -20,11 +20,18 @@
     <link rel="stylesheet" href="style.css">
 </head>
 <body class="aqua-mode">
+    <canvas id="snow-canvas"></canvas>
     <div class="ambient-breathing"></div>
 <div class="lang-switcher">
+    <div onclick="toggleMute()" id="sound-toggle" class="lang-btn" title="Mute / Unmute">
+        <i class="fas fa-volume-up" id="sound-icon"></i>
+    </div>
     <div onclick="setLanguage('ru')" id="lang-ru" class="lang-btn active">RU</div>
     <div onclick="setLanguage('en')" id="lang-en" class="lang-btn">EN</div>
     <div onclick="setLanguage('es')" id="lang-es" class="lang-btn">ES</div>
+    <div onclick="toggleNewYearMode()" id="ny-toggle" class="lang-btn" title="New Year Theme">
+        <i class="fas fa-snowflake" id="ny-icon"></i>
+    </div>
 </div>
     <canvas id="grid-canvas"></canvas>
     <div id="custom-cursor"></div>
@@ -127,7 +134,7 @@
 </div>
 
     <div class="footer">
-        UNAUTHORIZED ACCESS // <div class="scramble-text" id="nickname">M45T0D0NM4N</div> // V.5.5
+        UNAUTHORIZED ACCESS // <div class="scramble-text" id="nickname">M45T0D0NM4N</div> // V.6.0
     </div>
 
     <div class="demo-footer-text">By [EV] Energizer</div>

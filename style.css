@@ -2344,6 +2344,7 @@ body.red-mode .night-drawer.open {
     /* Красный градиент */
     background: linear-gradient(to bottom, #ff4444 0%, #880000 100%);
     -webkit-background-clip: text;
+    background-clip: text;
     -webkit-text-fill-color: transparent;
     
     /* Свечение */
@@ -2385,6 +2386,7 @@ body.red-mode .night-drawer.open {
     
     background: linear-gradient(to bottom, #00ffd8 0%, #008a75 50%, #00ffd8 100%);
     -webkit-background-clip: text;
+    background-clip: text;
     -webkit-text-fill-color: transparent;
     filter: drop-shadow(0 0 15px rgba(0, 255, 216, 0.8));
     
@@ -2467,4 +2469,1017 @@ body.red-mode .night-drawer.open {
 #logo-main {
     pointer-events: all; /* Разрешаем клики по основному слою */
     cursor: pointer;
+}
+/* Выравниваем иконку внутри кнопки */
+#sound-toggle {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 16px;
+}
+
+/* Состояние, когда звук выключен (Muted) */
+#sound-toggle.muted {
+    color: #ff4444 !important;
+    border-color: rgba(255, 68, 68, 0.4) !important;
+    background: rgba(255, 0, 0, 0.1) !important;
+    box-shadow: 0 0 10px rgba(255, 0, 0, 0.2);
+}
+
+#sound-toggle.muted:hover {
+    border-color: #ff4444 !important;
+    box-shadow: 0 0 15px rgba(255, 0, 0, 0.4);
+}
+
+/* Адаптация для мобильных (чтобы кнопки в углу не слипались) */
+@media screen and (max-width: 768px) {
+    .lang-switcher {
+        top: 15px !important;
+        right: 15px !important;
+        gap: 6px !important;
+    }
+    .lang-btn {
+        padding: 5px 8px !important;
+        font-size: 11px !important;
+    }
+}
+/* === РАЗДЕЛ SAS4 PLUS MOD (3 ЛОГОТИПА ПО ГОРИЗОНТАЛИ) === */
+.qol-logos-row {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: flex-start;
+    gap: 45px;
+    width: 100%;
+    max-width: 850px;
+    margin: 35px auto 25px auto;
+    padding: 10px;
+    box-sizing: border-box;
+}
+
+.qol-pack-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 200px;
+    position: relative;
+}
+
+.qol-logo-trigger {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    cursor: none !important;
+    transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    user-select: none;
+}
+
+/* Плавное парение PNG-логотипов */
+.qol-logo-img {
+    width: 150px;
+    height: 150px;
+    object-fit: contain;
+    filter: drop-shadow(0 0 12px rgba(0, 255, 216, 0.35));
+    transition: transform 0.4s ease, filter 0.4s ease;
+    animation: qol-float 4s ease-in-out infinite;
+}
+
+.qol-pack-item:nth-child(2) .qol-logo-img { animation-delay: 0.6s; }
+.qol-pack-item:nth-child(3) .qol-logo-img { animation-delay: 1.2s; }
+
+@keyframes qol-float {
+    0%, 100% { transform: translateY(0px); }
+    50% { transform: translateY(-8px); }
+}
+
+/* Индивидуальное свечение для каждого из 3 паков */
+.qol-pack-item[data-theme="aqua"] .qol-logo-img {
+    filter: drop-shadow(0 0 15px rgba(0, 255, 216, 0.4));
+}
+.qol-pack-item[data-theme="red"] .qol-logo-img {
+    filter: drop-shadow(0 0 15px rgba(255, 0, 0, 0.45));
+}
+.qol-pack-item[data-theme="ny"] .qol-logo-img {
+    filter: drop-shadow(0 0 15px rgba(0, 195, 255, 0.45));
+}
+
+/* Реакция при наведении и открытии */
+.qol-logo-trigger:hover,
+.qol-pack-item.open .qol-logo-trigger {
+    transform: scale(1.08);
+}
+
+.qol-pack-item[data-theme="aqua"] .qol-logo-trigger:hover .qol-logo-img,
+.qol-pack-item[data-theme="aqua"].open .qol-logo-img {
+    filter: drop-shadow(0 0 25px rgba(0, 255, 216, 0.95));
+}
+
+.qol-pack-item[data-theme="red"] .qol-logo-trigger:hover .qol-logo-img,
+.qol-pack-item[data-theme="red"].open .qol-logo-img {
+    filter: drop-shadow(0 0 25px rgba(255, 30, 30, 0.95));
+}
+
+.qol-pack-item[data-theme="ny"] .qol-logo-trigger:hover .qol-logo-img,
+.qol-pack-item[data-theme="ny"].open .qol-logo-img {
+    filter: drop-shadow(0 0 25px rgba(0, 215, 255, 0.95));
+}
+
+/* Названия под логотипами */
+.qol-pack-title {
+    margin: 16px 0 0 0;
+    font-size: 0.95rem;
+    color: #fff;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    text-align: center;
+    transition: color 0.3s ease, text-shadow 0.3s ease;
+}
+
+.qol-pack-item[data-theme="aqua"]:hover .qol-pack-title,
+.qol-pack-item[data-theme="aqua"].open .qol-pack-title {
+    color: var(--aqua);
+    text-shadow: 0 0 10px var(--aqua);
+}
+
+.qol-pack-item[data-theme="red"]:hover .qol-pack-title,
+.qol-pack-item[data-theme="red"].open .qol-pack-title {
+    color: #ff4444;
+    text-shadow: 0 0 10px #ff0000;
+}
+
+.qol-pack-item[data-theme="ny"]:hover .qol-pack-title,
+.qol-pack-item[data-theme="ny"].open .qol-pack-title {
+    color: #00d9ff;
+    text-shadow: 0 0 10px #00d9ff;
+}
+
+/* Выдвижной блок со ссылкой "СКАЧАТЬ" */
+.qol-dl-drawer {
+    max-height: 0;
+    opacity: 0;
+    overflow: hidden;
+    transform: translateY(-10px);
+    transition: max-height 0.4s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.3s ease, transform 0.3s ease, margin-top 0.3s ease;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    pointer-events: none;
+}
+
+.qol-pack-item.open .qol-dl-drawer {
+    max-height: 70px;
+    opacity: 1;
+    transform: translateY(0);
+    margin-top: 15px;
+    pointer-events: all;
+}
+
+.qol-dl-btn {
+    display: inline-block;
+    width: 85%;
+    padding: 10px 0;
+    text-align: center;
+    text-decoration: none;
+    font-family: 'Orbitron', sans-serif;
+    font-size: 0.75rem;
+    font-weight: bold;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    border: 1px solid var(--current-accent);
+    color: var(--current-accent);
+    background: rgba(0, 255, 216, 0.06);
+    transition: all 0.3s ease;
+}
+
+.qol-pack-item[data-theme="red"] .qol-dl-btn {
+    border-color: #ff4444;
+    color: #ff4444;
+    background: rgba(255, 0, 0, 0.06);
+}
+
+.qol-pack-item[data-theme="ny"] .qol-dl-btn {
+    border-color: #00d9ff;
+    color: #00d9ff;
+    background: rgba(0, 217, 255, 0.06);
+}
+
+.qol-dl-btn:hover {
+    background: var(--current-accent) !important;
+    color: #000 !important;
+    box-shadow: 0 0 15px var(--current-accent);
+}
+
+.qol-pack-item[data-theme="red"] .qol-dl-btn:hover {
+    background: #ff4444 !important;
+    color: #000 !important;
+    box-shadow: 0 0 15px #ff4444;
+}
+
+.qol-pack-item[data-theme="ny"] .qol-dl-btn:hover {
+    background: #00d9ff !important;
+    color: #000 !important;
+    box-shadow: 0 0 15px #00d9ff;
+}
+
+/* Адаптация под Android / мобильные экраны */
+@media screen and (max-width: 768px) {
+    .qol-logos-row {
+        flex-direction: column;
+        align-items: center;
+        gap: 25px;
+    }
+    .qol-logo-img {
+        width: 120px;
+        height: 120px;
+    }
+}
+/* === СТИЛИ ДЛЯ ГАЙДА SAS4-PLUS (QoL) === */
+
+/* Расширяем секцию и скролл-контейнер на ПК, чтобы крупный плеер свободно помещался */
+.evo-section[data-type="qol_guide"] {
+    max-width: 900px !important;
+}
+
+.evo-section[data-type="qol_guide"] .guide-scroll-container {
+    max-width: 820px !important;
+}
+
+.qol-platform-switcher {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+    width: 100%;
+    max-width: 450px;
+    margin: 0 auto;
+}
+
+.qol-plat-btn {
+    flex: 1;
+    padding: 12px 18px;
+    background: rgba(0, 255, 216, 0.05);
+    border: 1px solid rgba(0, 255, 216, 0.35);
+    color: var(--current-accent);
+    font-family: 'Orbitron', sans-serif;
+    font-size: 0.8rem;
+    font-weight: bold;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+}
+
+.qol-plat-btn:hover {
+    border-color: var(--current-accent);
+    background: rgba(0, 255, 216, 0.15);
+    box-shadow: 0 0 15px rgba(0, 255, 216, 0.25);
+}
+
+.qol-plat-btn.active {
+    background: var(--current-accent);
+    color: #000;
+    border-color: var(--current-accent);
+    box-shadow: 0 0 20px var(--current-accent);
+}
+
+/* На ПК плеер теперь 740px в ширину вместо 500px — все детали четко видно без фуллскрина */
+.local-video-box {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+    max-width: 740px;
+    margin: 15px auto 5px auto;
+}
+
+.qol-guide-video {
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    background: #000;
+    border: 2px solid var(--current-accent);
+    border-radius: 10px;
+    box-shadow: 0 0 25px rgba(0, 255, 216, 0.2);
+    outline: none;
+    pointer-events: all !important;
+}
+
+.btn-fullscreen-video {
+    margin-top: 12px;
+    padding: 8px 18px;
+    background: rgba(0, 0, 0, 0.7);
+    border: 1px solid var(--current-accent);
+    color: var(--current-accent);
+    font-family: 'Orbitron', sans-serif;
+    font-size: 0.7rem;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    border-radius: 4px;
+    transition: all 0.3s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.btn-fullscreen-video:hover {
+    background: var(--current-accent);
+    color: #000;
+    box-shadow: 0 0 15px var(--current-accent);
+}
+
+.code-path {
+    word-break: break-all;
+}
+
+/* На телефоне делаем карточку с видео чуть шире (88% вместо стандартных 75%) */
+@media screen and (max-width: 768px) {
+    .evo-section[data-type="qol_guide"] .guide-card {
+        width: 88% !important;
+        max-width: 370px !important;
+        padding: 12px !important;
+    }
+    .local-video-box {
+        max-width: 100% !important;
+    }
+}
+/* --- ТЕГ SAS4+ (QoL) НА ГЛАВНОЙ КАРТОЧКЕ MISC --- */
+.misc-qol-badge {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    pointer-events: none;
+    z-index: 10;
+    font-size: 0.6rem;
+    padding: 3px 8px;
+    border: 1px solid rgba(255, 215, 0, 0.55);
+    color: #ffd700;
+    border-radius: 4px;
+    text-transform: uppercase;
+    font-weight: bold;
+    background: rgba(15, 12, 0, 0.75);
+    letter-spacing: 1px;
+    box-shadow: 0 0 10px rgba(255, 215, 0, 0.15);
+    backdrop-filter: blur(2px);
+    transition: all 0.4s ease;
+}
+
+.misc-gold-card:hover .misc-qol-badge {
+    border-color: #ffd700;
+    background: rgba(255, 215, 0, 0.15);
+    color: #fff;
+    text-shadow: 0 0 8px #ffd700;
+    box-shadow: 0 0 15px rgba(255, 215, 0, 0.45);
+}
+
+@media screen and (max-width: 768px) {
+    .misc-qol-badge {
+        top: 6px;
+        right: 6px;
+        font-size: 0.5rem;
+        padding: 2px 6px;
+    }
+}
+/* === МИНИ-ИГРА: ОКНО ТЕРМИНАЛА CMD (УСТАРЕВШИЙ ТЕРМИНАЛ) === */
+
+
+/* Отключаем старую медленную CSS-анимацию провалов, чтобы работал только быстрый JS-эффект */
+#cmd-game-window.cmd-unstable-idle,
+#cmd-game-window.cmd-night-corrupted.cmd-unstable-idle {
+    animation: none !important;
+}
+
+#custom-cursor {
+    z-index: 9999999 !important;
+}
+
+#cmd-focus-vignette {
+    position: fixed;
+    inset: 0;
+    background: radial-gradient(circle at center, rgba(0, 0, 0, 0.25) 18%, rgba(0, 0, 0, 0.98) 55%);
+    z-index: 2000001;
+    opacity: 0;
+    pointer-events: none;
+}
+
+#cmd-focus-vignette.active {
+    opacity: 1;
+    transition: opacity 0.04s ease-out;
+}
+
+#cmd-focus-vignette.fade-out {
+    opacity: 0;
+    transition: opacity 1s ease-out;
+}
+
+/* Внешний вид старого изношенного терминала (фон — глубокая темная аква) */
+#cmd-game-window {
+    --cmd-theme-color: #00ffd8;
+    --cmd-bg-dark: #021114;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 92vw;
+    max-width: 760px;
+    height: 480px;
+    background: radial-gradient(circle at center, #052226 0%, var(--cmd-bg-dark) 85%);
+    border: 2px solid rgba(0, 255, 216, 0.45);
+    outline: 1px solid rgba(0, 0, 0, 0.9);
+    box-shadow: 
+        0 0 35px rgba(0, 255, 216, 0.15), 
+        inset 0 0 60px rgba(0, 0, 0, 0.92),
+        inset 0 0 12px rgba(0, 255, 216, 0.15);
+    border-radius: 6px;
+    z-index: 2000002;
+    display: flex;
+    flex-direction: column;
+    font-family: 'Source Code Pro', 'Courier New', monospace;
+    overflow: visible;
+}
+
+/* 1. Делаем узор черных полосок прозрачнее и мягче */
+.cmd-crt-scanlines {
+    position: absolute;
+    inset: 0;
+    background: repeating-linear-gradient(
+        0deg,
+        rgba(0, 0, 0, 0.28) 0px,
+        rgba(0, 0, 0, 0.28) 2px,
+        transparent 2px,
+        transparent 4px
+    ) !important;
+    pointer-events: none;
+    z-index: 15;
+    opacity: 0.45 !important; /* Снижена непрозрачность полосок */
+}
+
+/* 2. Шапка окна теперь служит ручкой для перетаскивания */
+.cmd-win-header {
+    user-select: none;
+    pointer-events: all !important;
+}
+
+/* 3. Полностью убираем скроллбар и запрещаем ручную прокрутку в CMD */
+.cmd-win-body {
+    flex: 1;
+    padding: 20px;
+    overflow: hidden !important; /* Полностью отключаем ползунок и скролл */
+    scrollbar-width: none !important;
+    -ms-overflow-style: none !important;
+    font-size: 13px;
+    line-height: 1.55;
+    position: relative;
+    z-index: 12;
+}
+
+.cmd-win-body::-webkit-scrollbar {
+    display: none !important;
+    width: 0 !important;
+    height: 0 !important;
+}
+
+/* Убираем скроллбар у ASCII-логотипа, если он вдруг появлялся */
+.cmd-ascii-logo {
+    overflow: hidden !important;
+    scrollbar-width: none !important;
+}
+.cmd-ascii-logo::-webkit-scrollbar {
+    display: none !important;
+}
+
+/* Потертые темные углы старого экрана */
+.cmd-aged-vignette {
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(circle at center, transparent 55%, rgba(0, 0, 0, 0.85) 100%);
+    pointer-events: none;
+    z-index: 14;
+}
+
+/* Нестабильное моргание терминала раз в несколько секунд */
+#cmd-game-window.cmd-unstable-idle {
+    animation: cmd-unstable-flicker 7s infinite;
+}
+
+@keyframes cmd-unstable-flicker {
+    0%, 18%, 20%, 62%, 64%, 91%, 94%, 100% {
+        opacity: 0.98;
+    }
+    19% {
+        opacity: 0.72;
+    }
+    63% {
+        opacity: 0.82;
+    }
+    92% {
+        opacity: 0.65;
+    }
+    93% {
+        opacity: 0.9;
+    }
+}
+
+/* === 1% ШАНС: PROJECT NIGHT CORRUPTED STYLE === */
+#cmd-game-window.cmd-night-corrupted {
+    --cmd-theme-color: #c81e1e;
+    --cmd-bg-dark: #0e0202;
+    background: radial-gradient(circle at center, #220505 0%, #090101 85%);
+    border-color: rgba(180, 20, 20, 0.55);
+    box-shadow: 
+        0 0 40px rgba(180, 0, 0, 0.25), 
+        inset 0 0 70px rgba(0, 0, 0, 0.95),
+        inset 0 0 15px rgba(200, 0, 0, 0.2);
+}
+
+#cmd-game-window.cmd-night-corrupted.cmd-unstable-idle {
+    animation: cmd-night-heavy-flicker 3.5s infinite;
+}
+
+@keyframes cmd-night-heavy-flicker {
+    0%, 14%, 16%, 38%, 41%, 74%, 77%, 100% {
+        opacity: 0.96;
+        transform: translate(-50%, -50%);
+    }
+    15% {
+        opacity: 0.55;
+        transform: translate(calc(-50% - 2px), -50%);
+    }
+    39% {
+        opacity: 0.7;
+    }
+    40% {
+        opacity: 0.45;
+        transform: translate(calc(-50% + 2px), calc(-50% + 1px));
+    }
+    75% {
+        opacity: 0.6;
+    }
+}
+
+/* Шапка окна и увеличенный значок Watermark_EV.png точно в цвет текста заголовка */
+.cmd-win-header {
+    background: rgba(0, 25, 28, 0.85);
+    border-bottom: 1px solid var(--cmd-theme-color);
+    padding: 10px 16px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    color: var(--cmd-theme-color);
+    font-size: 13px;
+    font-weight: bold;
+    letter-spacing: 2px;
+    position: relative;
+    z-index: 16;
+    text-shadow: 0 0 8px var(--cmd-theme-color);
+}
+
+#cmd-game-window.cmd-night-corrupted .cmd-win-header {
+    background: rgba(28, 4, 4, 0.9);
+}
+
+.cmd-header-left {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+/* Увеличенный значок Watermark_EV.png в цвет текста шапки */
+.cmd-header-icon-mask {
+    display: inline-block;
+    width: 42px !important;
+    height: 42px !important;
+    background-color: currentColor;
+    -webkit-mask: url('Watermark_EV.png') no-repeat center / contain;
+    mask: url('Watermark_EV.png') no-repeat center / contain;
+    filter: drop-shadow(0 0 8px currentColor);
+    flex-shrink: 0;
+}
+
+.cmd-win-close {
+    pointer-events: all !important;
+    padding: 2px 6px;
+    transition: 0.2s;
+}
+
+.cmd-win-close:hover {
+    background: #ff4444;
+    color: #000;
+    box-shadow: 0 0 10px #ff4444;
+}
+
+.cmd-win-body {
+    flex: 1;
+    padding: 20px;
+    overflow-y: auto;
+    font-size: 13px;
+    line-height: 1.55;
+    position: relative;
+    z-index: 12;
+}
+
+/* Экран быстрой загрузки внутри CMD */
+#cmd-boot-screen {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+}
+
+.cmd-boot-title {
+    color: var(--cmd-theme-color);
+    letter-spacing: 3px;
+    font-size: 14px;
+    text-shadow: 0 0 8px var(--cmd-theme-color);
+}
+
+.cmd-boot-bar {
+    width: 280px;
+    height: 6px;
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px solid var(--cmd-theme-color);
+}
+
+.cmd-boot-fill {
+    height: 100%;
+    width: 0%;
+    background: var(--cmd-theme-color);
+    box-shadow: 0 0 10px var(--cmd-theme-color);
+    transition: width 0.07s linear;
+}
+
+.cmd-boot-percent {
+    color: #7c8d8e;
+    font-size: 12px;
+}
+
+/* === ЦВЕТА ТЕКСТА В КОНСОЛИ === */
+.cmd-ascii-logo {
+    color: var(--cmd-theme-color);
+    text-shadow: 0 0 8px var(--cmd-theme-color);
+    font-size: 9.5px;
+    line-height: 1.15;
+    margin: 15px 0;
+    overflow-x: auto;
+    font-weight: bold;
+    opacity: 0.9;
+}
+
+.cmd-line {
+    margin-bottom: 6px;
+    word-break: break-word;
+}
+
+/* Посредственные тексты — приглушенные серые */
+.cmd-muted-text {
+    color: #7a8a8c;
+}
+
+/* Предупреждения — желтые */
+.cmd-warn-text {
+    color: #ffd000;
+    text-shadow: 0 0 6px rgba(255, 208, 0, 0.35);
+    margin-top: 8px;
+    margin-bottom: 10px;
+}
+
+/* Подтверждающие тексты — светлая аква со свечением */
+.cmd-aqua-confirm {
+    color: #9afff0;
+    text-shadow: 0 0 10px #00ffd8, 0 0 20px rgba(0, 255, 216, 0.5);
+    font-weight: bold;
+}
+
+/* Фатальная ошибка перед Kill */
+.cmd-err-text {
+    color: #ff4444;
+    text-shadow: 0 0 8px rgba(255, 0, 0, 0.7);
+    font-weight: bold;
+}
+
+/* Строка ввода */
+#cmd-input-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-top: 10px;
+    border-top: 1px dashed rgba(122, 138, 140, 0.3);
+    padding-top: 10px;
+}
+
+#cmd-prompt-label {
+    color: var(--cmd-theme-color);
+    font-weight: bold;
+    white-space: nowrap;
+    text-shadow: 0 0 6px var(--cmd-theme-color);
+}
+
+#cmd-user-input {
+    flex: 1;
+    background: transparent;
+    border: none;
+    outline: none;
+    color: #c5d6d8;
+    font-family: inherit;
+    font-size: 14px;
+    caret-color: var(--cmd-theme-color);
+}
+
+/* === КОРОТКИЙ TIKTOK EDIT SHAKE + BLUR НА ФОН И САМО ОКНО CMD === */
+body.tiktok-edit-shake #main-content,
+body.tiktok-edit-shake .social-sidebar,
+body.tiktok-edit-shake .lang-switcher,
+body.tiktok-edit-shake .patch-widget {
+    animation: edit-impact-shake 0.32s cubic-bezier(0.16, 1, 0.3, 1) forwards !important;
+}
+
+@keyframes edit-impact-shake {
+    0%   { transform: scale(1.14) translate(-24px, 16px) rotate(-1.5deg); filter: blur(7px) brightness(1.4); }
+    30%  { transform: scale(1.08) translate(20px, -14px) rotate(1.1deg); filter: blur(5px); }
+    65%  { transform: scale(1.03) translate(-10px, 6px) rotate(-0.4deg); filter: blur(2px); }
+    100% { transform: scale(1) translate(0, 0) rotate(0deg); filter: blur(0px); }
+}
+
+/* ЭФФЕКТ "СИЛЬНЫЙ ВЕТЕР" + RGB SPLIT + ШЕЙК С РАЗМЫТИЕМ ДЛЯ САМОГО ОКНА CMD */
+.cmd-wind-slice {
+    position: absolute;
+    inset: -2px;
+    pointer-events: none;
+    opacity: 0;
+    z-index: 20;
+    background: repeating-linear-gradient(
+        0deg,
+        transparent 0px,
+        transparent 6px,
+        rgba(255, 0, 55, 0.38) 6px,
+        rgba(255, 0, 55, 0.38) 10px,
+        transparent 10px,
+        transparent 18px,
+        rgba(0, 255, 216, 0.38) 18px,
+        rgba(0, 255, 216, 0.38) 21px
+    );
+}
+
+#cmd-game-window.cmd-rgb-wind {
+    box-shadow: 
+        -20px 0 0 rgba(255, 0, 50, 0.8),
+        20px 0 0 rgba(0, 255, 255, 0.8),
+        0 6px 0 rgba(0, 255, 70, 0.55) !important;
+    text-shadow: 
+        -6px 0 #ff003c, 
+        6px 0 #00ffd8, 
+        0 2px #00ff44 !important;
+    animation: cmd-window-edit-shake 0.32s cubic-bezier(0.16, 1, 0.3, 1) forwards !important;
+}
+
+@keyframes cmd-window-edit-shake {
+    0%   { transform: translate(-50%, -50%) scale(1.15) translate(-22px, 14px); filter: blur(6px) contrast(2); }
+    35%  { transform: translate(-50%, -50%) scale(1.07) translate(18px, -12px); filter: blur(4px) contrast(1.6); }
+    70%  { transform: translate(-50%, -50%) scale(1.02) translate(-8px, 5px); filter: blur(1.5px); }
+    100% { transform: translate(-50%, -50%) scale(1) translate(0, 0); filter: blur(0px); }
+}
+
+#cmd-game-window.cmd-rgb-wind .slice-r {
+    opacity: 1;
+    border: 2px solid #ff003c;
+    background-color: rgba(255, 0, 60, 0.14);
+    mix-blend-mode: screen;
+    animation: wind-tear-left 0.1s steps(2, end) infinite;
+}
+
+#cmd-game-window.cmd-rgb-wind .slice-b {
+    opacity: 1;
+    border: 2px solid #00ffd8;
+    background-color: rgba(0, 255, 216, 0.14);
+    mix-blend-mode: screen;
+    animation: wind-tear-right 0.1s steps(2, end) infinite;
+}
+
+@keyframes wind-tear-left {
+    0%   { clip-path: inset(10% 0 74% 0); transform: translateX(-50px) scaleX(1.1); }
+    33%  { clip-path: inset(58% 0 20% 0); transform: translateX(55px) scaleX(1.14); }
+    66%  { clip-path: inset(25% 0 52% 0); transform: translateX(-65px) scaleX(1.15); }
+    100% { clip-path: inset(75% 0 6% 0);  transform: translateX(45px) scaleX(1.08); }
+}
+
+@keyframes wind-tear-right {
+    0%   { clip-path: inset(68% 0 12% 0); transform: translateX(55px) scaleX(1.12); }
+    33%  { clip-path: inset(16% 0 66% 0); transform: translateX(-50px) scaleX(1.09); }
+    66%  { clip-path: inset(48% 0 30% 0); transform: translateX(65px) scaleX(1.15); }
+    100% { clip-path: inset(8% 0 78% 0);  transform: translateX(-45px) scaleX(1.06); }
+}
+
+@media screen and (max-width: 768px) {
+    #cmd-game-window {
+        height: 400px;
+    }
+    .cmd-ascii-logo {
+        font-size: 5.2px;
+    }
+}
+/* === ПОЛОСА РАЗВЕРТКИ СЛОМАННОГО ТВ ВНУТРИ ОКНА CMD === */
+.cmd-crt-scanlines {
+    overflow: hidden !important; /* Чтобы полоса не вылезала за границы терминала */
+}
+
+.cmd-crt-scanlines::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: -25%;
+    width: 100%;
+    height: 75px;
+    /* Градиент старого кинескопа: темный провал синхронизации + тусклая светящаяся полоса */
+    background: linear-gradient(
+        to bottom,
+        transparent 0%,
+        rgba(0, 0, 0, 0.45) 30%,
+        rgba(0, 255, 216, 0.1) 50%,
+        rgba(255, 255, 255, 0.04) 54%,
+        rgba(0, 0, 0, 0.35) 75%,
+        transparent 100%
+    );
+    box-shadow: 0 0 15px rgba(0, 255, 216, 0.05);
+    pointer-events: none;
+    animation: cmd-tv-roll-bar 7.5s linear infinite;
+}
+
+/* В 1%-м режиме Project Night полоса становится багрово-красной */
+#cmd-game-window.cmd-night-corrupted .cmd-crt-scanlines::after {
+    background: linear-gradient(
+        to bottom,
+        transparent 0%,
+        rgba(0, 0, 0, 0.6) 30%,
+        rgba(200, 20, 20, 0.16) 50%,
+        rgba(255, 100, 100, 0.05) 54%,
+        rgba(0, 0, 0, 0.5) 75%,
+        transparent 100%
+    );
+}
+
+@keyframes cmd-tv-roll-bar {
+    0% {
+        top: -25%;
+    }
+    100% {
+        top: 115%;
+    }
+}
+
+/* === НОВОГОДНЕЕ ОФОРМЛЕНИЕ (NY-MODE) === */
+#ny-toggle.active {
+    color: #001824 !important;
+    background: #8be9ff !important;
+    border-color: #8be9ff !important;
+    box-shadow: 0 0 14px rgba(139, 233, 255, 0.85);
+    font-weight: bold;
+}
+
+#snow-canvas {
+    position: fixed;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 10003;
+    opacity: 0;
+    transition: opacity 0.6s ease;
+}
+
+body.ny-mode #snow-canvas {
+    opacity: 1;
+}
+
+/* Вертикальная гирлянда строго по габаритам карточки */
+.ny-card-garland {
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    pointer-events: none;
+    z-index: 25;
+    overflow: visible;
+}
+
+.ny-garland-svg {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    overflow: visible;
+}
+
+.ny-wire-front {
+    fill: none;
+    stroke: rgba(16, 42, 34, 0.94);
+    stroke-width: 6.5;
+    stroke-linecap: round;
+    filter: drop-shadow(0 2px 3px rgba(0, 0, 0, 0.85));
+}
+
+.ny-wire-tail {
+    stroke-width: 6;
+}
+
+.ny-wire-back {
+    fill: none;
+    stroke: rgba(12, 30, 26, 0.32);
+    stroke-width: 5.5;
+    stroke-dasharray: 10 10;
+    stroke-linecap: round;
+}
+
+.ny-mini-bulb {
+    position: absolute;
+    width: 7px;
+    height: 10px;
+    border-radius: 50% 50% 45% 45%;
+    transform: translate(-50%, -20%) rotate(var(--bulb-tilt, 0deg));
+    transform-origin: 50% 0%;
+    animation: ny-mini-blink 1.6s infinite alternate ease-in-out;
+}
+
+/* Тёмный цоколь каждой лампочки на проводе */
+.ny-mini-bulb::before {
+    content: "";
+    position: absolute;
+    top: -3px;
+    left: 1.5px;
+    width: 4px;
+    height: 3.5px;
+    background: #14221d;
+    border-radius: 1.5px 1.5px 0 0;
+}
+
+.ny-bulb--red { background: #ff3b3b; color: #ff3b3b; }
+.ny-bulb--gold { background: #ffd43b; color: #ffd43b; }
+.ny-bulb--cyan { background: #3bc9db; color: #3bc9db; }
+.ny-bulb--green { background: #38d9a9; color: #38d9a9; }
+
+@keyframes ny-mini-blink {
+    0% {
+        opacity: 0.45;
+        box-shadow: 0 0 3px currentColor;
+    }
+    100% {
+        opacity: 1;
+        box-shadow: 0 0 9px currentColor, 0 0 16px currentColor;
+    }
+}
+
+body.ny-mode .card {
+    border-color: rgba(155, 238, 255, 0.35);
+    box-shadow: inset 0 1px 0 rgba(215, 252, 255, 0.16);
+}
+
+/* Локальный снежинковый иней в углах карточки */
+body.ny-mode .card::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    pointer-events: none;
+    z-index: 18;
+    opacity: 0;
+    transition: opacity 0.5s ease;
+    background-repeat: no-repeat, no-repeat;
+    background-position: top left, bottom right;
+    background-size: 130px 115px, 125px 110px;
+    background-image:
+        url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 130 115'%3E%3Cg fill='none' stroke='%23e6fbff' stroke-linecap='round'%3E%3Cg transform='translate(22 22)' stroke-width='1.2' opacity='0.9'%3E%3Cpath d='M0-14V14 M-12-7L12 7 M-12 7L12-7 M-4-10L0-6L4-10 M-4 10L0 6L4 10 M-10-4L-6 0L-10 4 M10-4L6 0L10 4'/%3E%3C/g%3E%3Cg transform='translate(54 14)' stroke-width='1' opacity='0.75'%3E%3Cpath d='M0-9V9 M-8-4.5L8 4.5 M-8 4.5L8-4.5 M-2.5-6.5L0-4L2.5-6.5 M-2.5 6.5L0 4L2.5 6.5'/%3E%3C/g%3E%3Cg transform='translate(14 54)' stroke-width='1' opacity='0.75'%3E%3Cpath d='M0-9V9 M-8-4.5L8 4.5 M-8 4.5L8-4.5 M-2.5-6.5L0-4L2.5-6.5 M-2.5 6.5L0 4L2.5 6.5'/%3E%3C/g%3E%3Cg transform='translate(44 44)' stroke-width='0.9' opacity='0.65'%3E%3Cpath d='M0-7V7 M-6-3.5L6 3.5 M-6 3.5L6-3.5'/%3E%3C/g%3E%3Cg transform='translate(82 12)' stroke-width='0.85' opacity='0.55'%3E%3Cpath d='M0-6V6 M-5.2-3L5.2 3 M-5.2 3L5.2-3'/%3E%3C/g%3E%3Cg transform='translate(12 82)' stroke-width='0.85' opacity='0.55'%3E%3Cpath d='M0-6V6 M-5.2-3L5.2 3 M-5.2 3L5.2-3'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E"),
+        url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 130 115'%3E%3Cg transform='rotate(180 65 57.5)' fill='none' stroke='%23e6fbff' stroke-linecap='round'%3E%3Cg transform='translate(22 22)' stroke-width='1.2' opacity='0.9'%3E%3Cpath d='M0-14V14 M-12-7L12 7 M-12 7L12-7 M-4-10L0-6L4-10 M-4 10L0 6L4 10 M-10-4L-6 0L-10 4 M10-4L6 0L10 4'/%3E%3C/g%3E%3Cg transform='translate(54 14)' stroke-width='1' opacity='0.75'%3E%3Cpath d='M0-9V9 M-8-4.5L8 4.5 M-8 4.5L8-4.5 M-2.5-6.5L0-4L2.5-6.5 M-2.5 6.5L0 4L2.5 6.5'/%3E%3C/g%3E%3Cg transform='translate(14 54)' stroke-width='1' opacity='0.75'%3E%3Cpath d='M0-9V9 M-8-4.5L8 4.5 M-8 4.5L8-4.5 M-2.5-6.5L0-4L2.5-6.5 M-2.5 6.5L0 4L2.5 6.5'/%3E%3C/g%3E%3Cg transform='translate(44 44)' stroke-width='0.9' opacity='0.65'%3E%3Cpath d='M0-7V7 M-6-3.5L6 3.5 M-6 3.5L6-3.5'/%3E%3C/g%3E%3Cg transform='translate(82 12)' stroke-width='0.85' opacity='0.55'%3E%3Cpath d='M0-6V6 M-5.2-3L5.2 3 M-5.2 3L5.2-3'/%3E%3C/g%3E%3Cg transform='translate(12 82)' stroke-width='0.85' opacity='0.55'%3E%3Cpath d='M0-6V6 M-5.2-3L5.2 3 M-5.2 3L5.2-3'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+}
+
+body.ny-mode .card:hover::after {
+    opacity: 0.95;
+}
+
+body.ny-mode .logo-base {
+    background-image: url('EV_New%20Year%20LOGO%20SAS.png') !important;
+    filter: drop-shadow(0 0 14px rgba(139, 233, 255, 0.55)) drop-shadow(0 0 26px rgba(0, 215, 255, 0.3));
+}
+
+body.ny-mode .logo-glitch {
+    opacity: 0 !important;
+    animation: none !important;
+}
+#console-err-msg.console-easter-icon {
+    background: none !important;
+    -webkit-text-fill-color: initial !important;
+    filter: drop-shadow(0 0 10px var(--current-accent));
+    top: 72px;
+}
+
+#console-err-msg.console-easter-icon img {
+    width: 64px;
+    height: 64px;
+    object-fit: contain;
+    display: block;
+}
+#console-err-msg.console-easter-icon.is-night {
+    filter: drop-shadow(0 0 12px rgba(255, 0, 0, 0.85));
 }

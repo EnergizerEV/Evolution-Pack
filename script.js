@@ -326,8 +326,305 @@ function drawGrid() {
     requestAnimationFrame(drawGrid);
 }
 drawGrid();
-// --- БЛОК ЗВУКОВОГО СОПРОВОЖДЕНИЯ ---
 
+// === НОВОГОДНИЙ РЕЖИМ: ГИРЛЯНДА, СНЕЖИНКИ И ПОДГОТОВКА К ДАТЕ (1 ДЕК - 10 ЯНВ МСК) ===
+let isNewYearActive = false;
+let snowAnimationId = null;
+
+function isNewYearScheduleActiveMSK(nowDate = new Date()) {
+    const mskParts = new Intl.DateTimeFormat('en-CA', {
+        timeZone: 'Europe/Moscow',
+        month: '2-digit',
+        day: '2-digit',
+        hour: '2-digit',
+        minute: '2-digit',
+        hour12: false
+    }).formatToParts(nowDate);
+
+    const getPart = (type) => Number(mskParts.find(p => p.type === type)?.value || 0);
+    const month = getPart('month');
+    const day = getPart('day');
+
+    // С 1 декабря по 15 января включительно по МСК (после Старого Нового года)
+    return (month === 12 && day >= 1) || (month === 1 && day <= 20);
+}
+
+function buildGarland() {
+    document.querySelectorAll('.ny-card-garland').forEach(el => el.remove());
+
+    const cards = document.querySelectorAll('#main-content .card');
+    if (!cards.length) return;
+
+    const colors = ['red', 'gold', 'cyan', 'green'];
+    const svgNS = 'http://www.w3.org/2000/svg';
+
+    cards.forEach((card, cardIdx) => {
+        const garland = document.createElement('div');
+        garland.className = 'ny-card-garland';
+        garland.setAttribute('aria-hidden', 'true');
+
+        const isHalf = card.classList.contains('half-card');
+
+        // Витки идут чётко от верхней границы карточки (y: 0) до нижней (y: 1000), не вылезая за рамку
+        const wraps = isHalf
+            ? [
+                { x1: 120, y1: 0, x2: 380, y2: 1000, bend: -35 },
+                { x1: 560, y1: 0, x2: 830, y2: 1000, bend: -35 }
+              ]
+            : [
+                { x1: 75,  y1: 0, x2: 245, y2: 1000, bend: -28 },
+                { x1: 315, y1: 0, x2: 495, y2: 1000, bend: -28 },
+                { x1: 565, y1: 0, x2: 745, y2: 1000, bend: -28 },
+                { x1: 805, y1: 0, x2: 945, y2: 1000, bend: -24 }
+              ];
+
+        const svg = document.createElementNS(svgNS, 'svg');
+        svg.setAttribute('viewBox', '0 0 1000 1000');
+        svg.setAttribute('preserveAspectRatio', 'none');
+        svg.classList.add('ny-garland-svg');
+
+        let colorStep = cardIdx;
+
+        const placeBulbsOnCurve = (p0, p1, p2, count, wrapIndex) => {
+            for (let b = 0; b < count; b++) {
+                // Смещаем от краёв (от 0.14 до 0.86), чтобы лампочки не торчали за верхнюю/нижнюю границу карточки
+                const t = 0.14 + (b / Math.max(1, count - 1)) * 0.72;
+                const inv = 1 - t;
+
+                const px = (inv * inv * p0.x + 2 * inv * t * p1.x + t * t * p2.x) / 10;
+                const py = (inv * inv * p0.y + 2 * inv * t * p1.y + t * t * p2.y) / 10;
+
+                const dx = 2 * inv * (p1.x - p0.x) + 2 * t * (p2.x - p1.x);
+                const dy = 2 * inv * (p1.y - p0.y) + 2 * t * (p2.y - p1.y);
+                const tiltDeg = Math.max(-24, Math.min(24, (dx / Math.max(1, Math.abs(dy))) * 16));
+
+                const cName = colors[colorStep++ % colors.length];
+                const bulb = document.createElement('span');
+                bulb.className = `ny-mini-bulb ny-bulb--${cName}`;
+                bulb.style.left = `${px.toFixed(2)}%`;
+                bulb.style.top = `${py.toFixed(2)}%`;
+                bulb.style.setProperty('--bulb-tilt', `${tiltDeg.toFixed(1)}deg`);
+                bulb.style.animationDelay = `${((b + wrapIndex * 2) % 6) * 0.22}s`;
+                garland.appendChild(bulb);
+            }
+        };
+
+        wraps.forEach((w, wrapIdx) => {
+            // Задний диагональный переход внутри границ карточки (имитация провода с тыльной стороны)
+            if (wrapIdx < wraps.length - 1) {
+                const nextW = wraps[wrapIdx + 1];
+                const backPath = document.createElementNS(svgNS, 'path');
+                backPath.setAttribute(
+                    'd',
+                    `M ${w.x2} 1000 L ${nextW.x1} 0`
+                );
+                backPath.setAttribute('class', 'ny-wire-back');
+                svg.appendChild(backPath);
+            }
+
+            // Лицевой вертикальный виток
+            const cx = (w.x1 + w.x2) / 2 + w.bend;
+            const cy = 500;
+
+            const frontPath = document.createElementNS(svgNS, 'path');
+            frontPath.setAttribute('d', `M ${w.x1} ${w.y1} Q ${cx} ${cy}, ${w.x2} ${w.y2}`);
+            frontPath.setAttribute('class', 'ny-wire-front');
+            svg.appendChild(frontPath);
+
+            placeBulbsOnCurve(
+                { x: w.x1, y: w.y1 },
+                { x: cx, y: cy },
+                { x: w.x2, y: w.y2 },
+                isHalf ? 3 : 4,
+                wrapIdx
+            );
+
+            // Короткий аккуратный хвостик провода у нижнего правого края карточки (выходит всего на ~8%)
+            if (wrapIdx === wraps.length - 1) {
+                const tailCtrlX = Math.min(985, w.x2 + 12);
+                const tailCtrlY = 1045;
+                const tailEndX = Math.min(990, w.x2 + 22);
+                const tailEndY = 1085;
+
+                const tailPath = document.createElementNS(svgNS, 'path');
+                tailPath.setAttribute('d', `M ${w.x2} 1000 Q ${tailCtrlX} ${tailCtrlY}, ${tailEndX} ${tailEndY}`);
+                tailPath.setAttribute('class', 'ny-wire-front ny-wire-tail');
+                svg.appendChild(tailPath);
+
+                const endBulb = document.createElement('span');
+                const endColor = colors[colorStep++ % colors.length];
+                endBulb.className = `ny-mini-bulb ny-bulb--${endColor}`;
+                endBulb.style.left = `${(tailEndX / 10).toFixed(2)}%`;
+                endBulb.style.top = `${(tailEndY / 10).toFixed(2)}%`;
+                endBulb.style.setProperty('--bulb-tilt', '-10deg');
+                endBulb.style.animationDelay = '0.35s';
+                garland.appendChild(endBulb);
+            }
+        });
+
+        garland.prepend(svg);
+        card.appendChild(garland);
+    });
+}
+
+function createSnowflakeSprite(size) {
+    const sprite = document.createElement('canvas');
+    const pad = 4;
+    const dim = Math.ceil(size * 2 + pad * 2);
+    sprite.width = dim;
+    sprite.height = dim;
+
+    const c = sprite.getContext('2d');
+    const center = dim / 2;
+    c.translate(center, center);
+    c.strokeStyle = '#dffaff';
+    c.lineWidth = Math.max(0.8, size * 0.22);
+    c.lineCap = 'round';
+
+    for (let i = 0; i < 6; i++) {
+        c.rotate(Math.PI / 3);
+        c.beginPath();
+        c.moveTo(0, 0);
+        c.lineTo(0, -size);
+
+        const branchLen = size * 0.36;
+        const branchPos = -size * 0.6;
+        c.moveTo(0, branchPos);
+        c.lineTo(-branchLen, branchPos - branchLen * 0.65);
+        c.moveTo(0, branchPos);
+        c.lineTo(branchLen, branchPos - branchLen * 0.65);
+        c.stroke();
+    }
+
+    return sprite;
+}
+
+function startSnowfall() {
+    const snowCanvas = document.getElementById('snow-canvas');
+    if (!snowCanvas) return;
+    const sctx = snowCanvas.getContext('2d');
+
+    if (snowAnimationId) {
+        cancelAnimationFrame(snowAnimationId);
+        snowAnimationId = null;
+    }
+
+    const resizeSnow = () => {
+        snowCanvas.width = window.innerWidth;
+        snowCanvas.height = window.innerHeight;
+    };
+    resizeSnow();
+
+    if (!snowCanvas._resizeBound) {
+        window.addEventListener('resize', resizeSnow);
+        snowCanvas._resizeBound = true;
+    }
+
+    // Заранее рисуем 3 размера снежинок в память — в цикле используется только быстрый drawImage
+    const sprites = [
+        createSnowflakeSprite(2.5),
+        createSnowflakeSprite(3.4),
+        createSnowflakeSprite(4.3)
+    ];
+
+    const isMob = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+    const flakeCount = isMob ? 95 : 190;
+    const flakes = Array.from({ length: flakeCount }, () => {
+        const sprite = sprites[Math.floor(Math.random() * sprites.length)];
+        return {
+            sprite,
+            half: sprite.width / 2,
+            x: Math.random() * snowCanvas.width,
+            y: Math.random() * snowCanvas.height,
+            speedY: Math.random() * 1.1 + 0.45,
+            speedX: Math.random() * 0.55 - 0.275,
+            swayOffset: Math.random() * Math.PI * 2,
+            opacity: Math.random() * 0.5 + 0.35
+        };
+    });
+
+    function renderSnow() {
+        if (!isNewYearActive) {
+            sctx.clearRect(0, 0, snowCanvas.width, snowCanvas.height);
+            snowAnimationId = null;
+            return;
+        }
+
+        sctx.clearRect(0, 0, snowCanvas.width, snowCanvas.height);
+        const time = performance.now() * 0.0014;
+
+        for (let i = 0; i < flakes.length; i++) {
+            const f = flakes[i];
+            f.y += f.speedY;
+            f.x += f.speedX + Math.sin(time + f.swayOffset) * 0.3;
+
+            if (f.y > snowCanvas.height + 10) {
+                f.y = -10;
+                f.x = Math.random() * snowCanvas.width;
+            }
+            if (f.x > snowCanvas.width + 10) f.x = -10;
+            if (f.x < -10) f.x = snowCanvas.width + 10;
+
+            sctx.globalAlpha = f.opacity;
+            sctx.drawImage(f.sprite, (f.x - f.half) | 0, (f.y - f.half) | 0);
+        }
+        sctx.globalAlpha = 1;
+
+        snowAnimationId = requestAnimationFrame(renderSnow);
+    }
+
+    renderSnow();
+}
+
+function setNewYearMode(enable, persist = true) {
+    isNewYearActive = Boolean(enable);
+    const toggleBtn = document.getElementById('ny-toggle');
+    const mainLogo = document.getElementById('logo-main');
+
+    if (isNewYearActive) {
+        document.body.classList.add('ny-mode');
+        if (toggleBtn) toggleBtn.classList.add('active');
+        if (mainLogo) mainLogo.style.backgroundImage = "url('EV_New Year LOGO SAS.png')";
+        buildGarland();
+        startSnowfall();
+    } else {
+        document.body.classList.remove('ny-mode');
+        if (toggleBtn) toggleBtn.classList.remove('active');
+        document.querySelectorAll('.ny-card-garland').forEach(el => el.remove());
+        if (mainLogo) {
+            const isRed = document.body.classList.contains('red-mode');
+            mainLogo.style.backgroundImage = isRed ? '' : "url('EV_Dark_2k.png')";
+        }
+        if (snowAnimationId) {
+            cancelAnimationFrame(snowAnimationId);
+            snowAnimationId = null;
+        }
+        const snowCanvas = document.getElementById('snow-canvas');
+        if (snowCanvas) {
+            snowCanvas.getContext('2d').clearRect(0, 0, snowCanvas.width, snowCanvas.height);
+        }
+    }
+
+    if (persist) {
+        // Вне сезона сохраняем ручной выбор навсегда, в сезон — только на текущую сессию вкладки
+        if (isNewYearScheduleActiveMSK()) {
+            sessionStorage.setItem('evo_ny_session_override', isNewYearActive ? 'true' : 'false');
+        } else {
+            localStorage.setItem('evo_ny_manual', isNewYearActive ? 'true' : 'false');
+        }
+    }
+}
+
+function toggleNewYearMode() {
+    setNewYearMode(!isNewYearActive, true);
+    if (typeof playSFX === 'function') playSFX('click');
+}
+
+window.addEventListener('resize', () => {
+    if (isNewYearActive) buildGarland();
+});
+
+// --- БЛОК ЗВУКОВОГО СОПРОВОЖДЕНИЯ ---
 const audioFiles = {
     ambientAqua: new Audio('Aqua_Embient.wav'),
     ambientRed: new Audio('Project_Night_Embient.wav'),
@@ -338,55 +635,104 @@ const audioFiles = {
 // Настройки громкости и зацикливания
 [audioFiles.ambientAqua, audioFiles.ambientRed].forEach(track => {
     track.loop = true;
-    track.volume = 0; // Начинаем с 0 для плавного перехода
+    track.volume = 0;
 });
 
 let currentAmbient = null;
+let isMuted = localStorage.getItem('evo_muted') === 'true';
 
+// Функция переключения звука по клику на иконку
+function toggleMute() {
+    isMuted = !isMuted;
+    localStorage.setItem('evo_muted', isMuted);
+    updateSoundUI();
 
-function fadeIn(audio, targetVol) {
-    let vol = audio.volume;
-    const interval = setInterval(() => {
-        if (vol < targetVol) {
-            vol += 0.01;
-            audio.volume = vol.toFixed(2);
-        } else {
-            clearInterval(interval);
-        }
-    }, 50);
+    if (isMuted) {
+        [audioFiles.ambientAqua, audioFiles.ambientRed].forEach(track => {
+            track.pause();
+        });
+    } else {
+        currentAmbient = document.body.classList.contains('red-mode') 
+            ? audioFiles.ambientRed 
+            : audioFiles.ambientAqua;
+            
+        currentAmbient.play().then(() => {
+            fadeAudio(currentAmbient, 0.1);
+        }).catch(e => {});
+        
+        playSFX('click');
+    }
 }
 
-function fadeOut(audio) {
-    let vol = audio.volume;
-    const interval = setInterval(() => {
-        if (vol > 0) {
-            vol -= 0.01;
-            audio.volume = vol.toFixed(2);
-        } else {
-            audio.pause();
-            clearInterval(interval);
-        }
-    }, 50);
+// Обновление иконки в углу
+function updateSoundUI() {
+    const btn = document.getElementById('sound-toggle');
+    const icon = document.getElementById('sound-icon');
+    if (!btn || !icon) return;
+
+    if (isMuted) {
+        btn.classList.add('muted');
+        icon.className = 'fas fa-volume-mute';
+    } else {
+        btn.classList.remove('muted');
+        icon.className = 'fas fa-volume-up';
+    }
 }
+
+document.addEventListener('DOMContentLoaded', () => {
+    updateSoundUI();
+
+    if (isNewYearScheduleActiveMSK()) {
+        // В сезон (1 дек – 15 янв МСК) тема включается принудительно, если пользователь не выключил её в этой же сессии
+        localStorage.removeItem('evo_ny_manual');
+        const sessionOverride = sessionStorage.getItem('evo_ny_session_override');
+        setNewYearMode(sessionOverride !== 'false', false);
+    } else {
+        sessionStorage.removeItem('evo_ny_session_override');
+        if (localStorage.getItem('evo_ny_manual') === 'true') {
+            setNewYearMode(true, false);
+        }
+    }
+});
+
+// Смена эмбиента (Aqua / Red)
+function switchAmbient(toRed) {
+    const nextAmbient = toRed ? audioFiles.ambientRed : audioFiles.ambientAqua;
+    const prevAmbient = toRed ? audioFiles.ambientAqua : audioFiles.ambientRed;
+
+    if (nextAmbient === currentAmbient) return;
+
+    fadeAudio(prevAmbient, 0);
+    currentAmbient = nextAmbient;
+
+    if (!isMuted) {
+        nextAmbient.play().then(() => {
+            fadeAudio(nextAmbient, 0.1);
+        }).catch(e => console.warn("Автовоспроизведение заблокировано:", e));
+    }
+}
+
+// Первый клик по сайту
 function initAudio() {
-    // Проверяем, какой режим активен в момент первого клика
     currentAmbient = document.body.classList.contains('red-mode') 
         ? audioFiles.ambientRed 
         : audioFiles.ambientAqua;
 
-    currentAmbient.play();
-    fadeAudio(currentAmbient, 0.1); // Плавное появление до 10%
+    if (!isMuted) {
+        currentAmbient.play().then(() => {
+            fadeAudio(currentAmbient, 0.1);
+        }).catch(e => {});
+    }
     
     document.removeEventListener('click', initAudio);
 }
-
 document.addEventListener('click', initAudio);
 
-
-// Вспомогательная функция для затухания/нарастания
+// Плавное изменение громкости
 function fadeAudio(audio, targetVolume) {
+    if (!audio) return;
     const step = 0.01;
-    const interval = 50; // Скорость изменения (50мс)
+    const interval = 50;
 
     const timer = setInterval(() => {
         if (audio.volume < targetVolume) {
@@ -397,16 +743,17 @@ function fadeAudio(audio, targetVolume) {
 
         if (audio.volume === targetVolume) {
             clearInterval(timer);
-            if (targetVolume === 0) audio.pause(); // Стоп, если громкость в 0
+            if (targetVolume === 0) audio.pause();
         }
     }, interval);
 }
 
-// Стандартные функции эффектов
+// Звуки интерфейса (клики и наведение)
 function playSFX(name) {
+    if (isMuted) return;
     const sound = audioFiles[name];
     if (sound) {
-        sound.currentTime = 0; // Сброс в начало, чтобы звук можно было "спамить"
+        sound.currentTime = 0;
         sound.play().catch(e => {}); 
     }
 }
@@ -415,7 +762,7 @@ function attachUIEffects() {
     // Слушаем клики на всем mainContent
     mainContent.addEventListener('click', (e) => {
         // Проверяем, является ли цель клика (или его родитель) кнопкой/карточкой
-        const target = e.target.closest('.btn, .download-link, .tab-header, .card, .mini-night-btn, .mini-dl-card, .mini-platform-btn, #unlock-android, #patch-notes-trigger');
+        const target = e.target.closest('.btn, .download-link, .tab-header, .card, .mini-night-btn, .mini-dl-card, .mini-platform-btn, #unlock-android, #patch-notes-trigger, .qol-dl-btn');
         
         if (target) {
             playSFX('click');
@@ -424,7 +771,7 @@ function attachUIEffects() {
 
     // Слушаем наведение
     mainContent.addEventListener('mouseover', (e) => {
-        const target = e.target.closest('.card, .btn, .menu-item, .checkbox, .sub-card, .mini-night-btn, .mini-dl-card, .mini-platform-btn, .confirm-item');
+        const target = e.target.closest('.card, .btn, .menu-item, .checkbox, .sub-card, .mini-night-btn, .mini-dl-card, .mini-platform-btn, .confirm-item, .qol-logo-trigger, .qol-dl-btn');
         
         if (target && !target.dataset.hoverTracked) {
             playSFX('hover');
@@ -643,11 +990,27 @@ function updateStaticStrings() {
             es: "Varios & Packs"
         };
 
+        // Текст тега сверху справа (короткий и сразу говорит о паках для SAS4 Plus)
+        const qolBadgeTexts = {
+            ru: "SAS4+ (QoL) ПАКИ",
+            en: "SAS4+ (QoL) PACKS",
+            es: "PACKS SAS4+ (QoL)"
+        };
+
         // 1. Меняем название
         if (h2) {
             h2.innerText = miscTitles[currentLang] || miscTitles.en;
             h2.classList.add('glow-part');
         }
+
+        // 1.5. Создаём или обновляем тег сверху справа
+        let qolBadge = card.querySelector('.misc-qol-badge');
+        if (!qolBadge) {
+            qolBadge = document.createElement('div');
+            qolBadge.className = 'misc-qol-badge';
+            card.appendChild(qolBadge);
+        }
+        qolBadge.innerHTML = `<i class="fas fa-plus-square"></i> <span>${qolBadgeTexts[currentLang] || qolBadgeTexts.en}</span>`;
 
         // 2. Устанавливаем описание
         if (d3) d3.setAttribute('data-text', translations[currentLang].desc_misc);
@@ -713,8 +1076,8 @@ function setLanguage(lang) {
     currentLang = lang;
     const data = translations[lang];
 
-    // Обновляем визуальное состояние кнопок переключения
-    document.querySelectorAll('.lang-btn').forEach(btn => btn.classList.remove('active'));
+    // Обновляем визуальное состояние только кнопок языка (не трогая #ny-toggle и #sound-toggle)
+    document.querySelectorAll('.lang-btn:not(#ny-toggle):not(#sound-toggle)').forEach(btn => btn.classList.remove('active'));
     const selectedBtn = document.getElementById(`lang-${lang}`);
     if (selectedBtn) selectedBtn.classList.add('active');
 
@@ -833,6 +1196,33 @@ inputEl.addEventListener('keypress', (e) => {
             showConsoleError("ERROR: UNKNOWN_COMMAND");
         }
         // --- СЕКЦИЯ ПАСХАЛОК ---
+
+        // 0. МИНИ-ИГРА: КОМАНДНАЯ СТРОКА (CMD)
+        if (cmd === 'cmd') {
+            inputEl.value = '';
+            launchCmdMinigame();
+            const isNightCmd = Boolean(window.cmdSessionState && window.cmdSessionState.isNightVariant);
+            const easterIcon = isNightCmd ? 'Mastodontman_Black_ICON.png' : 'Mastodontman_ICON.png';
+            showConsoleError(easterIcon, true, isNightCmd);
+            setTimeout(() => {
+                consoleEl.classList.remove('active');
+            }, 1400);
+            return;
+        }
+
+        if (cmd === 'ny' || cmd === 'newyear') {
+            inputEl.value = '';
+            setNewYearMode(true, true);
+            showConsoleError("NEW_YEAR_PROTOCOL: ENABLED");
+            return;
+        }
+
+        if (cmd === 'ny_off') {
+            inputEl.value = '';
+            setNewYearMode(false, true);
+            showConsoleError("NEW_YEAR_PROTOCOL: DISABLED");
+            return;
+        }
 
 // 1. Попытка взлома (с процентами)
 if (cmd === 'hack') {
@@ -959,25 +1349,29 @@ else if (cmd === 'ghost') {
 });
 
 // ФУНКЦИЯ ДЛЯ ОШИБКИ (вынеси её за пределы addEventListener, просто в любое место скрипта)
-function showConsoleError(message) {
+function showConsoleError(message, isImage = false, isNightEaster = false) {
     const oldErr = document.getElementById('console-err-msg');
     if (oldErr) oldErr.remove();
 
     const errBox = document.createElement('div');
     errBox.id = 'console-err-msg';
-    
-    // Если мы передали сообщение — пишем его, если нет — стандартное
-    errBox.innerText = message || "COMMAND_ERR"; 
-    
+
+    if (isImage) {
+        errBox.classList.add('console-easter-icon');
+        if (isNightEaster) errBox.classList.add('is-night');
+        errBox.innerHTML = `<img src="${message}" alt="M45T0D0NM4N">`;
+    } else {
+        errBox.innerText = message || "COMMAND_ERR";
+    }
+
     consoleEl.appendChild(errBox);
 
     setTimeout(() => {
         errBox.style.opacity = '0';
         errBox.style.transform = 'translateY(10px)';
         setTimeout(() => errBox.remove(), 500);
-    }, 2000); // Для пасхалок увеличим время до 2 сек
+    }, 2000);
 }
-
 const nicknameTrigger = document.getElementById('nickname');
 
 if (nicknameTrigger) {
@@ -1266,95 +1660,234 @@ function showMenu(type, prevEl = mainWrapper) {
         history.back();
     };
 
-        } else if (type === 'misc_main') {
-    const lang = translations[currentLang];
-    const localStrings = {
-        ru: { title: "СИСТЕМА_ДАННЫХ_MISC", sfx_btn: "SFX-Pack", inst_btn: "ИНСТРУКЦИЯ ПО УСТАНОВКЕ", ny_btn: "NEW YEAR PACK", steam_btn: "STEAM CUSTOMIZE" },
-        en: { title: "MISC_DATA_SYSTEM", sfx_btn: "SFX-Pack", inst_btn: "INSTALLATION GUIDE", ny_btn: "NEW YEAR PACK", steam_btn: "STEAM CUSTOMIZE" },
-        es: { title: "SISTEMA_DE_DATOS_MISC", sfx_btn: "SFX-Pack", inst_btn: "GUÍA DE INSTALACIÓN", ny_btn: "NEW YEAR PACK", steam_btn: "STEAM CUSTOMIZE" }
-    };
-    const s = localStrings[currentLang] || localStrings.en;
+} else if (type === 'misc_main') {
+            const lang = translations[currentLang];
+            const localStrings = {
+                ru: { 
+                    title: "СИСТЕМА_ДАННЫХ_MISC", 
+                    sfx_btn: "SFX-Pack", 
+                    inst_btn: "ИНСТРУКЦИЯ ПО УСТАНОВКЕ", 
+                    guide_old: "По старинке",
+                    guide_qol: "SAS4-Plus mod (QoL)",
+                    qol_btn: "SAS4 Plus mod", 
+                    ny_btn: "NEW YEAR PACK", 
+                    steam_btn: "STEAM CUSTOMIZE" 
+                },
+                en: { 
+                    title: "MISC_DATA_SYSTEM", 
+                    sfx_btn: "SFX-Pack", 
+                    inst_btn: "INSTALLATION GUIDE", 
+                    guide_old: "Classic Way",
+                    guide_qol: "SAS4-Plus mod (QoL)",
+                    qol_btn: "SAS4 Plus mod", 
+                    ny_btn: "NEW YEAR PACK", 
+                    steam_btn: "STEAM CUSTOMIZE" 
+                },
+                es: { 
+                    title: "SISTEMA_DE_DATOS_MISC", 
+                    sfx_btn: "SFX-Pack", 
+                    inst_btn: "GUÍA DE INSTALACIÓN", 
+                    guide_old: "Método Clásico",
+                    guide_qol: "SAS4-Plus mod (QoL)",
+                    qol_btn: "SAS4 Plus mod", 
+                    ny_btn: "NEW YEAR PACK", 
+                    steam_btn: "STEAM CUSTOMIZE" 
+                }
+            };
+            const s = localStrings[currentLang] || localStrings.en;
 
-    section.innerHTML = `
-        <div class="mobile-back-top">
-            <a href="#" class="btn btn-mobile-back" onclick="event.preventDefault(); history.back();">
-                <i class="fas fa-chevron-left"></i> ${lang.btn_back}
-            </a>
-        </div>
+            section.innerHTML = `
+                <div class="mobile-back-top">
+                    <a href="#" class="btn btn-mobile-back" onclick="event.preventDefault(); history.back();">
+                        <i class="fas fa-chevron-left"></i> ${lang.btn_back}
+                    </a>
+                </div>
 
-        <div class="header"><h1>${s.title}</h1></div>
-        <div class="expand-container" style="width:100%; display:flex; flex-direction:column; align-items:center; gap: 15px;">
+                <div class="header"><h1>${s.title}</h1></div>
+                <div class="expand-container" style="width:100%; display:flex; flex-direction:column; align-items:center; gap: 15px;">
+                    
+                    <!-- 1. INSTALLATION GUIDE С ВЫДВИЖНЫМИ КНОПКАМИ -->
+                    <div style="width: 100%; display: flex; flex-direction: column; align-items: center;">
+                        <div class="card sub-card aqua-glow" id="misc-guide-trigger" style="cursor: pointer; width: 100%; padding: 20px 15px; text-align: center;">
+                            <h2 style="margin: 0 0 15px 0;">${s.inst_btn}</h2>
+                            <div class="tag-info evolution-tag" style="margin: 0 auto;">DOCS</div>
+                        </div>
+
+                        <div id="guide-options-drawer" style="display: flex; width: 100%; max-width: 450px; justify-content: center; gap: 10px; overflow: hidden; max-height: 0; transition: all 0.4s ease; opacity: 0;">
+                            <div class="mini-platform-btn" id="btn-guide-old" style="flex: 1; margin-top: 10px; display: flex; align-items: center; justify-content: center;">${s.guide_old}</div>
+                            <div class="mini-platform-btn" id="btn-guide-qol" style="flex: 1; margin-top: 10px; display: flex; align-items: center; justify-content: center;">${s.guide_qol}</div>
+                        </div>
+                    </div>
+
+                    <!-- 2. SAS4 PLUS MOD -->
+                    <div class="card sub-card aqua-glow" id="qol-mod-trigger" style="cursor: pointer; width: 100%; padding: 20px 15px; position: relative; text-align: center;">
+                        <div class="platform-tags" style="position: absolute; top: 8px; right: 8px; display: flex; gap: 4px; pointer-events: none;">
+                            <span style="font-size: 0.55rem; padding: 1px 4px; border: 1px solid rgba(0, 255, 216, 0.5); color: #00ffd8; border-radius: 3px; text-transform: uppercase; font-weight: bold; background: rgba(0,0,0,0.3);">PC</span>
+                            <span style="font-size: 0.55rem; padding: 1px 4px; border: 1px solid rgba(255, 157, 0, 0.5); color: #ff9d00; border-radius: 3px; text-transform: uppercase; font-weight: bold; background: rgba(0,0,0,0.3);">Android</span>
+                        </div>
+                        <h2 style="margin: 0 0 15px 0;">${s.qol_btn}</h2>
+                        <div class="tag-info evolution-tag" style="margin: 0 auto;">Texture Packs</div>
+                    </div>
+
+                    <!-- 3. NEW YEAR PACK -->
+                    <div style="width: 100%; display: flex; flex-direction: column; align-items: center;">
+                        <div class="card sub-card aqua-glow" id="ny-pack-trigger" style="cursor: pointer; width: 100%; padding: 20px 15px; position: relative; text-align: center;">
+                            <div class="platform-tags" style="position: absolute; top: 8px; right: 8px; display: flex; gap: 4px; pointer-events: none;">
+                                <span style="font-size: 0.55rem; padding: 1px 4px; border: 1px solid rgba(0, 255, 216, 0.5); color: #00ffd8; border-radius: 3px; text-transform: uppercase; font-weight: bold; background: rgba(0,0,0,0.3);">PC</span>
+                                <span style="font-size: 0.55rem; padding: 1px 4px; border: 1px solid rgba(255, 157, 0, 0.5); color: #ff9d00; border-radius: 3px; text-transform: uppercase; font-weight: bold; background: rgba(0,0,0,0.3);">Android</span>
+                            </div>
+                            <h2 style="margin: 0 0 15px 0;">${s.ny_btn}</h2>
+                            <div id="season-tag-main" class="tag-info tag-season">
+                                <i class="fas fa-snowflake"></i> <span>SEASON</span>
+                            </div>
+                        </div>
+                        
+                        <div id="ny-platforms" style="display: flex; width: 100%; justify-content: center; gap: 10px; overflow: hidden; max-height: 0; transition: all 0.4s ease; opacity: 0;">
+                            <div class="mini-platform-btn" style="width: 120px; margin-top: 10px;" onclick="window.open('https://drive.google.com/file/d/1zQdaMpYY8EtXITAhSXVN8l6YgH5hyvAl/view?usp=drive_link')">PC</div>
+                            <div class="mini-platform-btn" style="width: 120px; margin-top: 10px;" onclick="window.open('https://drive.google.com/file/d/1OgIYHkroQPnPtbmTgjNoKWWb-WdF0kuo/view?usp=drive_link')">ANDROID</div>
+                        </div>
+                    </div>
+
+                    <!-- 4. SFX-PACK -->
+                    <div class="card sub-card aqua-glow" id="sfx-menu-trigger" style="cursor: pointer; width: 100%; padding: 20px 15px; position: relative; text-align: center;">
+                        <div class="platform-tags" style="position: absolute; top: 8px; right: 8px; display: flex; gap: 4px; pointer-events: none;">
+                            <span style="font-size: 0.55rem; padding: 1px 4px; border: 1px solid rgba(0, 255, 216, 0.5); color: #00ffd8; border-radius: 3px; text-transform: uppercase; font-weight: bold; background: rgba(0,0,0,0.3);">PC</span>
+                            <span style="font-size: 0.55rem; padding: 1px 4px; border: 1px solid rgba(255, 157, 0, 0.5); color: #ff9d00; border-radius: 3px; text-transform: uppercase; font-weight: bold; background: rgba(0,0,0,0.3);">Android</span>
+                        </div>
+                        <h2 style="margin: 0 0 15px 0;">${s.sfx_btn}</h2>
+                        <div class="tag-info tag-sounds" style="margin: 0 auto;">SOUNDS</div>
+                    </div>
+
+                    <!-- 5. STEAM CUSTOMIZE -->
+                    <div class="card sub-card aqua-glow" id="steam-cust-trigger" style="cursor: pointer; width: 100%; padding: 20px 15px; position: relative; text-align: center;">
+                        <div class="platform-tags" style="position: absolute; top: 8px; right: 8px; pointer-events: none;">
+                            <span style="font-size: 0.55rem; padding: 1px 4px; border: 1px solid rgba(0, 255, 216, 0.5); color: #00ffd8; border-radius: 3px; text-transform: uppercase; font-weight: bold; background: rgba(0,0,0,0.3);">PC</span>
+                        </div>
+                        <h2 style="margin: 0 0 15px 0;">${s.steam_btn}</h2>
+                        <div class="tag-info evolution-tag" style="background: #5c7eaf; margin: 0 auto;">STEAM</div>
+                    </div>
+
+                </div>
+                <div class="back-btn-wrapper">
+                    <a href="#" class="btn" id="back-to-main-from-misc">${lang.btn_back}</a>
+                </div>
+            `;
+
+            // Выдвижение 2 мини-кнопок у Инструкции
+            section.querySelector('#misc-guide-trigger').onclick = function() {
+                const drawer = section.querySelector('#guide-options-drawer');
+                if (drawer.style.maxHeight === '0px' || !drawer.style.maxHeight) {
+                    drawer.style.maxHeight = '100px';
+                    drawer.style.opacity = '1';
+                    drawer.style.marginBottom = '10px';
+                } else {
+                    drawer.style.maxHeight = '0px';
+                    drawer.style.opacity = '0';
+                    drawer.style.marginBottom = '0px';
+                }
+                if (typeof playSFX === 'function') playSFX('click');
+            };
+
+            // Переходы по мини-кнопкам гайдов
+            section.querySelector('#btn-guide-old').onclick = () => showMenu('aqua_guide', section);
+            section.querySelector('#btn-guide-qol').onclick = () => showMenu('qol_guide', section);
+
+            // Выдвижение у New Year Pack
+            section.querySelector('#ny-pack-trigger').onclick = function() {
+                const drawer = section.querySelector('#ny-platforms');
+                if (drawer.style.maxHeight === '0px' || !drawer.style.maxHeight) {
+                    drawer.style.maxHeight = '100px';
+                    drawer.style.opacity = '1';
+                    drawer.style.marginBottom = '10px';
+                } else {
+                    drawer.style.maxHeight = '0px';
+                    drawer.style.opacity = '0';
+                    drawer.style.marginBottom = '0px';
+                }
+                if (typeof playSFX === 'function') playSFX('click');
+            };
+
+            section.querySelector('#qol-mod-trigger').onclick = () => showMenu('sas4_plus', section);
+            section.querySelector('#sfx-menu-trigger').onclick = () => showMenu('sfx_download', section);
+            section.querySelector('#steam-cust-trigger').onclick = () => window.open('https://drive.google.com/file/d/1VxQS4WRV639ZodFzEG46Q3mzNrfX3DdM/view?usp=drive_link', '_blank');
+
+            section.querySelector('#back-to-main-from-misc').onclick = (e) => {
+                e.preventDefault();
+                history.back();
+            };
+
+        } else if (type === 'sas4_plus') {
+            // === НОВЫЙ РАЗДЕЛ: SAS4 PLUS MOD (3 ИНТЕРАКТИВНЫХ ЛОГОТИПА) ===
+            const lang = translations[currentLang];
+            const dlText = lang.btn_download || "СКАЧАТЬ";
+
+            section.innerHTML = `
+                <div class="mobile-back-top">
+                    <a href="#" class="btn btn-mobile-back" onclick="event.preventDefault(); history.back();">
+                        <i class="fas fa-chevron-left"></i> ${lang.btn_back}
+                    </a>
+                </div>
+
+                <div class="header"><h1>SAS4<span>_PLUS</span></h1></div>
+
+                <div class="qol-logos-row">
+                    <!-- 1. Evolution Pack -->
+                    <div class="qol-pack-item" data-theme="aqua">
+                        <div class="qol-logo-trigger">
+                            <img src="EV_Dark_2k.png" alt="EVolution Pack" class="qol-logo-img">
+                            <h3 class="qol-pack-title">EVolution Pack</h3>
+                        </div>
+                        <div class="qol-dl-drawer">
+                            <a href="https://drive.google.com/file/d/1at3sqvMh9IcsiJt3Pn8aRvbRPQlSMo7_/view?usp=drive_link" target="_blank" class="qol-dl-btn">${dlText}</a>
+                        </div>
+                    </div>
+
+                    <!-- 2. Project Night -->
+                    <div class="qol-pack-item" data-theme="red">
+                        <div class="qol-logo-trigger">
+                            <img src="Project_Night_Icon.png" alt="Project Night" class="qol-logo-img">
+                            <h3 class="qol-pack-title">Project Night</h3>
+                        </div>
+                        <div class="qol-dl-drawer">
+                            <a href="https://drive.google.com/file/d/1bkbJ6OEsHAvdOvUfWU6PatQUzx3kRTGE/view?usp=sharing" target="_blank" class="qol-dl-btn">${dlText}</a>
+                        </div>
+                    </div>
+
+                    <!-- 3. New Year -->
+                    <div class="qol-pack-item" data-theme="ny">
+                        <div class="qol-logo-trigger">
+                            <img src="EV_New Year LOGO SAS.png" alt="New Year" class="qol-logo-img">
+                            <h3 class="qol-pack-title">New Year</h3>
+                        </div>
+                        <div class="qol-dl-drawer">
+                            <a href="https://drive.google.com/file/d/1ONF7vnk8qx3G8Z21T8Uuo5qd0cSDbbRJ/view?usp=sharing" target="_blank" class="qol-dl-btn">${dlText}</a>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="back-btn-wrapper">
+                    <a href="#" class="btn" id="back-to-misc-from-qol">${lang.btn_back}</a>
+                </div>
+            `;
+
+            // Логика клика по логотипам (аккордеон: открывает выбранный, закрывает остальные)
+            const items = section.querySelectorAll('.qol-pack-item');
+            items.forEach(item => {
+                const trigger = item.querySelector('.qol-logo-trigger');
+                trigger.onclick = () => {
+                    const isOpen = item.classList.contains('open');
+                    items.forEach(el => el.classList.remove('open'));
+                    if (!isOpen) item.classList.add('open');
+                    if (typeof playSFX === 'function') playSFX('click');
+                };
+            });
+
+            section.querySelector('#back-to-misc-from-qol').onclick = (e) => {
+                e.preventDefault();
+                history.back();
+            };
+
             
-            <div class="card sub-card aqua-glow" id="misc-guide-trigger" style="cursor: pointer; width: 100%; padding: 20px 15px; text-align: center;">
-                <h2 style="margin: 0 0 15px 0;">${s.inst_btn}</h2>
-                <div class="tag-info evolution-tag" style="margin: 0 auto;">DOCS</div>
-            </div>
-
-            <div style="width: 100%; display: flex; flex-direction: column; align-items: center;">
-                <div class="card sub-card aqua-glow" id="ny-pack-trigger" style="cursor: pointer; width: 100%; padding: 20px 15px; position: relative; text-align: center;">
-                    <div class="platform-tags" style="position: absolute; top: 8px; right: 8px; display: flex; gap: 4px; pointer-events: none;">
-                        <span style="font-size: 0.55rem; padding: 1px 4px; border: 1px solid rgba(0, 255, 216, 0.5); color: #00ffd8; border-radius: 3px; text-transform: uppercase; font-weight: bold; background: rgba(0,0,0,0.3);">PC</span>
-                        <span style="font-size: 0.55rem; padding: 1px 4px; border: 1px solid rgba(255, 157, 0, 0.5); color: #ff9d00; border-radius: 3px; text-transform: uppercase; font-weight: bold; background: rgba(0,0,0,0.3);">Android</span>
-                    </div>
-                    <h2 style="margin: 0 0 15px 0;">${s.ny_btn}</h2>
-                    <div id="season-tag-main" class="tag-info tag-season">
-                        <i class="fas fa-snowflake"></i> <span>SEASON</span>
-                    </div>
-                </div>
-                
-                <div id="ny-platforms" style="display: flex; width: 100%; justify-content: center; gap: 10px; overflow: hidden; max-height: 0; transition: all 0.4s ease; opacity: 0;">
-                    <div class="mini-platform-btn" style="width: 120px; margin-top: 10px;" onclick="window.open('https://drive.google.com/file/d/1zQdaMpYY8EtXITAhSXVN8l6YgH5hyvAl/view?usp=drive_link')">PC</div>
-                    <div class="mini-platform-btn" style="width: 120px; margin-top: 10px;" onclick="window.open('https://drive.google.com/file/d/1OgIYHkroQPnPtbmTgjNoKWWb-WdF0kuo/view?usp=drive_link')">ANDROID</div>
-                </div>
-            </div>
-
-            <div class="card sub-card aqua-glow" id="sfx-menu-trigger" style="cursor: pointer; width: 100%; padding: 20px 15px; position: relative; text-align: center;">
-                <div class="platform-tags" style="position: absolute; top: 8px; right: 8px; display: flex; gap: 4px; pointer-events: none;">
-                    <span style="font-size: 0.55rem; padding: 1px 4px; border: 1px solid rgba(0, 255, 216, 0.5); color: #00ffd8; border-radius: 3px; text-transform: uppercase; font-weight: bold; background: rgba(0,0,0,0.3);">PC</span>
-                    <span style="font-size: 0.55rem; padding: 1px 4px; border: 1px solid rgba(255, 157, 0, 0.5); color: #ff9d00; border-radius: 3px; text-transform: uppercase; font-weight: bold; background: rgba(0,0,0,0.3);">Android</span>
-                </div>
-                <h2 style="margin: 0 0 15px 0;">${s.sfx_btn}</h2>
-                <div class="tag-info tag-sounds" style="margin: 0 auto;">SOUNDS</div>
-            </div>
-
-            <div class="card sub-card aqua-glow" id="steam-cust-trigger" style="cursor: pointer; width: 100%; padding: 20px 15px; position: relative; text-align: center;">
-                <div class="platform-tags" style="position: absolute; top: 8px; right: 8px; pointer-events: none;">
-                    <span style="font-size: 0.55rem; padding: 1px 4px; border: 1px solid rgba(0, 255, 216, 0.5); color: #00ffd8; border-radius: 3px; text-transform: uppercase; font-weight: bold; background: rgba(0,0,0,0.3);">PC</span>
-                </div>
-                <h2 style="margin: 0 0 15px 0;">${s.steam_btn}</h2>
-                <div class="tag-info evolution-tag" style="background: #5c7eaf; margin: 0 auto;">STEAM</div>
-            </div>
-
-        </div>
-        <div class="back-btn-wrapper">
-            <a href="#" class="btn" id="back-to-main-from-misc">${lang.btn_back}</a>
-        </div>
-    `;
-
-    section.querySelector('#ny-pack-trigger').onclick = function() {
-        const drawer = section.querySelector('#ny-platforms');
-        if (drawer.style.maxHeight === '0px' || !drawer.style.maxHeight) {
-            drawer.style.maxHeight = '100px';
-            drawer.style.opacity = '1';
-            drawer.style.marginBottom = '10px';
-        } else {
-            drawer.style.maxHeight = '0px';
-            drawer.style.opacity = '0';
-            drawer.style.marginBottom = '0px';
-        }
-        if (typeof playSFX === 'function') playSFX('click');
-    };
-
-    section.querySelector('#misc-guide-trigger').onclick = () => showMenu('aqua_guide', section);
-    section.querySelector('#sfx-menu-trigger').onclick = () => showMenu('sfx_download', section);
-    section.querySelector('#steam-cust-trigger').onclick = () => window.open('https://drive.google.com/file/d/1VxQS4WRV639ZodFzEG46Q3mzNrfX3DdM/view?usp=drive_link', '_blank');
-
-    // ИСПРАВЛЕНО: Кнопка назад через историю
-    section.querySelector('#back-to-main-from-misc').onclick = (e) => {
-        e.preventDefault();
-        history.back();
-    };
-
 } else if (type === 'sfx_download') {
     // === ЦЕНТРИРОВАННОЕ МЕНЮ SFX С РАБОЧИМИ КНОПКАМИ ===
     const lang = translations[currentLang];
@@ -1853,7 +2386,266 @@ function showMenu(type, prevEl = mainWrapper) {
             history.back();
         };
     }
-} // <--- ВОТ ТУТ ЗАКАНЧИВАЕТСЯ AQUA_GUIDE
+} else if (type === 'qol_guide') {
+            // === НОВЫЙ ГАЙД ДЛЯ SAS4-PLUS MOD (QoL) ===
+            const lang = translations[currentLang];
+
+            const qolGuideStrings = {
+                ru: {
+                    title: "ИНСТРУКЦИЯ SAS4-PLUS (QoL)",
+                    select_prompt: "ВЫБЕРИТЕ ПЛАТФОРМУ ДЛЯ УСТАНОВКИ:",
+                    btn_pc: "ПК (STEAM)",
+                    btn_android: "ANDROID",
+                    fullscreen_btn: "НА ВЕСЬ ЭКРАН",
+                    pc_header: "Как установить EVolution Pack (для QoL Mod) — PC (Steam)",
+                    pc_s1: "Убедитесь, что мод <b>QoL (SAS4-Plus)</b> уже установлен.",
+                    pc_s2: "Перейдите в корневую папку с игрой:",
+                    pc_s3: "Найдите папку <b>TexturePacks</b> (создайте её, если она отсутствует).",
+                    pc_s4: "Скопируйте архив <b>EVolution Pack 2.3.2 for QoL.zip</b> напрямую в папку <b>TexturePacks</b>. <span style='color:#ff4444; font-weight:bold;'>Не распаковывайте zip-архив!</span>",
+                    pc_s5: "Запустите игру.",
+                    and_header: "Как установить EVolution Pack (для QoL Mod) — Android",
+                    and_warn: "Перед началом обязательно сделайте принудительное сохранение (Force Backup) вашего профиля в настройках игры. Вход через Google Play не работает на модифицированном APK.",
+                    and_s1: "Установите APK мода <b>QoL</b> и запустите игру хотя бы один раз, чтобы создались необходимые системные папки.",
+                    and_s2: "Используя любой файловый менеджер (например, <b>ZArchiver</b>), перейдите по пути:",
+                    and_s3: "Скопируйте <b>EVolution Pack 2.3.2 for QoL.zip</b> в эту папку. <span style='color:#ff4444; font-weight:bold;'>Не распаковывайте архив!</span>",
+                    and_s4: "Запустите игру."
+                },
+                en: {
+                    title: "SAS4-PLUS (QoL) GUIDE",
+                    select_prompt: "SELECT INSTALLATION PLATFORM:",
+                    btn_pc: "PC (STEAM)",
+                    btn_android: "ANDROID",
+                    fullscreen_btn: "FULLSCREEN",
+                    pc_header: "How to Install EVolution Pack (for QoL Mod) — PC (Steam)",
+                    pc_s1: "Make sure the <b>QoL mod</b> is already installed.",
+                    pc_s2: "Navigate to your game's root directory:",
+                    pc_s3: "Locate the <b>TexturePacks</b> folder (create one if it does not exist).",
+                    pc_s4: "Copy <b>EVolution Pack 2.3.2 for QoL.zip</b> directly into the <b>TexturePacks</b> folder. <span style='color:#ff4444; font-weight:bold;'>Do not extract the zip file.</span>",
+                    pc_s5: "Launch the game.",
+                    and_header: "How to Install EVolution Pack (for QoL Mod) — Android",
+                    and_warn: "Before proceeding, make sure to perform a Force Backup of your profile in the game settings. Google Play login does not work on the modded APK.",
+                    and_s1: "Install the <b>QoL mod APK</b> and launch the game at least once so the required system directories are created.",
+                    and_s2: "Using any file manager (e.g., <b>ZArchiver</b>), navigate to:",
+                    and_s3: "Copy <b>EVolution Pack 2.3.2 for QoL.zip</b> into this folder. <span style='color:#ff4444; font-weight:bold;'>Do not extract the file.</span>",
+                    and_s4: "Launch the game."
+                },
+                es: {
+                    title: "GUÍA SAS4-PLUS (QoL)",
+                    select_prompt: "SELECCIONA LA PLATAFORMA DE INSTALACIÓN:",
+                    btn_pc: "PC (STEAM)",
+                    btn_android: "ANDROID",
+                    fullscreen_btn: "PANTALLA COMPLEТА",
+                    pc_header: "Cómo instalar EVolution Pack (para QoL Mod) — PC (Steam)",
+                    pc_s1: "Asegúrate de que el <b>mod QoL</b> ya esté instalado.",
+                    pc_s2: "Ve al directorio raíz de tu juego:",
+                    pc_s3: "Busca la carpeta <b>TexturePacks</b> (créala si no existe).",
+                    pc_s4: "Copia <b>EVolution Pack 2.3.2 for QoL.zip</b> directamente en la carpeta <b>TexturePacks</b>. <span style='color:#ff4444; font-weight:bold;'>No extraigas el archivo zip.</span>",
+                    pc_s5: "Inicia el juego.",
+                    and_header: "Cómo instalar EVolution Pack (para QoL Mod) — Android",
+                    and_warn: "Antes de continuar, asegúrate de realizar un Force Backup de tu perfil en los ajustes del juego. El inicio de sesión con Google Play no funciona en el APK modificado.",
+                    and_s1: "Instala el <b>APK del mod QoL</b> e inicia el juego al menos una vez para que se creen los directorios necesarios del sistema.",
+                    and_s2: "Usando cualquier gestor de archivos (por ejemplo, <b>ZArchiver</b>), navega hasta:",
+                    and_s3: "Copia <b>EVolution Pack 2.3.2 for QoL.zip</b> en esta carpeta. <span style='color:#ff4444; font-weight:bold;'>No extraigas el archivo.</span>",
+                    and_s4: "Inicia el juego."
+                }
+            };
+
+            const g = qolGuideStrings[currentLang] || qolGuideStrings.en;
+
+            section.innerHTML = `
+                <div class="mobile-back-top">
+                    <a href="#" class="btn btn-mobile-back" onclick="event.preventDefault(); history.back();">
+                        <i class="fas fa-chevron-left"></i> ${lang.btn_back}
+                    </a>
+                </div>
+
+                <div class="header"><h1>${g.title}</h1></div>
+
+                <!-- Кнопки выбора платформы -->
+                <div style="text-align: center; margin-bottom: 15px; width: 100%;">
+                    <div style="font-size: 0.75rem; color: var(--current-accent); letter-spacing: 2px; margin-bottom: 10px; opacity: 0.8;">
+                        ${g.select_prompt}
+                    </div>
+                    <div class="qol-platform-switcher">
+                        <button type="button" class="qol-plat-btn active" id="qol-select-pc">
+                            <i class="fas fa-desktop"></i> ${g.btn_pc}
+                        </button>
+                        <button type="button" class="qol-plat-btn" id="qol-select-android">
+                            <i class="fab fa-android"></i> ${g.btn_android}
+                        </button>
+                    </div>
+                </div>
+
+                <div class="guide-scroll-container" style="max-height: 58vh; overflow-y: auto; padding: 10px;">
+                    
+                    <!-- БЛОК ДЛЯ ПК -->
+                    <div id="qol-pc-content" class="qol-guide-pane">
+                        <div class="guide-card highlight-cyan" style="text-align: center;">
+                            <h3 style="color: var(--current-accent); margin-top: 0;">${g.pc_header}</h3>
+                            <div class="local-video-box">
+                                <video id="qol-video-pc" controls playsinline preload="metadata" class="qol-guide-video">
+                                    <source src="PC_GUIDE.mp4" type="video/mp4">
+                                    <source src="PC_GUIDE.webm" type="video/webm">
+                                </video>
+                                <button type="button" class="btn-fullscreen-video" data-target="qol-video-pc">
+                                    <i class="fas fa-expand"></i> ${g.fullscreen_btn}
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="guide-card">
+                            <div class="step-num">01</div>
+                            <p>${g.pc_s1}</p>
+                        </div>
+
+                        <div class="guide-card">
+                            <div class="step-num">02</div>
+                            <p>${g.pc_s2}</p>
+                            <div class="code-path">C:\\Program Files (x86)\\Steam\\steamapps\\common\\SAS Zombie Assault 4</div>
+                        </div>
+
+                        <div class="guide-card">
+                            <div class="step-num">03</div>
+                            <p>${g.pc_s3}</p>
+                        </div>
+
+                        <div class="guide-card">
+                            <div class="step-num">04</div>
+                            <p>${g.pc_s4}</p>
+                        </div>
+
+                        <div class="guide-card finish-card">
+                            <div class="step-num">05</div>
+                            <h3 style="color: var(--current-accent); text-align: center; margin: 5px 0 0 0;">${g.pc_s5}</h3>
+                        </div>
+                    </div>
+
+                    <!-- БЛОК ДЛЯ ANDROID -->
+                    <div id="qol-android-content" class="qol-guide-pane" style="display: none;">
+                        <div class="guide-card warning-card" style="border-left: 4px solid #ff9d00;">
+                            <div style="color: #ff9d00; font-weight: bold; margin-bottom: 8px;">
+                                <i class="fas fa-exclamation-triangle"></i> [ IMPORTANT / BACKUP ]
+                            </div>
+                            <p style="margin: 0; color: #ffe0b2; line-height: 1.5;">${g.and_warn}</p>
+                        </div>
+
+                        <div class="guide-card highlight-cyan" style="text-align: center;">
+                            <h3 style="color: var(--current-accent); margin-top: 0;">${g.and_header}</h3>
+                            <div class="local-video-box">
+                                <video id="qol-video-android" controls playsinline preload="metadata" class="qol-guide-video">
+                                    <source src="ANDROID_GUIDE.mp4" type="video/mp4">
+                                    <source src="ANDROID_GUIDE.webm" type="video/webm">
+                                </video>
+                                <button type="button" class="btn-fullscreen-video" data-target="qol-video-android">
+                                    <i class="fas fa-expand"></i> ${g.fullscreen_btn}
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="guide-card">
+                            <div class="step-num">01</div>
+                            <p>${g.and_s1}</p>
+                        </div>
+
+                        <div class="guide-card">
+                            <div class="step-num">02</div>
+                            <p>${g.and_s2}</p>
+                            <div class="code-path">Android/media/com.ninjakiwi.sasza4/SAS4/TexturePacks/</div>
+                        </div>
+
+                        <div class="guide-card">
+                            <div class="step-num">03</div>
+                            <p>${g.and_s3}</p>
+                        </div>
+
+                        <div class="guide-card finish-card">
+                            <div class="step-num">04</div>
+                            <h3 style="color: var(--current-accent); text-align: center; margin: 5px 0 0 0;">${g.and_s4}</h3>
+                        </div>
+                    </div>
+
+                </div>
+
+                <div class="back-btn-wrapper">
+                    <a href="#" class="btn" id="back-from-qol-guide">${lang.btn_back}</a>
+                </div>
+            `;
+
+            const btnPc = section.querySelector('#qol-select-pc');
+            const btnAnd = section.querySelector('#qol-select-android');
+            const panePc = section.querySelector('#qol-pc-content');
+            const paneAnd = section.querySelector('#qol-android-content');
+            const vidPc = section.querySelector('#qol-video-pc');
+            const vidAnd = section.querySelector('#qol-video-android');
+
+            // Переключение вкладок PC / Android
+            btnPc.onclick = () => {
+                btnPc.classList.add('active');
+                btnAnd.classList.remove('active');
+                panePc.style.display = 'block';
+                paneAnd.style.display = 'none';
+                if (vidAnd) vidAnd.pause();
+                if (typeof playSFX === 'function') playSFX('click');
+            };
+
+            btnAnd.onclick = () => {
+                btnAnd.classList.add('active');
+                btnPc.classList.remove('active');
+                paneAnd.style.display = 'block';
+                panePc.style.display = 'none';
+                if (vidPc) vidPc.pause();
+                if (typeof playSFX === 'function') playSFX('click');
+            };
+
+// Кнопки открытия видео на весь экран
+            section.querySelectorAll('.btn-fullscreen-video').forEach(fsBtn => {
+                fsBtn.onclick = () => {
+                    const targetId = fsBtn.getAttribute('data-target');
+                    const videoEl = section.querySelector('#' + targetId);
+                    if (!videoEl) return;
+                    if (videoEl.requestFullscreen) {
+                        videoEl.requestFullscreen();
+                    } else if (videoEl.webkitRequestFullscreen) {
+                        videoEl.webkitRequestFullscreen();
+                    } else if (videoEl.webkitEnterFullscreen) {
+                        videoEl.webkitEnterFullscreen();
+                    }
+                };
+            });
+
+            // ФИКС ДЛЯ ANDROID: принудительный возврат масштаба при выходе из полноэкранного видео
+            const restoreMobileViewport = () => {
+                if (!document.fullscreenElement && !document.webkitFullscreenElement) {
+                    const vp = document.querySelector('meta[name="viewport"]');
+                    if (vp) {
+                        // Перезаписываем viewport, чтобы сбросить зависший зум Android
+                        vp.setAttribute('content', 'width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no');
+                    }
+                    // Возвращаем фокус и позицию скролла на переключатель платформ
+                    setTimeout(() => {
+                        window.scrollTo(0, 0);
+                        const switcher = section.querySelector('.qol-platform-switcher');
+                        if (switcher) switcher.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    }, 150);
+                }
+            };
+
+            document.addEventListener('fullscreenchange', restoreMobileViewport);
+            document.addEventListener('webkitfullscreenchange', restoreMobileViewport);
+            if (vidPc) vidPc.addEventListener('webkitendfullscreen', restoreMobileViewport);
+            if (vidAnd) vidAnd.addEventListener('webkitendfullscreen', restoreMobileViewport);
+
+            section.querySelector('#back-from-qol-guide').onclick = (e) => {
+                e.preventDefault();
+                if (vidPc) vidPc.pause();
+                if (vidAnd) vidAnd.pause();
+                document.removeEventListener('fullscreenchange', restoreMobileViewport);
+                document.removeEventListener('webkitfullscreenchange', restoreMobileViewport);
+                history.back();
+            };
+        }
+
+
 
         // Вставляем созданную секцию в основной контейнер
         const mainContent = document.getElementById('main-content');
@@ -2258,3 +3050,423 @@ window.addEventListener('popstate', (event) => {
     }
 });
 
+// === МИНИ-ИГРА: ТЕРМИНАЛ MA5BOT0ND_TERM ===
+function triggerSystemKill() {
+    if (typeof showConsoleError === 'function') {
+        showConsoleError("SYSTEM_CRITICAL_FAILURE: TERMINATING...");
+    }
+    setTimeout(() => {
+        document.body.classList.add('crt-power-off');
+        setTimeout(() => {
+            window.close();
+            document.body.innerHTML = `
+                <div style="background: #000; height: 100vh; display: flex; align-items: center; justify-content: center;">
+                    <div style="width: 4px; height: 4px; background: #fff; border-radius: 50%; box-shadow: 0 0 10px #fff;"></div>
+                </div>
+            `;
+        }, 600);
+    }, 1000);
+}
+
+// Глобальная память терминала на время текущей сессии (живет до F5)
+window.cmdSessionState = {
+    initialized: false,
+    isNightVariant: false,
+    authStage: 'login', // 'login' | 'password' | 'authenticated'
+    attemptsLeft: 3,
+    logHTML: ''
+};
+
+function launchCmdMinigame() {
+    const oldWin = document.getElementById('cmd-game-window');
+    if (oldWin) {
+        if (oldWin._bulbTimer) clearTimeout(oldWin._bulbTimer);
+        oldWin.remove();
+    }
+    const oldVig = document.getElementById('cmd-focus-vignette');
+    if (oldVig) oldVig.remove();
+
+    const state = window.cmdSessionState;
+
+    // 1% шанс на Project Night определяется при первом запуске в сессии
+    if (!state.initialized) {
+        state.isNightVariant = Math.random() < 0.01;
+    }
+
+    const focusVignette = document.createElement('div');
+    focusVignette.id = 'cmd-focus-vignette';
+    document.body.appendChild(focusVignette);
+
+    const cmdWin = document.createElement('div');
+    cmdWin.id = 'cmd-game-window';
+    if (state.isNightVariant) {
+        cmdWin.classList.add('cmd-night-corrupted');
+    }
+
+    cmdWin.innerHTML = `
+        <div class="cmd-crt-scanlines"></div>
+        <div class="cmd-aged-vignette"></div>
+        <div class="cmd-win-header" id="cmd-drag-handle">
+            <span class="cmd-header-left">
+                <span class="cmd-header-icon-mask"></span>
+                <span>EVO_OS // MA5BOT0ND.....ET...0RK</span>
+            </span>
+            <span class="cmd-win-close" id="cmd-close-btn">[X]</span>
+        </div>
+        <div class="cmd-win-body" id="cmd-body">
+            <div id="cmd-boot-screen">
+                <div class="cmd-boot-title">LOADING EVO_OS KERNEL...</div>
+                <div class="cmd-boot-bar"><div class="cmd-boot-fill" id="cmd-boot-fill"></div></div>
+                <div class="cmd-boot-percent" id="cmd-boot-percent">0%</div>
+            </div>
+            <div id="cmd-terminal-view" style="display: none;">
+                <div id="cmd-log"></div>
+                <div id="cmd-input-row" style="display: none;">
+                    <span id="cmd-prompt-label">LOGIN ></span>
+                    <input type="text" id="cmd-user-input" autocomplete="off" spellcheck="false">
+                </div>
+            </div>
+        </div>
+        <div class="cmd-wind-slice slice-r"></div>
+        <div class="cmd-wind-slice slice-b"></div>
+    `;
+    document.body.appendChild(cmdWin);
+
+    if (typeof window.ensureCursorOnTop === 'function') window.ensureCursorOnTop();
+
+    const closeBtn = cmdWin.querySelector('#cmd-close-btn');
+    const dragHandle = cmdWin.querySelector('#cmd-drag-handle');
+    const logEl = cmdWin.querySelector('#cmd-log');
+    const inputRow = cmdWin.querySelector('#cmd-input-row');
+    const userInput = cmdWin.querySelector('#cmd-user-input');
+    const promptLabel = cmdWin.querySelector('#cmd-prompt-label');
+    const bodyEl = cmdWin.querySelector('#cmd-body');
+
+    // === 1. БЛОКИРОВКА РУЧНОГО СКРОЛЛА (Текст уходит вверх навсегда) ===
+    const stickToBottom = () => {
+        bodyEl.scrollTop = bodyEl.scrollHeight;
+    };
+    bodyEl.addEventListener('wheel', (e) => e.preventDefault(), { passive: false });
+    bodyEl.addEventListener('touchmove', (e) => e.preventDefault(), { passive: false });
+
+    // === 2. ПЕРЕМЕЩЕНИЕ ОКНА МЫШКОЙ И ПАЛЬЦЕМ ЗА ШАПКУ ===
+    let isDragging = false;
+    let dragOffsetX = 0;
+    let dragOffsetY = 0;
+
+    const startDrag = (clientX, clientY, target) => {
+        if (target === closeBtn || closeBtn.contains(target)) return;
+        isDragging = true;
+        const rect = cmdWin.getBoundingClientRect();
+        // Переводим из центровки translate(-50%, -50%) в точные координаты экрана
+        cmdWin.style.transform = 'none';
+        cmdWin.style.left = rect.left + 'px';
+        cmdWin.style.top = rect.top + 'px';
+        dragOffsetX = clientX - rect.left;
+        dragOffsetY = clientY - rect.top;
+    };
+
+    const onDrag = (clientX, clientY) => {
+        if (!isDragging) return;
+        const maxX = window.innerWidth - 60;
+        const maxY = window.innerHeight - 40;
+        const newX = Math.max(-cmdWin.offsetWidth + 100, Math.min(clientX - dragOffsetX, maxX));
+        const newY = Math.max(0, Math.min(clientY - dragOffsetY, maxY));
+        cmdWin.style.left = newX + 'px';
+        cmdWin.style.top = newY + 'px';
+    };
+
+    const stopDrag = () => { isDragging = false; };
+
+    dragHandle.addEventListener('mousedown', (e) => startDrag(e.clientX, e.clientY, e.target));
+    window.addEventListener('mousemove', (e) => onDrag(e.clientX, e.clientY));
+    window.addEventListener('mouseup', stopDrag);
+
+    dragHandle.addEventListener('touchstart', (e) => {
+        const t = e.touches[0];
+        startDrag(t.clientX, t.clientY, e.target);
+    }, { passive: true });
+    window.addEventListener('touchmove', (e) => {
+        if (!isDragging) return;
+        const t = e.touches[0];
+        onDrag(t.clientX, t.clientY);
+    }, { passive: true });
+    window.addEventListener('touchend', stopDrag);
+
+    // === 3. ЭФФЕКТ СЛОМАННОЙ ЛАМПОЧКИ В РАНДОМНОЕ ВРЕМЯ ===
+    // === 3. МЯГКОЕ И ОЧЕНЬ БЫСТРОЕ МОРГАНИЕ ЛАМПОЧКИ (БЕЗ УДАРА ПО ГЛАЗАМ) ===
+    function scheduleBrokenBulbFlicker() {
+        if (!document.body.contains(cmdWin)) return;
+
+        // Пауза между сериями морганий: 4–9 сек (в Night-режиме 2–5 сек)
+        const minWait = state.isNightVariant ? 2000 : 4000;
+        const maxWait = state.isNightVariant ? 5000 : 9000;
+        const nextDelay = Math.floor(Math.random() * (maxWait - minWait)) + minWait;
+
+        cmdWin._bulbTimer = setTimeout(() => {
+            if (!document.body.contains(cmdWin)) return;
+
+            // Короткая очередь из 2–4 очень быстрых микро-морганий
+            const flickCount = Math.floor(Math.random() * 3) + 2;
+            let step = 0;
+
+            const burstInterval = setInterval(() => {
+                if (!document.body.contains(cmdWin)) {
+                    clearInterval(burstInterval);
+                    return;
+                }
+                if (step < flickCount * 2) {
+                    const isDip = step % 2 === 0;
+                    if (isDip) {
+                        // Мягкая просадка прозрачности (0.84 - 0.92), никаких провалов в темноту
+                        const softOp = state.isNightVariant ? (Math.random() * 0.1 + 0.78) : (Math.random() * 0.08 + 0.85);
+                        cmdWin.style.opacity = softOp.toFixed(2);
+                        cmdWin.style.filter = 'brightness(0.92)';
+                    } else {
+                        // Возврат к норме без ослепляющей вспышки
+                        cmdWin.style.opacity = '0.98';
+                        cmdWin.style.filter = 'brightness(1.03)';
+                    }
+                    step++;
+                } else {
+                    clearInterval(burstInterval);
+                    cmdWin.style.opacity = '0.98';
+                    cmdWin.style.filter = 'none';
+                    scheduleBrokenBulbFlicker();
+                }
+            }, Math.floor(Math.random() * 18) + 18); // Очень быстрые 18–35 мс (легкое подрагивание света)
+        }, nextDelay);
+    }
+
+    function saveSessionLog() {
+        state.logHTML = logEl.innerHTML;
+    }
+
+    function updatePromptUI() {
+        if (state.authStage === 'login') {
+            promptLabel.innerText = "LOGIN >";
+            userInput.type = "text";
+        } else if (state.authStage === 'password') {
+            promptLabel.innerText = "PASSWORD >";
+            userInput.type = "password";
+        } else if (state.authStage === 'authenticated') {
+            promptLabel.innerText = "ROOT@MA5BOT0ND:~#";
+            userInput.type = "text";
+        }
+    }
+
+    closeBtn.onclick = () => {
+        if (typeof playSFX === 'function') playSFX('click');
+        if (cmdWin._bulbTimer) clearTimeout(cmdWin._bulbTimer);
+        saveSessionLog();
+        cmdWin.remove();
+        focusVignette.remove();
+    };
+
+    // === 4. ЗАГРУЗКА И ШЕЙК СРАБАТЫВАЮТ ВСЕГДА ПРИ ОТКРЫТИИ ===
+    let progress = 0;
+    const fillEl = cmdWin.querySelector('#cmd-boot-fill');
+    const percentEl = cmdWin.querySelector('#cmd-boot-percent');
+    
+    const bootTimer = setInterval(() => {
+        progress += Math.floor(Math.random() * 22) + 15;
+        if (progress >= 100) {
+            progress = 100;
+            clearInterval(bootTimer);
+            setTimeout(startEditImpact, 100);
+        }
+        fillEl.style.width = progress + '%';
+        percentEl.innerText = progress + '%';
+    }, 75);
+
+    function startEditImpact() {
+        focusVignette.classList.add('active');
+        document.body.classList.add('tiktok-edit-shake');
+        cmdWin.classList.add('cmd-rgb-wind');
+        if (typeof playSFX === 'function') playSFX('hover');
+
+        setTimeout(() => {
+            document.body.classList.remove('tiktok-edit-shake');
+            cmdWin.classList.remove('cmd-rgb-wind');
+
+            focusVignette.classList.remove('active');
+            focusVignette.classList.add('fade-out');
+            setTimeout(() => focusVignette.remove(), 1000);
+
+            cmdWin.querySelector('#cmd-boot-screen').style.display = 'none';
+            cmdWin.querySelector('#cmd-terminal-view').style.display = 'block';
+
+            // Запускаем рандомное моргание сломанной лампочки
+            scheduleBrokenBulbFlicker();
+
+            // Если в этой сессии уже запускали — сразу подгружаем сохраненный лог и стадию
+            if (state.initialized) {
+                logEl.innerHTML = state.logHTML;
+                updatePromptUI();
+                if (state.attemptsLeft > 0) {
+                    inputRow.style.display = 'flex';
+                    userInput.focus();
+                }
+                stickToBottom();
+            } else {
+                // Иначе печатаем приветствие в первый раз
+                printWelcomeSequence();
+            }
+        }, 320);
+    }
+
+    function printWelcomeSequence() {
+        const bootLines = [
+            "EVO_OS Kernel initialized successfully.",
+            "Mounting encrypted memory blocks... DONE.",
+            "Establishing neural link... CONNECTED.",
+            " "
+        ];
+
+        const asciiBanner = `
+ ███╗   ███╗ █████╗ ███████╗██████╗  ██████╗ ████████╗ ██████╗ ███╗   ██╗██████╗ 
+ ████╗ ████║██╔══██╗██╔════╝██╔══██╗██╔═══██╗╚══██╔══╝██╔═████╗████╗  ██║██╔══██╗
+ ██╔████╔██║███████║███████╗██████╔╝██║   ██║   ██║   ██║██╔██║██╔██╗ ██║██║  ██║
+ ██║╚██╔╝██║██╔══██║╚════██║██╔══██╗██║   ██║   ██║   ████╔╝██║██║╚██╗██║██║  ██║
+ ██║ ╚═╝ ██║██║  ██║███████║██████╔╝╚██████╔╝   ██║   ╚██████╔╝██║ ╚████║██████╔╝
+ ╚═╝     ╚═╝╚═╝  ╚═╝╚══════╝╚═════╝  ╚═════╝    ╚═╝    ╚═════╝ ╚═╝  ╚═══╝╚═════╝ 
+                          [ M A 5 B O T 0 N D _ T E R M ]`;
+
+        let lineIdx = 0;
+
+        function printNextBootLine() {
+            if (lineIdx < bootLines.length) {
+                const p = document.createElement('div');
+                p.className = 'cmd-line cmd-muted-text';
+                logEl.appendChild(p);
+                typeLineText(p, bootLines[lineIdx], 12, () => {
+                    lineIdx++;
+                    stickToBottom();
+                    setTimeout(printNextBootLine, 80);
+                });
+            } else {
+                const pre = document.createElement('pre');
+                pre.className = 'cmd-ascii-logo';
+                pre.innerText = asciiBanner;
+                logEl.appendChild(pre);
+                stickToBottom();
+
+                const subInfo = document.createElement('div');
+                subInfo.className = 'cmd-line cmd-warn-text';
+                logEl.appendChild(subInfo);
+
+                typeLineText(subInfo, "WARNING: RESTRICTED ACCESS. AUTHORIZATION REQUIRED.", 16, () => {
+                    state.initialized = true;
+                    saveSessionLog();
+                    inputRow.style.display = 'flex';
+                    stickToBottom();
+                    userInput.focus();
+                });
+            }
+        }
+
+        printNextBootLine();
+    }
+
+    function typeLineText(element, text, speed, callback) {
+        let i = 0;
+        const timer = setInterval(() => {
+            if (i < text.length) {
+                element.innerText += text[i];
+                i++;
+                stickToBottom();
+            } else {
+                clearInterval(timer);
+                if (callback) callback();
+            }
+        }, speed);
+    }
+
+    function appendLog(text, className = 'cmd-line cmd-muted-text') {
+        const div = document.createElement('div');
+        div.className = className;
+        div.innerText = text;
+        logEl.appendChild(div);
+        saveSessionLog();
+        stickToBottom();
+    }
+
+    cmdWin.addEventListener('mousedown', (e) => {
+        if (e.target !== closeBtn && !dragHandle.contains(e.target)) {
+            setTimeout(() => userInput.focus(), 10);
+        }
+    });
+
+    userInput.addEventListener('keydown', (e) => {
+        // Блокируем клавиши PageUp / PageDown / стрелки вверх-вниз, чтобы нельзя было прокрутить с клавиатуры
+        if (e.key === 'PageUp' || e.key === 'PageDown') {
+            e.preventDefault();
+            return;
+        }
+        if (e.key !== 'Enter') return;
+        const val = userInput.value.trim();
+        userInput.value = '';
+        if (!val) return;
+
+        if (typeof playSFX === 'function') playSFX('click');
+
+        // ЭТАП 1: ЛОГИН
+        if (state.authStage === 'login') {
+            appendLog(`LOGIN > ${val}`, 'cmd-line cmd-muted-text');
+
+            const currentSessEl = document.getElementById('visitor-count');
+            const activeSessId = currentSessEl ? currentSessEl.innerText.trim() : '';
+
+            if (val.toUpperCase() === activeSessId.toUpperCase() && activeSessId !== '') {
+                appendLog("IDENTITY VERIFIED. ENTER PASSCODE.", "cmd-line cmd-aqua-confirm");
+                state.authStage = 'password';
+                updatePromptUI();
+                saveSessionLog();
+                stickToBottom();
+            } else {
+                state.attemptsLeft--;
+                handleFailedAttempt("ACCESS DENIED: UNKNOWN CREDENTIALS.");
+            }
+        }
+        // ЭТАП 2: ПАРОЛЬ (evolution)
+        else if (state.authStage === 'password') {
+            appendLog(`PASSWORD > ${'*'.repeat(val.length)}`, 'cmd-line cmd-muted-text');
+
+            if (val.toLowerCase() === 'evolution') {
+                appendLog("================================================", "cmd-line cmd-aqua-confirm");
+                appendLog("ACCESS GRANTED. WELCOME TO MA5BOT0ND_TERM.", "cmd-line cmd-aqua-confirm");
+                appendLog("Awaiting root commands...", "cmd-line cmd-muted-text");
+                state.authStage = 'authenticated';
+                updatePromptUI();
+                saveSessionLog();
+                stickToBottom();
+            } else {
+                state.attemptsLeft--;
+                handleFailedAttempt("ACCESS DENIED: INVALID PASSWORD.");
+            }
+        }
+        // ЭТАП 3: ПОСЛЕ ВХОДА
+        else if (state.authStage === 'authenticated') {
+            appendLog(`ROOT@MA5BOT0ND:~# ${val}`, 'cmd-line cmd-muted-text');
+            appendLog(`Executing '${val}'... [Module pending]`, 'cmd-line cmd-warn-text');
+            stickToBottom();
+        }
+    });
+
+    function handleFailedAttempt(reasonText) {
+        cmdWin.classList.add('cmd-rgb-wind');
+        setTimeout(() => cmdWin.classList.remove('cmd-rgb-wind'), 220);
+
+        if (state.attemptsLeft > 0) {
+            appendLog(`WARNING: ${reasonText} (${state.attemptsLeft} ATTEMPTS LEFT)`, "cmd-line cmd-warn-text");
+        } else {
+            appendLog(`CRITICAL: INTRUSION DETECTED. EXECUTING KILL PROTOCOL...`, "cmd-line cmd-err-text");
+            inputRow.style.display = 'none';
+            saveSessionLog();
+            stickToBottom();
+            setTimeout(() => {
+                triggerSystemKill();
+            }, 900);
+        }
+    }
+}
